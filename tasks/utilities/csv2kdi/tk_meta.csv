@@ -1,0 +1,41 @@
+Kenna Item,Associated Source File Column,Required,Description,Object Type
+date_format,%FT%T%:z,,,
+locator,hostname,,field used to compare for dupes for this file load only,Asset
+file,,one value per Asset is required,(string) path to affected file,Asset
+ip_address,,one value per Asset is required,(string) IP of internal facing asset,Asset
+mac_address,,one value per Asset is required,(mac format-regex) MAC address asset,Asset
+hostname,Trusted Peer,one value per Asset is required,(string) host name/domain name of affected asset,Asset
+ec2,,one value per Asset is required,(string) Amazon EC2 instance id or name,Asset
+netbios,,one value per Asset is required,(string) netbios name,Asset
+external_ip_address,,no,(string) IP of external facing asset,Asset
+url,,one value per Asset is required,(string) URL pointing to asset,Asset
+fqdn,,one value per Asset is required,(string) fqdn of asset,Asset
+external_id,,one value per Asset is required,(string) ExtID of asset-Often used as an int org name for asset,Asset
+database,,one value per Asset is required,(string) Name of db,Asset
+application,,no,(string) ID/app Name,Asset
+tags,"Protocol,Result,Direction,Level 1 Category,Level 2 Category,Level 3 Category",no,(string) list of strings that correspond to tags on an asset,Asset Meta
+tag_prefix,,,,
+owner,,no,(string) Some string that identifies an owner of an asset,Asset Meta
+os,,no,(string) Operating system of asset,Asset Meta
+os_version,,no,(string) OS version,Asset Meta
+priority,,no,(Integer) Def:10 - Priority of asset (int 1 to 10).Adjusts asset score. nil for default to 10,Asset Meta
+scanner_source,static,yes,declares scanner type data locatin as static (listed in this file) or column (pulled from the source file),
+scanner_type,Picus,yes,(string) - official name of scan type - should be the same across files where appropriate can be static or pulled from column,Vulnerability
+scanner_id,Threat ID,yes,(string) - Vuln ID defined by the scanner,Vulnerability
+details,Threat Name,no,(string) - Details about vuln,Vulnerability
+created,,no,(string) - Date vuln created,Vulnerability
+score_map,"{""High"":""10"",""Medium"":""7"",""Low"":""4""}",no,hash of translation scanner score values to kenna range of 1-10 if needed,
+scanner_score,Severity,no,(Integer) - scanner score,Vulnerability
+last_fixed,,no,(string) - Last fixed date,Vulnerability
+last_seen,,yes,,Vulnerability
+status_map,Result,no,hash of translation scanner status to Kenna status mappings if needed,
+status,"{""Insecure"":""open"",""NotTested"":""open""}",yes,"(string) default to ""open"" if inbound reports will only include open vulns",Vulnerability
+closed,"{""Secure"":""closed""}",required if status is closed,(string) Date it was closed,Vulnerability
+additional_fields,,no,(array) Comma delimited findings (new appsec only),Findings
+port,Destination Port,no,(Integer) Port if associated with vuln,Vulnerability
+cve_id,CVE Ref.,no,(string) Any CVE(s)?,Vuln Def
+wasc_id,,no,(string) Any WASC?,Vuln Def
+cwe_id,,no,(string) Any CWE?,Vuln Def
+name,Threat Name,no,(string) Name/title of Vuln,Vuln Def
+description,Attack Description,no,(string) Description,Vuln Def
+solution,,no,(string) Solution,Vuln Def

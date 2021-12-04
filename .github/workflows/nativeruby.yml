@@ -1,0 +1,26 @@
+
+name: Native-Ruby-Test
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  
+jobs:
+   Native-Ruby-Test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout 128iid Repo
+      uses: actions/checkout@v2
+      with:
+        repository: KennaPublicSamples/128iid
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: 2.6
+    - name: Install dependencies
+      run: bundle install --without development test
+    - name:  Run 128iid
+      run : ruby 128iid.rb task=help
+      

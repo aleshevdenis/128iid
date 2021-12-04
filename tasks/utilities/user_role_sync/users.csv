@@ -1,0 +1,7 @@
+Email,FirstName,LastName,ADGroup
+user1@example.com,User1,FirstLast,Role1
+user2@example.com,User2,SecondLast,Role1
+user3@example.com,User3,ThirdLast,Role1
+user4@example.com,User4,FourthLast,Role2
+user5@example.com,User5,FifthLast,Role3
+user6@example.com,User6,SixthLast,Role4

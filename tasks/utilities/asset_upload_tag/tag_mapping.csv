@@ -1,0 +1,6 @@
+Column,Prefix,Delimiter
+Environment,ENV:,
+Class,CLASS:,
+Type,TYPE:,
+Applications,APP:,|
+InternetFacing,,

@@ -1,0 +1,477 @@
+{
+  "metadata": {
+    "default": null
+  },
+  "content": [
+    {
+      "id": "server_security_misconfiguration",
+      "cwe": ["CWE-16"],
+      "children": [
+        {
+          "id": "unsafe_cross_origin_resource_sharing",
+          "cwe": ["CWE-942"]
+        },
+        {
+          "id": "path_traversal",
+          "cwe": ["CWE-22", "CWE-73"]
+        },
+        {
+          "id": "directory_listing_enabled",
+          "cwe": ["CWE-548"]
+        },
+        {
+          "id": "ssl_attack_brforeach_poodle_etc",
+          "cwe": ["CWE-310"]
+        },
+        {
+          "id": "using_default_credentials",
+          "cwe": ["CWE-255", "CWE-521"]
+        },
+        {
+          "id": "misconfigured_dns",
+          "children": [
+            {
+              "id": "zone_transfer",
+              "cwe": ["CWE-669"]
+            }
+          ]
+        },
+        {
+          "id": "dbms_misconfiguration",
+          "children": [
+            {
+              "id": "excessively_privileged_user_dba",
+              "cwe": ["CWE-250"]
+            }
+          ]
+        },
+        {
+          "id": "lack_of_password_confirmation",
+          "children": [
+            {
+              "id": "change_password",
+              "cwe": ["CWE-620"]
+            }
+          ]
+        },
+        {
+          "id": "no_rate_limiting_on_form",
+          "cwe": ["CWE-799"],
+          "children": [
+            {
+              "id": "login",
+              "cwe": ["CWE-307"]
+            }
+          ]
+        },
+        {
+          "id": "unsafe_file_upload",
+          "children": [
+            {
+              "id": "file_extension_filter_bypass",
+              "cwe": ["CWE-434", "CWE-646"]
+            }
+          ]
+        },
+        {
+          "id": "missing_secure_or_httponly_cookie_flag",
+          "cwe": ["CWE-614", "CWE-1004"]
+        },
+        {
+          "id": "clickjacking",
+          "cwe": ["CWE-451"]
+        },
+        {
+          "id": "oauth_misconfiguration",
+          "cwe": ["CWE-303"],
+          "children": [
+            {
+              "id": "missing_state_parameter",
+              "cwe": ["CWE-352"]
+            },
+            {
+              "id": "insecure_redirect_uri",
+              "cwe": ["CWE-601"]
+            }
+          ]
+        },
+        {
+          "id": "captcha",
+          "cwe": ["CWE-804"]
+        },
+        {
+          "id": "username_enumeration",
+          "cwe": ["CWE-204"]
+        },
+        {
+          "id": "insecure_ssl",
+          "children": [
+            {
+              "id": "insecure_cipher_suite",
+              "cwe": ["CWE-326"]
+            }
+          ]
+        },
+        {
+          "id": "lack_of_security_headers",
+          "children": [
+            {
+              "id": "cache_control_for_a_non_sensitive_page",
+              "cwe": ["CWE-525"]
+            },
+            {
+              "id": "cache_control_for_a_sensitive_page",
+              "cwe": ["CWE-525"]
+            }
+          ]
+        },
+        {
+          "id": "race_condition",
+          "cwe": ["CWE-362", "CWE-366", "CWE-368", "CWE-421"]
+        },
+        {
+          "id": "cache_poisoning",
+          "cwe": ["CWE-444"]
+        }
+      ]
+    },
+    {
+      "id": "server_side_injection",
+      "cwe": ["CWE-929"],
+      "children": [
+        {
+          "id": "file_inclusion",
+          "cwe": ["CWE-73", "CWE-714"]
+        },
+        {
+          "id": "remote_code_execution_rce",
+          "cwe": ["CWE-77", "CWE-78", "CWE-94", "CWE-95"]
+        },
+        {
+          "id": "sql_injection",
+          "cwe": ["CWE-89"]
+        },
+        {
+          "id": "xml_external_entity_injection_xxe",
+          "cwe": ["CWE-611"]
+        },
+        {
+          "id": "http_response_manipulation",
+          "children": [
+            {
+              "id": "response_splitting_crlf",
+              "cwe": ["CWE-113"]
+            }
+          ]
+        },
+        {
+          "id": "content_spoofing",
+          "cwe": ["CWE-451"],
+          "children": [
+            {
+              "id": "homograph_idn_based",
+              "cwe": ["CWE-1007"]
+            }
+          ]
+        },
+        {
+          "id": "ssti",
+          "cwe": ["CWE-94"]
+        }
+      ]
+    },
+    {
+      "id": "broken_authentication_and_session_management",
+      "cwe": ["CWE-930"],
+      "children": [
+        {
+          "id": "authentication_bypass",
+          "cwe": ["CWE-287"]
+        },
+        {
+          "id": "two_fa_bypass",
+          "cwe": ["CWE-304"]
+        },
+        {
+          "id": "privilege_escalation",
+          "cwe": ["CWE-269"]
+        },
+        {
+          "id": "cleartext_transmission_of_session_token",
+          "cwe": ["CWE-319"]
+        },
+        {
+          "id": "weak_login_function",
+          "cwe": ["CWE-523"]
+        },
+        {
+          "id": "session_fixation",
+          "cwe": ["CWE-384"]
+        },
+        {
+          "id": "failure_to_invalidate_session",
+          "cwe": ["CWE-613"]
+        },
+        {
+          "id": "concurrent_logins",
+          "cwe": ["CWE-1018"]
+        },
+        {
+          "id": "weak_registration_implementation",
+          "children": [
+            {
+              "id": "over_http",
+              "cwe": ["CWE-311"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sensitive_data_exposure",
+      "cwe": ["CWE-934"],
+      "children": [
+        {
+          "id": "disclosure_of_secrets",
+          "cwe": ["CWE-522"]
+        },
+        {
+          "id": "exif_geolocation_data_not_stripped_from_uploaded_images",
+          "cwe": ["CWE-200"]
+        },
+        {
+          "id": "visible_detailed_error_page",
+          "cwe": ["CWE-209", "CWE-215"]
+        },
+        {
+          "id": "disclosure_of_known_public_information",
+          "cwe": ["CWE-200"]
+        },
+        {
+          "id": "token_leakage_via_referer",
+          "cwe": ["CWE-200"]
+        },
+        {
+          "id": "sensitive_token_in_url",
+          "cwe": ["CWE-200"]
+        },
+        {
+          "id": "non_sensitive_token_in_url",
+          "cwe": ["CWE-200"]
+        },
+        {
+          "id": "weak_password_reset_implementation",
+          "cwe": ["CWE-640"]
+        },
+        {
+          "id": "via_localstorage_sessionstorage",
+          "cwe": ["CWE-922"]
+        }
+      ]
+    },
+    {
+      "id": "cross_site_scripting_xss",
+      "cwe": ["CWE-79"]
+    },
+    {
+      "id": "broken_access_control",
+      "cwe": ["CWE-723"],
+      "children": [
+        {
+          "id": "idor",
+          "cwe": ["CWE-932"]
+        },
+        {
+          "id": "server_side_request_forgery_ssrf",
+          "cwe": ["CWE-918", "CWE-441"]
+        },
+        {
+          "id": "username_enumeration",
+          "cwe": ["CWE-200"]
+        },
+        {
+          "id": "exposed_sensitive_android_intent",
+          "cwe": ["CWE-927"]
+        },
+        {
+          "id": "exposed_sensitive_ios_url_scheme",
+          "cwe": ["CWE-939"]
+        }
+      ]
+    },
+    {
+      "id": "cross_site_request_forgery_csrf",
+      "cwe": ["CWE-352"]
+    },
+    {
+      "id": "application_level_denial_of_service_dos",
+      "cwe": ["CWE-400"]
+    },
+    {
+      "id": "unvalidated_redirects_and_forwards",
+      "cwe": ["CWE-601"],
+      "children": [
+        {
+          "id": "open_redirect",
+          "cwe": ["CWE-601"]
+        },
+        {
+          "id": "tabnabbing",
+          "cwe": ["CWE-1022"]
+        }
+      ]
+    },
+    {
+      "id": "external_behavior",
+      "cwe": null
+    },
+    {
+      "id": "insufficient_security_configurability",
+      "cwe": ["CWE-16"],
+      "children": [
+        {
+          "id": "weak_password_policy",
+          "cwe": ["CWE-521"]
+        },
+        {
+          "id": "no_password_policy",
+          "cwe": ["CWE-521"]
+        },
+        {
+          "id": "password_policy_bypass",
+          "cwe": ["CWE-521"]
+        },
+        {
+          "id": "weak_password_reset_implementation",
+          "cwe": ["CWE-640"]
+        }
+      ]
+    },
+    {
+      "id": "using_components_with_known_vulnerabilities",
+      "cwe": ["CWE-937"]
+    },
+    {
+      "id": "insecure_data_storage",
+      "cwe": ["CWE-729", "CWE-922"],
+      "children": [
+        {
+          "id": "sensitive_application_data_stored_unencrypted",
+          "cwe": ["CWE-312"]
+        },
+        {
+          "id": "server_side_credentials_storage",
+          "cwe": ["CWE-522"],
+          "children": [
+            {
+              "id": "plaintext",
+              "cwe": ["CWE-256"]
+            }
+          ]
+        },
+        {
+          "id": "non_sensitive_application_data_stored_unencrypted",
+          "cwe": ["CWE-312"]
+        }
+      ]
+    },
+    {
+      "id": "lack_of_binary_hardening",
+      "cwe": ["CWE-693"]
+    },
+    {
+      "id": "insecure_data_transport",
+      "cwe": ["CWE-311", "CWE-319"],
+      "children": [
+        {
+          "id": "cleartext_transmission_of_sensitive_data",
+          "cwe": ["CWE-319"]
+        },
+        {
+          "id": "executable_download",
+          "children": [
+            {
+              "id": "no_secure_integrity_check",
+              "cwe": ["CWE-353", "CWE-354", "CWE-494"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "insecure_os_firmware",
+      "children": [
+        {
+          "id": "command_injection",
+          "cwe": ["CWE-77"]
+        },
+        {
+          "id": "hardcoded_password",
+          "cwe": ["CWE-259"]
+        }
+      ]
+    },
+    {
+      "id": "broken_cryptography",
+      "cwe": ["CWE-310"]
+    },
+    {
+      "id": "privacy_concerns",
+      "cwe": ["CWE-359"]
+    },
+    {
+      "id": "network_security_misconfiguration",
+      "cwe": ["CWE-16"]
+    },
+    {
+      "id": "mobile_security_misconfiguration",
+      "cwe": ["CWE-919"]
+    },
+    {
+      "id": "client_side_injection",
+      "cwe": ["CWE-929"]
+    },
+    {
+      "id": "automotive_security_misconfiguration",
+      "cwe": null,
+      "children": [
+        {
+          "id": "infotainment_radio_head_unit",
+          "cwe": null
+        },
+        {
+          "id": "rf_hub",
+          "cwe": null
+        },
+        {
+          "id": "can",
+          "cwe": null
+        },
+        {
+          "id": "battery_management_system",
+          "cwe": null
+        },
+        {
+          "id": "gnss_gps",
+          "cwe": null
+        },
+        {
+          "id": "immobilizer",
+          "cwe": null
+        },
+        {
+          "id": "abs",
+          "cwe": null
+        },
+        {
+          "id": "rsu",
+          "cwe": null
+        }
+      ]
+    },
+    {
+      "id": "indicators_of_compromise",
+      "cwe": null
+    }
+  ]
+}
