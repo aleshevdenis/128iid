@@ -6,7 +6,7 @@ To run this task you need the following information from GitHub:
 
 1. GitHub username
 2. GitHub token 
-3. One or more organization names or repository names
+3. One or more organization names and/or repository names
 
 **IMPORTANT: you must be an administrator for the repository or organization, and you must use an access token with the repo scope or security_events scope.**
 

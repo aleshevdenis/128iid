@@ -129,7 +129,6 @@ module Kenna
 
         def validate_options
           fail_task("Invalid task parameters. At least one organization or repository must be specified.") if @organizations.blank? && @repositories.blank?
-          fail_task("Invalid task parameters. Only a list of organization or repository is allowed, not both.") if @organizations.present? && @repositories.present?
           fail_task("Invalid task parameters. Maximum page size is 100.") if @page_size > 100
           fail_task("Invalid task parameters. State must be one of [open, resolved] if present.") unless [nil, "open", "resolved"].include?(@state)
         end
