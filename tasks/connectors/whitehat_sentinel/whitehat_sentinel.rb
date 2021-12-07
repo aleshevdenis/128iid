@@ -18,7 +18,7 @@ module Kenna
           description: "This task connects to the Whitehat Sentinel API and pulls results into the Kenna Platform.",
           options: [
             { name: "whitehat_api_key",
-              type: "string",
+              type: "api_key",
               required: true,
               default: "",
               description: "This is the Whitehat key used to query the API." },
@@ -31,8 +31,8 @@ module Kenna
               type: "integer",
               required: false,
               default: 1,
-              description: "The minimum severity level of vulns to retrieve from the API." },
-            { name: "whitehat_scoring",
+              description: "The minimum severity level (1-5) of vulns to retrieve from the API." },
+            { name: "whitehat_scoring_type",
               type: "string",
               required: false,
               default: "legacy",
@@ -44,7 +44,7 @@ module Kenna
               description: "Kenna API Key" },
             { name: "kenna_api_host",
               type: "hostname",
-              required: true,
+              required: false,
               default: "api.denist.dev",
               description: "Kenna API Hostname" },
             { name: "kenna_connector_id",
@@ -55,7 +55,7 @@ module Kenna
             { name: "kenna_batch_size",
               type: "integer",
               required: false,
-              default: 0,
+              default: 500,
               description: "The number of findings to upload to Kenna at a time.  If not set, or set to 0, findings will not be batched, instead they will all be uploaded at once." },
             { name: "output_directory",
               type: "filename",
@@ -74,7 +74,7 @@ module Kenna
         @kenna_api_host = @options[:kenna_api_host]
         @kenna_api_key = @options[:kenna_api_key]
         @kenna_connector_id = @options[:kenna_connector_id]
-        scoring_system = @options[:whitehat_scoring].downcase.to_sym
+        scoring_system = @options[:whitehat_scoring_type].downcase.to_sym
         key = @options[:whitehat_api_key]
         page_size = @options[:whitehat_page_size].to_i
         @batch_size = @options[:kenna_batch_size].to_i
