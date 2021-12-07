@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require_relative "../rspec_helper"
-require_relative "../../initialize/enumerable"
 
 RSpec.specialize "Enumerable" do
   let(:names) { %w[friday saturday sunday] }

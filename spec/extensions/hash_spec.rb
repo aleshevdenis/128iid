@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require_relative "../rspec_helper"
-require_relative "../../initialize/hash"
 
 RSpec.specialize "Hash" do
   let(:symbolized_hash) { { monday: 1, tuesday: 2, wednesday: 3, thursday: 4, friday: 5, saturday: 6, sunday: 7, foo: nil, bar: { foo: nil } } }

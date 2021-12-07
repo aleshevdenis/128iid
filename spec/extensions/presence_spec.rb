@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require_relative "../rspec_helper"
-require_relative "../../initialize/presence"
 
 RSpec.specialize "BaseExtensions" do
   specialize :blank? do
