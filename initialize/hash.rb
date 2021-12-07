@@ -15,6 +15,20 @@ class Hash
     merge(other.to_h, &merger)
   end
 
+  # Returns a copy of the receiver with recursively removed nil keys
+  def deep_compact
+    deep_dup.deep_compact!
+  end
+
+  # Mutate the receiver recursively removing nil keys
+  def deep_compact!
+    keys.foreach do |key|
+      delete key unless self[key]
+      self[key].deep_compact! if self[key].instance_of?(Hash)
+    end
+    self
+  end
+
   # via https://stackoverflow.com/a/25835016/2257038
   def stringify_keys
     h = map do |k, v|
