@@ -130,17 +130,30 @@ module Kenna
                   "application" => find_from["webApp"]["name"].presence || domain_detail(find_from)
                 }
                 asset.compact!
-
                 details = {
                   "potential" => find_from["potential"].to_s
-                }.tap do |d|
-                  d["result_list"] = JSON.pretty_generate(remove_html_tags(find_from["resultList"]["list"].to_s)) if find_from["resultList"]["list"].present?
+                }
+                result_list = find_from["resultList"]["list"].first if find_from["resultList"]["list"].present?
+                details["accessPath"] = remove_html_tags(result_list["Result"]["accessPath"].to_s).to_json if result_list["Result"]["accessPath"].present?
+                details["authentication"] = remove_html_tags(result_list["Result"]["authentication"].to_s).to_json if result_list["Result"]["authentication"].present?
+                details["ajax"] = remove_html_tags(result_list["Result"]["ajax"].to_s).to_json if result_list["Result"]["ajax"].present?
+                details["ajaxRequestId"] = remove_html_tags(result_list["Result"]["ajaxRequestId"].to_s).to_json if result_list["Result"]["ajaxRequestId"].present?
+                details["formLocation"] = remove_html_tags(result_list["Result"]["formLocation"].to_s).to_json if result_list["Result"]["formLocation"].present?
+                payload_list = result_list["Result"]["payloads"]["list"].present? ? result_list["Result"]["payloads"]["list"] : []
+                payload_count = 1
+                payload_list.foreach do |payload|
+                  payload_instance = {}
+                  payload_instance["payload"] = remove_html_tags(payload["PayloadInstance"]["payload"].to_s).to_json if payload["PayloadInstance"]["payload"].present?
+                  payload_instance["response"] = remove_html_tags(payload["PayloadInstance"]["response"].to_s).to_json if payload["PayloadInstance"]["response"].present?
+                  payload_instance["request"] = remove_html_tags(payload["PayloadInstance"]["request"].to_s).to_json if payload["PayloadInstance"]["request"].present?
+                  payload_instance["payloadResult"] = remove_html_tags(payload["PayloadInstance"]["payloadResult"].to_s).to_json if payload["PayloadInstance"]["payloadResult"].present?
+                  details["PayloadInstance #{payload_count}"] = payload_instance
+                  payload_count += 1
                 end
 
-                details.tap do |t|
-                  t.merge!(find_from["owasp"]) if find_from["owasp"].present?
-                  t.merge!(find_from["wasc"]) if find_from["wasc"].present?
-                end
+                details["timesDetected"] = find_from["timesDetected"] if find_from["timesDetected"].present?
+                details["OWASP"] = remove_html_tags(find_from["owasp"]["list"].first["OWASP"].to_s) if find_from["owasp"].present? && find_from["owasp"]["list"].present?
+                details["WASC"] = remove_html_tags(find_from["wasc"]["list"].first["WASC"].to_s) if find_from["wasc"].present? && find_from["wasc"]["list"].present?
                 details.compact!
 
                 # start finding section
