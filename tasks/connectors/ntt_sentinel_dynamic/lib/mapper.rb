@@ -2,7 +2,7 @@
 
 module Kenna
   module 128iid
-    module WhitehatSentinel
+    module NTTSentinelDynamic
       class Mapper
         CWE_REGEX = %r{cwe.mitre.org/data/definitions/(?<cwe_id>\d+)\.html}.freeze
 
@@ -35,7 +35,7 @@ module Kenna
 
           {
             scanner_identifier: node[:id],
-            scanner_type: "Whitehat Sentinel",
+            scanner_type: "NTT Sentinel Dynamic",
             created_at: Time.parse(node[:found]),
             last_seen_at: closed_at || Time.now,
             last_fixed_on: closed_at,
@@ -50,7 +50,7 @@ module Kenna
         def vuln_def_hash(node)
           {
             scanner_identifier: node[:class],
-            scanner_type: "Whitehat Sentinel",
+            scanner_type: "NTT Sentinel Dynamic",
             name: node[:class],
             description: node[:description][:description],
             solution: node[:solution][:solution],
