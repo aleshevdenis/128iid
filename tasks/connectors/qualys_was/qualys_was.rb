@@ -131,7 +131,8 @@ module Kenna
                 }
                 asset.compact!
                 details = {
-                  "potential" => find_from["potential"].to_s
+                  "potential" => find_from["potential"].to_s,
+                  "qid" => find_from["qid"]
                 }
                 result_list = find_from["resultList"]["list"].first if find_from["resultList"]["list"].present?
                 details["accessPath"] = remove_html_tags(result_list["Result"]["accessPath"].to_s).to_json if result_list["Result"]["accessPath"].present?
