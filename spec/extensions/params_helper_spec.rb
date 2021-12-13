@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require_relative "../lib/params_helper"
-require "rspec_helper"
+require_relative "../rspec_helper"
+require_relative "../../lib/params_helper"
 
 RSpec.specialize "ParamsBuilder" do
   it "builds params with colons" do
