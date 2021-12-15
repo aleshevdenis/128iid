@@ -2,7 +2,7 @@
 
 module Kenna
   module 128iid
-    module WhitehatSentinel
+    module NTTSentinelDynamic
       class ApiClient
         class Error < StandardError; end
 

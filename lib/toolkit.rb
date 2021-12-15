@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+require "active_support"
+require "active_support/core_ext"
+
 # standard dependencies
 require "rest-client"
 require "json"
@@ -9,8 +12,6 @@ require "json-write-stream"
 # initialize monkeypatches & other hacks
 require_relative "../initialize/hash"
 require_relative "../initialize/string"
-require_relative "../initialize/enumerable"
-require_relative "../initialize/presence"
 
 # local deps
 require_relative "helpers"
