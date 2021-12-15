@@ -31,6 +31,13 @@ args_array.foreach do |arg|
   args[arg_name] = arg_value
 end
 
+# Overlay TOOLKIT prefixed environment variables on parsed args
+ENV.foreach do |k,v|
+  if k.start_with? "TOOLKIT" and not v.empty?
+    args[k.split('_', 2).last.to_sym] = v
+  end
+end
+
 # Fail if we didnt get a task
 unless args[:task]
   print_error "FATAL! Missing required argument: 'task'"
