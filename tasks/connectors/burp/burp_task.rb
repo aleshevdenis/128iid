@@ -15,6 +15,11 @@ module Kenna
               required: true,
               default: nil,
               description: "Burp instance hostname, e.g. http://burp.example.com:8080" },
+            { name: "burp_api_port",
+              type: "integer",
+              required: false,
+              default: nil,
+              description: "Burp instance hostname, e.g. http://burp.example.com:8080" },
             { name: "burp_schedule_id",
               type: "string",
               required: true,
@@ -102,7 +107,8 @@ module Kenna
       private
 
       def initialize_options
-        @host = @options[:burp_api_host]
+        @host = "http://#{@options[:burp_api_host]}"
+        @host = "#{@host}:#{@options[:burp_api_port]}" unless @options[:burp_api_port].nil?
         @schedule_ids = extract_list(:burp_schedule_id)
         @issue_severities = extract_list(:burp_issue_severity, %w[info low medium high])
         @api_token = @options[:burp_api_token]
