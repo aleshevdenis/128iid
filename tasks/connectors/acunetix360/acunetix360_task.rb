@@ -147,12 +147,13 @@ module Kenna
       end
 
       def extract_definition(issue)
+        cwe_identifiers = issue["Classification"]["Cwe"].split(",").map { |id| "CWE-#{id.strip}" }.join(", ")
         {
           "name" => issue["Name"],
           "description" => remove_html_tags(issue["Description"]),
           "solution" => remove_html_tags(issue["RemedialProcedure"]),
           "scanner_type" => "Acunetix360",
-          "cwe_identifiers" => issue["Classification"]["Cwe"].split(",").map { |id| "CWE-#{id.strip}" }.join(", ")
+          "cwe_identifiers" => (cwe_identifiers if cwe_identifiers.present?)
         }.compact
       end
 
