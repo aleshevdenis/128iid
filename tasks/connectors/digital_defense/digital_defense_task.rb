@@ -8,7 +8,7 @@ module Kenna
       SCANNER_TYPE = "digital_defense"
       STATUS = {
         "new" => "open"
-      }
+      }.freeze
       def self.metadata
         {
           id: "digital_defense",
