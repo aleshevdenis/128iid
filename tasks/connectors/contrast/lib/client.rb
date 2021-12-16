@@ -15,74 +15,46 @@ module Kenna
           @tags = {}
         end
 
-        def get_vulns(tags, environments, severities)
+        def get_vulns(tags, environments, severities, offset, limit)
           print_debug "Getting vulnerabilities from the Contrast API"
 
-          more_results = true
-          offset = 0
-          limit = 25
-          out = []
+          url = "#{@base_url}/orgtraces/filter?expand=application&offset=#{offset}&limit=#{limit}&applicationTags=#{tags}&environments=#{environments}&severities=#{severities}&licensedOnly=true"
+          response = http_get(url, @headers)
+          return nil if response.nil?
 
-          while more_results
-            url = "#{@base_url}/orgtraces/filter?expand=application&offset=#{offset}&limit=#{limit}&applicationTags=#{tags}&environments=#{environments}&severities=#{severities}&licensedOnly=true"
-            response = http_get(url, @headers)
-            return nil if response.nil?
+          body = JSON.parse response.body
 
-            body = JSON.parse response.body
+          more_results = !(response.nil? || response.empty? || offset > body["count"])
+          ceiling = [limit + offset, body['count']].min
 
-            # prepare the next request
-            offset += limit
+          print "Fetched #{ceiling} of #{body['count']} vulnerabilities"
 
-            if response.nil? || response.empty? || offset > body["count"]
-              # morepages = false
-              more_results = false
-              break
-            end
-
-            # do stuff with the data
-            out.concat(body["traces"])
-
-            print_debug "Fetched #{out.length} of #{body['count']} vulnerabilities"
-
-          end
-
-          out
+          return body["traces"], more_results, body['count']
         end
 
-        def get_vulnerable_libraries(apps)
+        def get_vulnerable_libraries(apps, offset, limit)
           print_debug "Getting vulnerable libraries from the Contrast API"
-
-          more_results = true
-          offset = 0
-          limit = 25
-          out = []
 
           payload = {
             quickFilter: "VULNERABLE",
             "apps": apps
           }
+          
+          url = "#{@base_url}/libraries/filter?offset=#{offset}&limit=#{limit}&sort=score&expand=skip_links%2Capps%2Cvulns%2Cstatus%2Cusage_counts"
 
-          while more_results
-            url = "#{@base_url}/libraries/filter?offset=#{offset}&limit=#{limit}&sort=score&expand=skip_links%2Capps%2Cvulns%2Cstatus%2Cusage_counts"
+          response = http_post(url, @headers, payload.to_json)
+          body = JSON.parse response.body
 
-            response = http_post(url, @headers, payload.to_json)
-            body = JSON.parse response.body
-
-            # prepare the next request
-            offset += limit
-
-            if response.nil? || response.empty? || body["libraries"].count.zero?
-              # morepages = false
-              more_results = false
-              break
-            end
-
-            # do stuff with the data
-            out.concat(body["libraries"])
-
-            print_debug "Fetched #{offset} libraries"
-
+          #TODO shorten
+          if response.nil? || response.empty? || body["libraries"].count.zero?
+            more_results = false
+          else
+            more_results = true
           end
+
+          out = [body["libraries"], more_results]
+
+          print_debug "Fetched #{offset} libraries"
 
           out
         end
