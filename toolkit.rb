@@ -7,8 +7,16 @@ require_relative "lib/params_helper"
 
 # First split up whatever we got
 args_array = Kenna::128iid::ParamsHelper.build_params(ARGV)
-# Then split up this into a hash
 args = {}
+
+# Parse TOOLKIT prefixed environment variables into arg hash
+ENV.foreach do |k,v|
+  if k.start_with? "TOOLKIT" and not v.empty?
+    args[k.split('_', 2).last.to_sym] = v
+  end
+end
+
+# Then split up this into a hash
 args_array.foreach do |arg|
   name_value = arg.split("=", 2)
   arg_name = name_value[0].to_sym
@@ -29,13 +37,6 @@ args_array.foreach do |arg|
 
   # set the arg value into the hash
   args[arg_name] = arg_value
-end
-
-# Overlay TOOLKIT prefixed environment variables on parsed args
-ENV.foreach do |k,v|
-  if k.start_with? "TOOLKIT" and not v.empty?
-    args[k.split('_', 2).last.to_sym] = v
-  end
 end
 
 # Fail if we didnt get a task
