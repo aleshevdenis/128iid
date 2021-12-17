@@ -6,9 +6,9 @@ To run this task you need the following information from Checkmarx SAST:
 
 1. Username
 2. Password
-3. Client ID
-4. Client Secret
-5. grant_type
+3. Client Secret
+4. Client ID (optional)
+5. grant_type (optional)
 6. scope (optional)
 
 ## This Task will use the Checkmarx SAST API to
@@ -27,7 +27,7 @@ Complete list of Options:
 | --- | --- | --- | --- |
 | checkmarx_sast_user | true | Checkmarx SAST username | n/a |
 | checkmarx_sast_password | true | Checkmarx SAST password | n/a |
-| client_id | true | Checkmarx SAST Client ID | n/a |
+| client_id | false | Checkmarx SAST Client ID | n/a |
 | client_secret | true | Checkmarx SAST Client Secret | n/a |
 | grant_type | false | password | n/a |
 | scope | false | access_control_api sast_api | n/a |
