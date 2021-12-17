@@ -16,47 +16,38 @@ module Kenna
         end
 
         def get_vulns(tags, environments, severities, offset, limit)
-          print_debug "Getting vulnerabilities from the Contrast API"
-
           url = "#{@base_url}/orgtraces/filter?expand=application&offset=#{offset}&limit=#{limit}&applicationTags=#{tags}&environments=#{environments}&severities=#{severities}&licensedOnly=true"
           response = http_get(url, @headers)
           return nil if response.nil?
 
           body = JSON.parse response.body
 
-          more_results = !(response.nil? || response.empty? || offset > body["count"])
+          more_results = !(response.nil? || response.empty? || (offset + limit) >= body["count"])
           ceiling = [limit + offset, body['count']].min
 
-          print "Fetched #{ceiling} of #{body['count']} vulnerabilities"
+          print "Fetched #{ceiling} of #{body['count']} vulnerabilities" 
 
           return body["traces"], more_results, body['count']
         end
 
         def get_vulnerable_libraries(apps, offset, limit)
-          print_debug "Getting vulnerable libraries from the Contrast API"
-
           payload = {
             quickFilter: "VULNERABLE",
             "apps": apps
           }
-          
-          url = "#{@base_url}/libraries/filter?offset=#{offset}&limit=#{limit}&sort=score&expand=skip_links%2Capps%2Cvulns%2Cstatus%2Cusage_counts"
 
+          url = "#{@base_url}/libraries/filter?offset=#{offset}&limit=#{limit}&sort=score&expand=skip_links%2Capps%2Cvulns%2Cstatus%2Cusage_counts"
           response = http_post(url, @headers, payload.to_json)
+          return nil if response.nil?
+
           body = JSON.parse response.body
 
-          #TODO shorten
-          if response.nil? || response.empty? || body["libraries"].count.zero?
-            more_results = false
-          else
-            more_results = true
-          end
+          more_results = !(response.nil? || response.empty? || (offset + limit) >= body["count"])
+          ceiling = [limit + offset, body['count']].min
 
-          out = [body["libraries"], more_results]
+          print "Fetched #{ceiling} of #{body['count']} libraries" 
 
-          print_debug "Fetched #{offset} libraries"
-
-          out
+          return body["libraries"], more_results, body['count']
         end
 
         def get_application_ids(tags)
@@ -92,7 +83,6 @@ module Kenna
         end
 
         def get_trace_story(id)
-          # begin
           url = "#{@base_url}/traces/#{id}/story"
 
           response = http_get(url, @headers)

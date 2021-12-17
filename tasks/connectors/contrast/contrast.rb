@@ -212,13 +212,11 @@ module Kenna
               create_kdi_vuln_def(vuln_def)
 
               print "Processed #{[i + 10,vulns.count].min}/#{vulns.count}" if ((i % 10).zero? || i == vulns.count)
-
-              upload=true
             end
 
             ### Write KDI format
             output_directory = "#{$basedir}/#{@options[:output_directory]}"
-            kdi_upload(output_directory, "generator.kdi_vulns_#{[offset,total].min}.json", @kenna_connector_id, @kenna_api_host, @kenna_api_key, false, 3, 1) if upload
+            kdi_upload(output_directory, "generator.kdi_vulns_#{[offset,total].min}.json", kenna_connector_id, kenna_api_host, kenna_api_key, false, 3, 1) unless total==0
           end
         end
 
@@ -231,20 +229,25 @@ module Kenna
           # Convert to an array of strings
           apps = apps.map { |f| f["app_id"] }
 
-          more_results=true
+          #This is a Contrast API restriction
+          if batch_size > 50
+            print "Maximum batch size for libraries is 50"
+            batch_size = 50
+          end if
+
+          more_results=apps.count>0
           offset=0
           while more_results
             results = @client.get_vulnerable_libraries(apps, offset, batch_size)
 
             libs=results[0]
             more_results=results[1]
+            total=results[2]
             offset += batch_size
 
             fail_task "Unable to retrieve libraries, please check credentials" if libs.nil?
 
             libs.foreach_with_index do |l, i|
-              print "Processing #{i + 1}/#{libs.count} libraries" if (i % 10).zero?
-
               # For foreach application using this lib
               l["apps"].foreach do |a|
                 # Check that this app is in our apps list (as libs can be used in multiple apps)
@@ -307,23 +310,24 @@ module Kenna
                   create_kdi_asset_vuln(asset, vuln)
                 end
                 create_kdi_vuln_def(vuln_def)
-                
-                upload=true
+
+                print "Processed #{[i + 10,libs.count].min}/#{libs.count}" if ((i % 10).zero? || i == libs.count)
+
               end
             rescue RestClient::ExceptionWithResponse => e
               print_error "Error processing #{l['file_name']}: #{e.message}"
             end
 
             ### Write KDI format
-            kdi_upload(output_directory, "generator.kdi_libs_#{offset}.json", @kenna_connector_id, @kenna_api_host, @kenna_api_key, false, 3, 1) if upload
+            kdi_upload(output_directory, "generator.kdi_libs_#{[offset,total].min}.json", kenna_connector_id, kenna_api_host, kenna_api_key, false, 3, 1) unless total==0
           end
         end
 
-        if upload == true && kenna_connector_id && kenna_api_host && kenna_api_key
+        if kenna_connector_id && kenna_api_host && kenna_api_key
           print_good "Running connector"
           kdi_connector_kickoff(kenna_connector_id, kenna_api_host, kenna_api_key)
         else
-          print_good "Nothing to import or no Kenna credentials supplied"
+          print_good "No Kenna credentials supplied"
         end
       end
 
@@ -349,18 +353,6 @@ module Kenna
           "UNIMPORTANT" => 2
         }
         importance_lookup[importance]
-        # case importance
-        # when "CRITICAL"
-        #   "10"
-        # when "HIGH"
-        #   "8"
-        # when "MEDIUM"
-        #   "6"
-        # when "LOW"
-        #   "4"
-        # when "UNIMPORTANT"
-        #   "2"
-        # end
       end
 
       def map_severity_to_scanner_score(severity)
@@ -372,18 +364,6 @@ module Kenna
           "NOTE" => 1
         }
         severity_lookup[severity.upcase]
-        # case severity.upcase
-        # when "CRITICAL"
-        #   10
-        # when "HIGH"
-        #   8
-        # when "MEDIUM"
-        #   6
-        # when "LOW"
-        #   3
-        # when "NOTE"
-        #   1
-        # end
       end
 
       def map_status_to_open_closed(status)
@@ -422,7 +402,6 @@ module Kenna
       end
 
       def process_cwe(cwe_link)
-        # "CWE-" + cwe_link.split("/")[-1].gsub(".html", "")
         "CWE-#{cwe_link.split('/')[-1].gsub('.html', '')}"
       end
 
@@ -437,15 +416,8 @@ module Kenna
 
           # Collapsed rules will have properties array
           c["properties"]&.foreach do |_key, value|
-            # print "P's #{key} is #{value}"
             description += "\n#{value['name']}"
           end
-          # if !c["properties"].nil?
-          #   c["properties"]&.foreach do |_key, value|
-          #     # print "P's #{key} is #{value}"
-          #     description += "\n#{value['name']}"
-          #   end
-          # end
         end
         description += "\n\nWhat's the risk?\n\n"
         description += force_wrap_text ? wrap(risk) : risk
