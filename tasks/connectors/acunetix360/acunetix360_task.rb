@@ -147,18 +147,20 @@ module Kenna
       end
 
       def extract_definition(issue)
-        cwe_identifiers = issue["Classification"]["Cwe"].split(",").map { |id| "CWE-#{id.strip}" }.join(", ")
         {
           "name" => issue["Name"],
           "description" => remove_html_tags(issue["Description"]),
           "solution" => remove_html_tags(issue["RemedialProcedure"]),
-          "scanner_type" => "Acunetix360",
-          "cwe_identifiers" => (cwe_identifiers if cwe_identifiers.present?)
+          "scanner_type" => "Acunetix360"
         }.compact
       end
 
       def extract_additional_fields(issue)
+        # CWE Identifiers was moved out from definition because Acunetix 360 maps several definitions to the same CWE
+        # causing some issues when displaying information in UI
+        cwe_identifiers = issue["Classification"]["Cwe"].split(",").map { |id| "CWE-#{id.strip}" }.join(", ")
         fields = {
+          "CWE Identifiers" => (cwe_identifiers if cwe_identifiers.present?),
           "Acunetix 360 Severity" => issue["Severity"],
           "Acunetix 360 State" => issue["State"],
           "Certainty" => issue["Certainty"],
@@ -175,7 +177,7 @@ module Kenna
           "Remedy References" => remove_html_tags(issue["RemedyReferences"]),
           "Exploitation Skills" => remove_html_tags(issue["ExploitationSkills"]),
           "External References" => remove_html_tags(issue["ExternalReferences"])
-        }
+        }.compact
         fields.merge!(extra_information(issue))
         fields.delete_if { |_, v| (v.is_a?(String) || v.is_a?(Array)) && v.empty? }
       end
