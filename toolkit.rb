@@ -11,7 +11,7 @@ args = {}
 
 # Parse TOOLKIT prefixed environment variables into arg hash
 ENV.foreach do |k, v|
-    args[k.split("_", 2).last.to_sym] = v if k.start_with? "TOOLKIT" && !v.empty?
+  args[k.split("_", 2).last.to_sym] = v if (k.start_with? "TOOLKIT") && !v.empty?
 end
 
 # Then split up this into a hash
