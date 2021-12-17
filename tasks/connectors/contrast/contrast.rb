@@ -121,8 +121,6 @@ module Kenna
         output_directory = "#{$basedir}/#{@options[:output_directory]}"
 
         batch_size = @options[:batch_size].to_i
-        upload = false
-
         @client = Kenna::128iid::Contrast::Client.new(contrast_host, contrast_port, contrast_api_key, contrast_auth_header, contrast_org_id, contrast_use_https)
 
         kenna_api_host = @options[:kenna_api_host]
@@ -131,10 +129,10 @@ module Kenna
         kenna_appsec_module = @options[:kenna_appsec_module]
 
         if contrast_include_vulns == true
-          #Init paging vars
-          more_results=true
-          offset=0
-          total=0
+          # Init paging vars
+          more_results = true
+          offset = 0
+          total = 0
 
           while more_results
             # Fetch vulnerabilities from the Contrast API
@@ -142,9 +140,9 @@ module Kenna
 
             fail_task "Unable to retrieve vulnerabilities, please check credentials" if results.nil?
 
-            vulns=results[0]
-            more_results=results[1]
-            total=results[2]
+            vulns = results[0]
+            more_results = results[1]
+            total = results[2]
             offset += batch_size
 
             fail_task "Unable to retrieve vulnerabilities, please check credentials" if vulns.nil?
@@ -213,12 +211,12 @@ module Kenna
               end
               create_kdi_vuln_def(vuln_def)
 
-              print "Processed #{[i + 10,vulns.count].min}/#{vulns.count}" if ((i % 10).zero? || i == vulns.count)
+              print "Processed #{[i + 10, vulns.count].min}/#{vulns.count}" if (i % 10).zero? || i == vulns.count
             end
 
             ### Write KDI format
             output_directory = "#{$basedir}/#{@options[:output_directory]}"
-            kdi_upload(output_directory, "generator.kdi_vulns_#{[offset,total].min}.json", kenna_connector_id, kenna_api_host, kenna_api_key, false, 3, 1) unless total==0
+            kdi_upload(output_directory, "generator.kdi_vulns_#{[offset, total].min}.json", kenna_connector_id, kenna_api_host, kenna_api_key, false, 3, 1) unless total.zero?
           end
         end
 
