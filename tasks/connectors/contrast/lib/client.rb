@@ -15,118 +15,90 @@ module Kenna
           @tags = {}
         end
 
-        def get_vulns(tags, environments, severities)
-          print_debug "Getting vulnerabilities from the Contrast API"
+        def get_vulns(tags, environments, severities, offset, limit)
+          url = "#{@base_url}/orgtraces/filter?expand=application&offset=#{offset}&limit=#{limit}&applicationTags=#{tags}&environments=#{environments}&severities=#{severities}&licensedOnly=true"
+          response = http_get(url, @headers, 1)
+          return nil if response.nil?
 
-          more_results = true
-          offset = 0
-          limit = 25
-          out = []
+          body = JSON.parse response.body
 
-          while more_results
-            url = "#{@base_url}/orgtraces/filter?expand=application&offset=#{offset}&limit=#{limit}&applicationTags=#{tags}&environments=#{environments}&severities=#{severities}&licensedOnly=true"
-            response = http_get(url, @headers)
-            return nil if response.nil?
+          more_results = !(response.nil? || response.empty? || (offset + limit) >= body["count"])
+          ceiling = [limit + offset, body['count']].min
 
-            body = JSON.parse response.body
+          print "Fetched #{ceiling} of #{body['count']} vulnerabilities" 
 
-            # prepare the next request
-            offset += limit
-
-            if response.nil? || response.empty? || offset > body["count"]
-              # morepages = false
-              more_results = false
-              break
-            end
-
-            # do stuff with the data
-            out.concat(body["traces"])
-
-            print_debug "Fetched #{out.length} of #{body['count']} vulnerabilities"
-
-          end
-
-          out
+          return body["traces"], more_results, body['count']
+        rescue RestClient::ExceptionWithResponse => e
+          print_error "Error getting vulnerabilities: #{e.message}"
+        rescue SocketError => e
+          print_error "Error calling API, check server address: #{e.message}"
         end
 
-        def get_vulnerable_libraries(apps)
-          print_debug "Getting vulnerable libraries from the Contrast API"
-
-          more_results = true
-          offset = 0
-          limit = 25
-          out = []
-
+        def get_vulnerable_libraries(apps, offset, limit)
           payload = {
             quickFilter: "VULNERABLE",
             "apps": apps
           }
 
-          while more_results
-            url = "#{@base_url}/libraries/filter?offset=#{offset}&limit=#{limit}&sort=score&expand=skip_links%2Capps%2Cvulns%2Cstatus%2Cusage_counts"
+          url = "#{@base_url}/libraries/filter?offset=#{offset}&limit=#{limit}&sort=score&expand=skip_links%2Capps%2Cvulns%2Cstatus%2Cusage_counts"
+          response = http_post(url, @headers, payload.to_json)
+          return nil if response.nil?
 
-            response = http_post(url, @headers, payload.to_json)
-            body = JSON.parse response.body
+          body = JSON.parse response.body
 
-            # prepare the next request
-            offset += limit
+          more_results = !(response.nil? || response.empty? || (offset + limit) >= body["count"])
+          ceiling = [limit + offset, body['count']].min
 
-            if response.nil? || response.empty? || body["libraries"].count.zero?
-              # morepages = false
-              more_results = false
-              break
-            end
+          print "Fetched #{ceiling} of #{body['count']} libraries" 
 
-            # do stuff with the data
-            out.concat(body["libraries"])
-
-            print_debug "Fetched #{offset} libraries"
-
-          end
-
-          out
+          return body["libraries"], more_results, body['count']
+        rescue RestClient::ExceptionWithResponse => e
+          print_error "Error getting vulnerable libraries for apps #{apps}: #{e}"
         end
 
         def get_application_ids(tags)
-          print_debug "Getting applications from the Contrast API"
           url = "#{@base_url}/applications/filter/short?filterTags=#{tags}"
-          response = http_get(url, @headers)
+          response = http_get(url, @headers, 1)
           return nil if response.nil?
 
           temp = JSON.parse response.body
           temp["applications"]
+        rescue RestClient::ExceptionWithResponse => e
+          print_error "Error getting applications for tags #{tags}: #{e}"
         end
 
         def get_application_tags(app_id)
           if @tags[app_id].nil?
             url = "#{@base_url}/tags/application/list/#{app_id}"
 
-            response = http_get(url, @headers)
+            response = http_get(url, @headers, 1)
             temp = JSON.parse response.body
             @tags[app_id] = temp["tags"]
           end
           @tags[app_id]
+        rescue RestClient::ExceptionWithResponse => e
+          print_error "Error getting application tags for app id #{app_id}: #{e}"
         end
 
         def get_trace_recommendation(id, rule_name)
           if @recs[rule_name].nil?
-            # print "Getting recommendation for rule #{rule_name}"
             url = "#{@base_url}/traces/#{id}/recommendation"
-            response = RestClient.get(url, @headers)
+            response = http_get(url, @headers)
 
             @recs[rule_name] = JSON.parse response.body
           end
           @recs[rule_name]
+        rescue RestClient::ExceptionWithResponse => e
+          print_error "Error fetching trace recommendation for #{id}: #{e}"
         end
 
         def get_trace_story(id)
-          # begin
           url = "#{@base_url}/traces/#{id}/story"
 
           response = http_get(url, @headers)
           JSON.parse response.body
         rescue RestClient::ExceptionWithResponse => e
-          print_debug "Error fetching trace story for #{id}: #{e} (unlicensed?)"
+          print_error "Error fetching trace story for #{id}: #{e}"
         end
       end
     end
