@@ -140,6 +140,8 @@ module Kenna
             # Fetch vulnerabilities from the Contrast API
             results = @client.get_vulns(contrast_application_tags, contrast_environments, contrast_severities, offset, batch_size)
 
+            fail_task "Unable to retrieve vulnerabilities, please check credentials" if results.nil?
+
             vulns=results[0]
             more_results=results[1]
             total=results[2]

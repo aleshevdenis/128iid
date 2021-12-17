@@ -17,7 +17,7 @@ module Kenna
 
         def get_vulns(tags, environments, severities, offset, limit)
           url = "#{@base_url}/orgtraces/filter?expand=application&offset=#{offset}&limit=#{limit}&applicationTags=#{tags}&environments=#{environments}&severities=#{severities}&licensedOnly=true"
-          response = http_get(url, @headers)
+          response = http_get(url, @headers, 1)
           return nil if response.nil?
 
           body = JSON.parse response.body
@@ -28,6 +28,10 @@ module Kenna
           print "Fetched #{ceiling} of #{body['count']} vulnerabilities" 
 
           return body["traces"], more_results, body['count']
+        rescue RestClient::ExceptionWithResponse => e
+          print_error "Error getting vulnerabilities: #{e.message}"
+        rescue SocketError => e
+          print_error "Error calling API, check server address: #{e.message}"
         end
 
         def get_vulnerable_libraries(apps, offset, limit)
@@ -48,38 +52,44 @@ module Kenna
           print "Fetched #{ceiling} of #{body['count']} libraries" 
 
           return body["libraries"], more_results, body['count']
+        rescue RestClient::ExceptionWithResponse => e
+          print_error "Error getting vulnerable libraries for apps #{apps}: #{e}"
         end
 
         def get_application_ids(tags)
-          print_debug "Getting applications from the Contrast API"
           url = "#{@base_url}/applications/filter/short?filterTags=#{tags}"
-          response = http_get(url, @headers)
+          response = http_get(url, @headers, 1)
           return nil if response.nil?
 
           temp = JSON.parse response.body
           temp["applications"]
+        rescue RestClient::ExceptionWithResponse => e
+          print_error "Error getting applications for tags #{tags}: #{e}"
         end
 
         def get_application_tags(app_id)
           if @tags[app_id].nil?
             url = "#{@base_url}/tags/application/list/#{app_id}"
 
-            response = http_get(url, @headers)
+            response = http_get(url, @headers, 1)
             temp = JSON.parse response.body
             @tags[app_id] = temp["tags"]
           end
           @tags[app_id]
+        rescue RestClient::ExceptionWithResponse => e
+          print_error "Error getting application tags for app id #{app_id}: #{e}"
         end
 
         def get_trace_recommendation(id, rule_name)
           if @recs[rule_name].nil?
-            # print "Getting recommendation for rule #{rule_name}"
             url = "#{@base_url}/traces/#{id}/recommendation"
-            response = RestClient.get(url, @headers)
+            response = http_get(url, @headers)
 
             @recs[rule_name] = JSON.parse response.body
           end
           @recs[rule_name]
+        rescue RestClient::ExceptionWithResponse => e
+          print_error "Error fetching trace recommendation for #{id}: #{e}"
         end
 
         def get_trace_story(id)
@@ -88,7 +98,7 @@ module Kenna
           response = http_get(url, @headers)
           JSON.parse response.body
         rescue RestClient::ExceptionWithResponse => e
-          print_debug "Error fetching trace story for #{id}: #{e} (unlicensed?)"
+          print_error "Error fetching trace story for #{id}: #{e}"
         end
       end
     end
