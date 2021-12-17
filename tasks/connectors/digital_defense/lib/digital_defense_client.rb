@@ -15,7 +15,16 @@ module Kenna
 
         def get_vulnerabilities(page: 1, count: 25)
           url = URI("https://#{endpoint}scanresults/active/vulnerabilities/")
-          payload = { page: page, count: count }
+          payload = {
+            page: page,
+            count: count,
+            _0_notiin_vuln_active_view_status: "fixed",
+            _1_eq_vuln_acceptable_risk: "False",
+            _2_eq_vuln_false_positive: "False",
+            _3_iin_vuln_severity_ddi: "Critical",
+            _4_iin_vuln_severity_ddi: "High",
+            _5_iin_vuln_severity_ddi: "Low"
+          }
 
           url.query = URI.encode_www_form(payload)
           response = http_get(url.to_s, headers)
