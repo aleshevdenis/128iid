@@ -5,7 +5,7 @@ require "json"
 module Kenna
   module 128iid
     module CheckmarxScaHelper
-      attr_reader :username, :password, :grant_type, :scope, :checkmarx_sast_url, :client_id, :acr_values
+      attr_reader :username, :password, :tenant_id
 
       # Method for generating token using username & pwd , client ID and secret
       def request_checkmarx_sca_token
@@ -14,12 +14,12 @@ module Kenna
         # Retrieve an OAuth access token to be used against Checkmarx SAST API"
         headers = { "content-type" => "application/x-www-form-urlencoded" }
         payload = {
-          grant_type: grant_type,
-          scope: scope,
+          grant_type: "password",
+          scope: "sca_api",
           username: username,
           password: password,
-          client_id: client_id,
-          acr_values: "Tenant:#{acr_values}"
+          client_id: "sca_resource_owner",
+          acr_values: "Tenant:#{tenant_id}"
         }
 
         begin
