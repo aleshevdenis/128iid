@@ -121,8 +121,6 @@ module Kenna
         output_directory = "#{$basedir}/#{@options[:output_directory]}"
 
         batch_size = @options[:batch_size].to_i
-        upload = false
-
         @client = Kenna::128iid::Contrast::Client.new(contrast_host, contrast_port, contrast_api_key, contrast_auth_header, contrast_org_id, contrast_use_https)
 
         kenna_api_host = @options[:kenna_api_host]
@@ -131,10 +129,10 @@ module Kenna
         kenna_appsec_module = @options[:kenna_appsec_module]
 
         if contrast_include_vulns == true
-          #Init paging vars
-          more_results=true
-          offset=0
-          total=0
+          # Init paging vars
+          more_results = true
+          offset = 0
+          total = 0
 
           while more_results
             # Fetch vulnerabilities from the Contrast API
@@ -142,9 +140,9 @@ module Kenna
 
             fail_task "Unable to retrieve vulnerabilities, please check credentials" if results.nil?
 
-            vulns=results[0]
-            more_results=results[1]
-            total=results[2]
+            vulns = results[0]
+            more_results = results[1]
+            total = results[2]
             offset += batch_size
 
             fail_task "Unable to retrieve vulnerabilities, please check credentials" if vulns.nil?
@@ -213,38 +211,38 @@ module Kenna
               end
               create_kdi_vuln_def(vuln_def)
 
-              print "Processed #{[i + 10,vulns.count].min}/#{vulns.count}" if ((i % 10).zero? || i == vulns.count)
+              print "Processed #{[i + 10, vulns.count].min}/#{vulns.count}" if (i % 10).zero? || i == vulns.count
             end
 
             ### Write KDI format
             output_directory = "#{$basedir}/#{@options[:output_directory]}"
-            kdi_upload(output_directory, "generator.kdi_vulns_#{[offset,total].min}.json", kenna_connector_id, kenna_api_host, kenna_api_key, false, 3, 1) unless total==0
+            kdi_upload(output_directory, "generator.kdi_vulns_#{[offset, total].min}.json", kenna_connector_id, kenna_api_host, kenna_api_key, false, 3, 1) unless total.zero?
           end
         end
 
         if contrast_include_libs == true
           # Fetch a list of relevant applications
           apps = @client.get_application_ids(contrast_application_tags)
-          
+
           fail_task "Unable to retrieve applications, please check credentials" if apps.nil?
 
           # Convert to an array of strings
           apps = apps.map { |f| f["app_id"] }
 
-          #This is a Contrast API restriction
+          # This is a Contrast API restriction
           if batch_size > 50
             print "Maximum batch size for libraries is 50"
             batch_size = 50
-          end if
+          end
 
-          more_results=apps.count>0
-          offset=0
+          more_results = apps.count.postive?
+          offset = 0
           while more_results
             results = @client.get_vulnerable_libraries(apps, offset, batch_size)
 
-            libs=results[0]
-            more_results=results[1]
-            total=results[2]
+            libs = results[0]
+            more_results = results[1]
+            total = results[2]
             offset += batch_size
 
             fail_task "Unable to retrieve libraries, please check credentials" if libs.nil?
@@ -313,15 +311,14 @@ module Kenna
                 end
                 create_kdi_vuln_def(vuln_def)
 
-                print "Processed #{[i + 10,libs.count].min}/#{libs.count}" if ((i % 10).zero? || i == libs.count)
-
+                print "Processed #{[i + 10, libs.count].min}/#{libs.count}" if (i % 10).zero? || i == libs.count
               end
             rescue RestClient::ExceptionWithResponse => e
               print_error "Error processing #{l['file_name']}: #{e.message}"
             end
 
             ### Write KDI format
-            kdi_upload(output_directory, "generator.kdi_libs_#{[offset,total].min}.json", kenna_connector_id, kenna_api_host, kenna_api_key, false, 3, 1) unless total==0
+            kdi_upload(output_directory, "generator.kdi_libs_#{[offset, total].min}.json", kenna_connector_id, kenna_api_host, kenna_api_key, false, 3, 1) unless total.zero?
           end
         end
 

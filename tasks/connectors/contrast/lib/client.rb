@@ -23,11 +23,11 @@ module Kenna
           body = JSON.parse response.body
 
           more_results = !(response.nil? || response.empty? || (offset + limit) >= body["count"])
-          ceiling = [limit + offset, body['count']].min
+          ceiling = [limit + offset, body["count"]].min
 
-          print "Fetched #{ceiling} of #{body['count']} vulnerabilities" 
+          print "Fetched #{ceiling} of #{body['count']} vulnerabilities"
 
-          return body["traces"], more_results, body['count']
+          [body["traces"], more_results, body["count"]]
         rescue RestClient::ExceptionWithResponse => e
           print_error "Error getting vulnerabilities: #{e.message}"
         rescue SocketError => e
@@ -47,11 +47,11 @@ module Kenna
           body = JSON.parse response.body
 
           more_results = !(response.nil? || response.empty? || (offset + limit) >= body["count"])
-          ceiling = [limit + offset, body['count']].min
+          ceiling = [limit + offset, body["count"]].min
 
-          print "Fetched #{ceiling} of #{body['count']} libraries" 
+          print "Fetched #{ceiling} of #{body['count']} libraries"
 
-          return body["libraries"], more_results, body['count']
+          [body["libraries"], more_results, body["count"]]
         rescue RestClient::ExceptionWithResponse => e
           print_error "Error getting vulnerable libraries for apps #{apps}: #{e}"
         end
