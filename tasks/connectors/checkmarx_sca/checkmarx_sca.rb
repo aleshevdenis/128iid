@@ -24,26 +24,11 @@ module Kenna
               required: true,
               default: nil,
               description: "checkmarx_sca Password" },
-            { name: "acr_values",
-              type: "tenent id ",
+            { name: "tenant_id",
+              type: "string ",
               required: true,
               default: nil,
               description: "tenent id checkmarx SCA" },
-            { name: "scope",
-              type: "api scope",
-              required: false,
-              default: "sca_api",
-              description: "scope API" },
-            { name: "client_id",
-              type: "client detail",
-              required: true,
-              default: nil,
-              description: "client id of checkmarx SCA" },
-            { name: "grant_type",
-              type: "grant access type",
-              required: false,
-              default: "password",
-              description: "grant access type" },
             { name: "kenna_api_key",
               type: "api_key",
               required: false,
@@ -137,10 +122,7 @@ module Kenna
       def initialze_options
         @username = @options[:checkmarx_sca_user]
         @password = @options[:checkmarx_sca_password]
-        @grant_type = @options[:grant_type]
-        @scope = @options[:scope]
-        @client_id = @options[:client_id]
-        @acr_values = @options[:acr_values]
+        @tenant_id = @options[:tenant_id]
         @kenna_api_host = @options[:kenna_api_host]
         @kenna_api_key = @options[:kenna_api_key]
         @kenna_connector_id = @options[:kenna_connector_id]
