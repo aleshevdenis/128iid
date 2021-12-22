@@ -154,6 +154,8 @@ module Kenna
           result = kenna.run_files_on_connector(connector_id, upload_ids, max_retries)
           fail_task "File upload failed" unless result
           fail_task "Connector run (id #{result['id']}) failed" unless result["success"]
+          # At this point the connector ran successfully
+          print_good "Connector run (id #{result['id']}) success!"
         else
           fail_task "Invalid Connector ID (#{connector_id}), unable to upload."
         end
