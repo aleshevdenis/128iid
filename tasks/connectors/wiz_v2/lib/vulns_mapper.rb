@@ -14,15 +14,17 @@ module Kenna
         end
 
         def extract_asset(vuln)
-          {
+          asset = {
             "external_id" => vuln["vulnerableAsset"]["providerUniqueId"],
             "owner" => vuln["vulnerableAsset"]["subscriptionExternalId"],
-            "image_id" => vuln["vulnerableAsset"]["imageId"],
+            "image_id" => (vuln["vulnerableAsset"]["imageId"] if vuln["vulnerableAsset"]["imageId"].present?),
             "hostname" => (vuln["vulnerableAsset"]["name"] if vuln["vulnerableAsset"]["type"] == "VIRTUAL_MACHINE"),
             "os" => (vuln["vulnerableAsset"]["operatingSystem"] if vuln["vulnerableAsset"]["type"] == "VIRTUAL_MACHINE"),
             "ip_address" => ((vuln["vulnerableAsset"]["ipAddresses"] || []).first if vuln["vulnerableAsset"]["type"] == "VIRTUAL_MACHINE"),
             "tags" => extract_tags(vuln)
           }.compact
+          asset["asset_type"] = "image" if asset["image_id"]
+          asset
         end
 
         def extract_tags(vuln)
@@ -49,11 +51,12 @@ module Kenna
         end
 
         def extract_definition(vuln)
+          cve = (vuln["name"] || "").scan(/CVE-\d*-\d*/).join(", ")
           {
             "name" => extract_vuln_def_name(vuln),
             "description" => vuln["CVEDescription"] || vuln["description"] || vuln["name"],
             "solution" => vuln["remediation"],
-            "cve_identifiers" => vuln["name"],
+            "cve_identifiers" => (cve if cve.present?),
             "scanner_type" => SCANNER_TYPE
           }.compact
         end
