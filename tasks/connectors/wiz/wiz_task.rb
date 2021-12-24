@@ -136,7 +136,7 @@ module Kenna
             vuln_score = vuln_severity[severity].to_i
             if abspath.include? "VIRTUAL_MACHINE"
               runtime = row["Runtime"]
-              os = ow["OperatingSystem"] unless row["OperatingSystem"].empty?
+              os = row["OperatingSystem"] unless row["OperatingSystem"].empty?
             elsif abspath.include? "CONTAINER_IMAGE"
               image_id = row["ImageId"]
             elsif abspath.include? "SERVERLESS"

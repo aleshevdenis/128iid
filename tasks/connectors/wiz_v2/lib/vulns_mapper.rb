@@ -1,0 +1,77 @@
+# frozen_string_literal: true
+
+require_relative "mapper"
+module Kenna
+  module 128iid
+    module WizV2
+      class VulnsMapper < Mapper
+        def name
+          "Vuln"
+        end
+
+        def plural_name
+          "Vulns"
+        end
+
+        def extract_asset(vuln)
+          {
+            "external_id" => vuln["vulnerableAsset"]["providerUniqueId"],
+            "owner" => vuln["vulnerableAsset"]["subscriptionExternalId"],
+            "image_id" => vuln["vulnerableAsset"]["imageId"],
+            "hostname" => (vuln["vulnerableAsset"]["name"] if vuln["vulnerableAsset"]["type"] == "VIRTUAL_MACHINE"),
+            "os" => (vuln["vulnerableAsset"]["operatingSystem"] if vuln["vulnerableAsset"]["type"] == "VIRTUAL_MACHINE"),
+            "ip_address" => ((vuln["vulnerableAsset"]["ipAddresses"] || []).first if vuln["vulnerableAsset"]["type"] == "VIRTUAL_MACHINE"),
+            "tags" => extract_tags(vuln)
+          }.compact
+        end
+
+        def extract_tags(vuln)
+          tags = vuln["vulnerableAsset"]["tags"].map { |k, v| "#{k}:#{v}" }
+          tags << "Region:#{vuln['vulnerableAsset']['region']}" if vuln["vulnerableAsset"]["region"].present?
+          tags << "CloudPlatform:#{vuln['vulnerableAsset']['cloudPlatform']}" if vuln["vulnerableAsset"]["cloudPlatform"].present?
+        end
+
+        def extract_vuln(vuln)
+          vuln = {
+            "scanner_identifier" => vuln["vulnerableAsset"]["id"],
+            "scanner_type" => SCANNER_TYPE,
+            "vuln_def_name" => extract_vuln_def_name(vuln),
+            "scanner_score" => SEVERITY_MAP[vuln["vendorSeverity"].downcase],
+            "created_at" => vuln["firstDetectedAt"],
+            "last_seen_at" => vuln["lastDetectedAt"],
+            "details" => extract_details(vuln)
+          }
+          vuln.compact
+        end
+
+        def extract_vuln_def_name(vuln)
+          vuln["name"]
+        end
+
+        def extract_definition(vuln)
+          {
+            "name" => extract_vuln_def_name(vuln),
+            "description" => vuln["CVEDescription"] || vuln["description"] || vuln["name"],
+            "solution" => vuln["remediation"],
+            "cve_identifiers" => vuln["name"],
+            "scanner_type" => SCANNER_TYPE
+          }.compact
+        end
+
+        def extract_details(vuln)
+          details = {
+            "Vuln ID" => vuln["id"],
+            "Cloud Provider URL" => vuln["vulnerableAsset"]["cloudProviderURL"],
+            "Score" => vuln["score"],
+            "Exploitability Score" => vuln["exploitabilityScore"],
+            "Impact Score" => vuln["impactScore"],
+            "Link" => vuln["link"],
+            "Projects" => vuln["projects"],
+            "Vulnerable Asset" => vuln["vulnerableAsset"].except("tags", "cloudProviderURL")
+          }.compact
+          JSON.pretty_generate(details)
+        end
+      end
+    end
+  end
+end
