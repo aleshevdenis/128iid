@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require_relative "lib/hackerone_client"
-require 'pry'
 
 module Kenna
   module 128iid
@@ -33,11 +32,21 @@ module Kenna
               required: false,
               default: "none, low, medium, high, critical",
               description: "A list of [none, low, medium, high, critical] (comma separated)" },
-            { name: "batch_size",
+            { name: "page_number",
               type: "integer",
               required: false,
-              default: 500,
-              description: "Maximum number of issues to retrieve in batches." },
+              default: 1,
+              description: "The page to retrieve from." },
+            { name: "page_size",
+              type: "integer",
+              required: false,
+              default: 100,
+              description: "The number of objects per page (currently limited from 1 to 100)." },
+            { name: "filters",
+              type: "string",
+              required: false,
+              default: nil,
+              description: "A list of filters (& separated) filters=string with severity=low&state=new" },
             { name: "kenna_api_key",
               type: "api_key",
               required: false,
@@ -68,93 +77,120 @@ module Kenna
         initialize_options
         initialize_client
 
-        # p @client.get_reports(@api_user, @api_password, @api_program)
+        offset = @page_number
 
         loop do
-          asset = {}
-          response = @client.get_reports(@api_user, @api_password, @api_program)
+          response = client.get_reports(offset, @page_size, submissions_filter)
+          break unless response.dig("data").any?
 
           response.dig('data').foreach do |issue|
-            asset[:assets] = extract_asset(issue)
-            binding.pry
+            asset   = extract_asset(issue)
+            finding = extract_finding(issue)
+            definition = extract_definition(issue)
+
+            create_kdi_asset_finding(asset, finding)
+            create_kdi_vuln_def(definition)
           end
+          print_good("Processed #{offset} submissions.")
+
+          kdi_upload(@output_directory, "hackerone_submissions_report_#{offset}.json", @kenna_connector_id, @kenna_api_host, @kenna_api_key, @skip_autoclose, @retries, @kdi_version)
+          offset += 1
         end
 
         kdi_connector_kickoff(@kenna_connector_id, @kenna_api_host, @kenna_api_key)
+
       rescue Kenna::128iid::Hackerone::HackeroneClient::ApiError => e
         fail_task e.message
       end
 
       private
 
-      def initialize_options
-        @api_user = @options[:hackerone_api_user]
-        @api_password = @options[:hackerone_api_password]
-        @api_program = @options[:hackerone_api_program]
-        @issue_severities = extract_list(:hackerone_issue_severity, %w[none low medium high critical])
-        @output_directory = @options[:output_directory]
-        @kenna_api_host = @options[:kenna_api_host]
-        @kenna_api_key = @options[:kenna_api_key]
-        @kenna_connector_id = @options[:kenna_connector_id]
-        @batch_size = @options[:batch_size].to_i
-        @skip_autoclose = false
-        @retries = 3
-        @kdi_version = 2
-      end
+      attr_reader :client
 
       def initialize_client
         @client = Kenna::128iid::Hackerone::HackeroneClient.new(@api_user, @api_password, @api_program)
       end
 
+      def initialize_options
+        @api_user           = @options[:hackerone_api_user]
+        @api_password       = @options[:hackerone_api_password]
+        @api_program        = @options[:hackerone_api_program]
+        @output_directory   = @options[:output_directory]
+        @filters            = @options[:filters].to_s
+        @issue_severities   = extract_list(:hackerone_issue_severity, %w[none low medium high critical])
+        @kenna_api_host     = @options[:kenna_api_host]
+        @kenna_api_key      = @options[:kenna_api_key]
+        @kenna_connector_id = @options[:kenna_connector_id]
+        @page_number        = @options[:page_number].to_i
+        @page_size          = @options[:page_size].to_i
+        @skip_autoclose     = false
+        @retries            = 3
+        @kdi_version        = 2
+        fail_task "The number of objects per page (currently limited from 1 to 100)." unless @page_size.between?(1, 100)
+        fail_task "The number of page need to be >= 1." if @page_number < 1
+      end
+
       def extract_asset(issue)
         asset = {}
 
-        asset_type = issue.dig("relationships", "structured_scope", "data", "attributes", "asset_type")
-        asset_identifier = issue.dig("relationships", "structured_scope", "data", "attributes", "asset_identifier")
+        asset_type          = issue.dig("relationships", "structured_scope", "data", "attributes", "asset_type")
+        asset_identifier    = issue.dig("relationships", "structured_scope", "data", "attributes", "asset_identifier")
+        asset[:id]          = issue.dig("relationships", "structured_scope", "data", "id")
+        asset[:application] = issue.dig("relationships", "program", "data", "attributes", "handle")
 
         case asset_type
         when "SOURCE_CODE", "URL"
-          asset[:url] = asset_identifier
+          asset[:url]         = asset_identifier
         when "DOWNLOADABLE_EXECUTABLES"
-          asset[:file] = asset_identifier
+          asset[:file]        = asset_identifier
         when ""
-          asset = setting_asset("hacker_one_missing_asset", "hacker_one_missing_asset", "hacker_one_missing_asset")
+          asset[:file]        = "hacker_one_missing_asset"
         else
-          external_id = { "#{asset_type}": asset_identifier }
-          asset[:external_id] = external_id
+          asset[:external_id] = "#{asset_type}-#{asset_identifier}"
         end
 
-        asset
+        asset.compact
       end
 
-      # def extract_asset(issue)
+      def extract_finding(issue)
+        {
+          "scanner_type"       => "HackerOne",
+          "scanner_identifier" => issue.dig("id"),
+          "vuln_def_name"      => issue.dig("attributes", "title"),
+          "severity"           => SEVERITY_VALUE[issue.dig("relationships", "severity", "data", "attributes", "rating")],
+          "triage_state"       => map_state_to_triage_state(issue.dig("attributes", "state")),
+          "created_at"         => convert_date(issue.dig("attributes", "created_at")),
+          "additional_fields"  => extract_additional_fields(issue)
+        }.compact
+      end
 
-      #   asset_type = issue.dig("relationships", "structured_scope", "data", "attributes", "asset_type")
-      #   asset_identifier = issue.dig("relationships", "structured_scope", "data", "attributes", "asset_identifier")
+      def extract_additional_fields(issue)
+        {
+          "attributes"          => issue.dig("attributes").compact,
+          "severity"            => issue.dig("relationships", "severity"),
+          "structured_scope"    => issue.dig("relationships", "structured_scope").compact,
+          "custom_field_values" => issue.dig("relationships", "custom_field_values").compact
+        }
+      end
 
-      #   case asset_type
-      #   when "SOURCE_CODE", "URL"
-      #     asset = setting_asset(asset_identifier, "hacker_one_missing_asset", "hacker_one_missing_asset")
-      #   when "DOWNLOADABLE_EXECUTABLES"
-      #     asset = setting_asset("hacker_one_missing_asset", asset_identifier, "hacker_one_missing_asset")
-      #   when ""
-      #     asset = setting_asset("hacker_one_missing_asset", "hacker_one_missing_asset", "hacker_one_missing_asset")
-      #   else
-      #     external_id = { "#{asset_type}": asset_identifier }
-      #     asset = setting_asset("hacker_one_missing_asset", "hacker_one_missing_asset", external_id)
-      #   end
+      def extract_definition(issue)
+        {
+          # "name"       => issue.dig("attributes", "title"),
+          "scanner_type" => "HackerOne",
+          "cwe_id"       => issue.dig("relationships", "weakness", "data", "attributes", "external_id"),
+          "name"         => issue.dig("relationships", "weakness", "data", "attributes", "name"),
+          "description"  => issue.dig("relationships", "weakness", "data", "attributes", "description"),
+        }.compact
+      end
 
-      #   asset
-      # end
+      def submissions_filter
+        CGI::parse(@filters)
+      end
 
-      def setting_asset(url, file, external_id)
-        asset = {}
-
-        asset[:url] = url
-        asset[:file] = file
-        asset[:external_id] = external_id
-
-        asset
+      def convert_date(date_string)
+        Time.parse(date_string).to_datetime.iso8601
+      rescue StandardError
+        nil
       end
 
       def extract_list(key, default = nil)
@@ -162,14 +198,24 @@ module Kenna
         list.empty? ? default : list
       end
 
-      # Map needed when the source data value isn't in the range 0 - 10
       SEVERITY_VALUE = {
-        "none" => 0,
-        "low" => 3,
-        "medium" => 5,
-        "high" => 8,
+        "none"     => 0,
+        "low"      => 3,
+        "medium"   => 5,
+        "high"     => 8,
         "critical" => 10
       }.freeze
+
+      def map_state_to_triage_state(hackerone_state)
+        case hackerone_state
+        when "new", "triaged", "resolved", "pending-program-review"
+          hackerone_state
+        when "needs-more-info", "retesting"
+          "in_progress"
+        else
+          "not_a_security_issue"
+        end
+      end
     end
   end
 end
