@@ -8,7 +8,7 @@ module Kenna
 
         def initialize(host, port, user_id, password, application, issue_severities, page_size, verify_ssl)
           # TODO: We are guessing too much about the base path here.
-          @base_path = "https://#{host}#{":#{port.to_s}" if port}/ase/api"
+          @base_path = "https://#{host}#{":#{port}" if port}/ase/api"
           @user_id = user_id
           @password = password
           @application = application
