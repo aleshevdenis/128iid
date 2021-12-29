@@ -6,7 +6,7 @@ module Kenna
       class Client
         class ApiError < StandardError; end
 
-        def initialize(host, port, user_id, password, application, issue_severities, page_size, verify_ssl)
+        def initialize(host, port, user_id, password, application, issue_severities, page_size, days_back, verify_ssl)
           # TODO: We are guessing too much about the base path here.
           @base_path = "https://#{host}#{":#{port}" if port}/ase/api"
           @user_id = user_id
@@ -14,6 +14,7 @@ module Kenna
           @application = application
           @issue_severities = issue_severities
           @page_size = page_size
+          @days_back = days_back
           @verify_ssl = verify_ssl
           @headers = { "content-type": "application/json", "accept": "application/json" }
         end
@@ -63,6 +64,7 @@ module Kenna
           @issue_severities.foreach do |severity|
             query << ",Severity=#{severity}"
           end
+          query << ",Date Created=#{Date.today - @days_back}\\,#{Date.today}" if @days_back
           query
         end
 

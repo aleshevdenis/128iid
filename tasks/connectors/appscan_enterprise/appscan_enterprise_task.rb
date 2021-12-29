@@ -42,6 +42,11 @@ module Kenna
               required: false,
               default: nil,
               description: "A list of [Critical, High, Medium, Low, Information, Undetermined] (comma separated). If not present ALL issues are imported." },
+            { name: "appscan_days_back",
+              type: "integer",
+              required: false,
+              default: nil,
+              description: "Get results n days back up to today. Get all history if not present." },
             { name: "appscan_page_size",
               type: "integer",
               required: false,
@@ -79,7 +84,7 @@ module Kenna
       def run(opts)
         super
         initialize_options
-        client = Kenna::128iid::AppScanEnterprise::Client.new(@host, @port, @user_id, @password, @application, @issue_severities, @page_size, @appscan_verify_ssl)
+        client = Kenna::128iid::AppScanEnterprise::Client.new(@host, @port, @user_id, @password, @application, @issue_severities, @page_size, @days_back, @appscan_verify_ssl)
 
         begin
           client.login
@@ -113,6 +118,7 @@ module Kenna
         @application = @options[:appscan_application]
         @issue_severities = extract_list(:appscan_issue_severity, [])
         @page_size = @options[:appscan_page_size].to_i
+        @days_back = @options[:appscan_days_back].to_i if @options[:appscan_days_back]
         @appscan_verify_ssl = @options[:appscan_verify_ssl]
         @output_directory = @options[:output_directory]
         @kenna_api_host = @options[:kenna_api_host]

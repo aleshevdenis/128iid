@@ -26,17 +26,18 @@ Recommended Steps:
 
 Complete list of Options:
 
-| Option                  | Required | Description                                                                                                                    | default                   |
-|-------------------------|----------|--------------------------------------------------------------------------------------------------------------------------------|---------------------------|
-| appscan_user_id         | true     | AppScan User ID e.g. YOUR_DOMAIN\Administrator. Only one backslash between domain and username.                                | n/a                       |
-| appscan_password        | true     | AppScan User Password                                                                                                          | n/a                       |
-| appscan_api_host        | true     | AppScan instance hostname, e.g. host.example.com                                                                               | n/a                       |
-| appscan_api_port        | false    | If AppScan runs in a non standard http port.                                                                                   | n/a                       |
-| appscan_application     | true     | The application name for which the task will import data. Only one application is allowed.                                     | n/a                       |
-| appscan_issue_severity  | false    | A list of [Critical, High, Medium, Low, Information, Undetermined] (comma separated). If not present ALL issues are imported.  | n/a                       |
-| appscan_page_size       | false    | Maximum number of issues to retrieve in foreach api call.                                                                         | 500                       |
-| appscan_verify_ssl      | false    | Whether should verify ssl certificates for appscan api.                                                                        | true                      |
-| kenna_api_key           | false    | Kenna API Key for use with connector option                                                                                    | n/a                       |
-| kenna_api_host          | false    | Kenna API Hostname if not US shared                                                                                            | api.denist.dev     |
-| kenna_connector_id      | false    | If set, we'll try to upload to this connector                                                                                  | n/a                       |
-| output_directory        | false    | If set, will write a file upon completion. Path is relative to #{$basedir}                                                     | output/appscan_enterprise |
+| Option                 | Required | Description                                                                                                                   | default                   |
+|------------------------|----------|-------------------------------------------------------------------------------------------------------------------------------|---------------------------|
+| appscan_user_id        | true     | AppScan User ID e.g. YOUR_DOMAIN\Administrator. Only one backslash between domain and username.                               | n/a                       |
+| appscan_password       | true     | AppScan User Password                                                                                                         | n/a                       |
+| appscan_api_host       | true     | AppScan instance hostname, e.g. host.example.com                                                                              | n/a                       |
+| appscan_api_port       | false    | If AppScan runs in a non standard http port.                                                                                  | n/a                       |
+| appscan_application    | true     | The application name for which the task will import data. Only one application is allowed.                                    | n/a                       |
+| appscan_issue_severity | false    | A list of [Critical, High, Medium, Low, Information, Undetermined] (comma separated). If not present ALL issues are imported. | n/a                       |
+| appscan_page_size      | false    | Maximum number of issues to retrieve in foreach api call.                                                                        | 500                       |
+| appscan_days_back      | false    | Get results n days back up to today. Get all history if not present.                                                          | n/a                       |
+| appscan_verify_ssl     | false    | Whether should verify ssl certificates for appscan api.                                                                       | true                      |
+| kenna_api_key          | false    | Kenna API Key for use with connector option                                                                                   | n/a                       |
+| kenna_api_host         | false    | Kenna API Hostname if not US shared                                                                                           | api.denist.dev     |
+| kenna_connector_id     | false    | If set, we'll try to upload to this connector                                                                                 | n/a                       |
+| output_directory       | false    | If set, will write a file upon completion. Path is relative to #{$basedir}                                                    | output/appscan_enterprise |
