@@ -18,6 +18,7 @@ module Kenna
           response = http_get("#{HOST}/v1/reports", headers(page_number, page_size, filters))
 
           raise ApiError, "Unable to retrieve submissions, please check credentials." unless response
+
           JSON.parse(response)
         end
 
@@ -31,7 +32,7 @@ module Kenna
         private
 
         def get_query(page_number, page_size, filters)
-          query = {
+          {
             filter: {
               program: [@program]
             }.merge(filters),

@@ -81,16 +81,17 @@ module Kenna
 
         loop do
           response = client.get_reports(offset, @page_size, submissions_filter)
-          break unless response.dig("data").any?
+          break unless response["data"].any?
 
-          response.dig('data').foreach do |issue|
-            asset   = extract_asset(issue)
-            finding = extract_finding(issue)
+          response["data"].foreach do |issue|
+            asset      = extract_asset(issue)
+            finding    = extract_finding(issue)
             definition = extract_definition(issue)
 
             create_kdi_asset_finding(asset, finding)
             create_kdi_vuln_def(definition)
           end
+
           print_good("Processed #{offset} submissions.")
 
           kdi_upload(@output_directory, "hackerone_submissions_report_#{offset}.json", @kenna_connector_id, @kenna_api_host, @kenna_api_key, @skip_autoclose, @retries, @kdi_version)
@@ -98,7 +99,6 @@ module Kenna
         end
 
         kdi_connector_kickoff(@kenna_connector_id, @kenna_api_host, @kenna_api_key)
-
       rescue Kenna::128iid::Hackerone::HackeroneClient::ApiError => e
         fail_task e.message
       end
@@ -135,7 +135,6 @@ module Kenna
 
         asset_type          = issue.dig("relationships", "structured_scope", "data", "attributes", "asset_type")
         asset_identifier    = issue.dig("relationships", "structured_scope", "data", "attributes", "asset_identifier")
-        asset[:id]          = issue.dig("relationships", "structured_scope", "data", "id")
         asset[:application] = issue.dig("relationships", "program", "data", "attributes", "handle")
 
         case asset_type
@@ -154,37 +153,38 @@ module Kenna
 
       def extract_finding(issue)
         {
-          "scanner_type"       => "HackerOne",
-          "scanner_identifier" => issue.dig("id"),
-          "vuln_def_name"      => issue.dig("attributes", "title"),
-          "severity"           => SEVERITY_VALUE[issue.dig("relationships", "severity", "data", "attributes", "rating")],
-          "triage_state"       => map_state_to_triage_state(issue.dig("attributes", "state")),
-          "created_at"         => convert_date(issue.dig("attributes", "created_at")),
-          "additional_fields"  => extract_additional_fields(issue)
+          "scanner_type" => "HackerOne",
+          "scanner_identifier" => issue["id"],
+          "vuln_def_name" => issue.dig("attributes", "title"),
+          "severity" => SEVERITY_VALUE[issue.dig("relationships", "severity", "data", "attributes", "rating")],
+          "triage_state" => map_state_to_triage_state(issue.dig("attributes", "state")),
+          "created_at" => convert_date(issue.dig("attributes", "created_at")),
+          "additional_fields" => extract_additional_fields(issue)
         }.compact
       end
 
       def extract_additional_fields(issue)
         {
-          "attributes"          => issue.dig("attributes").compact,
-          "severity"            => issue.dig("relationships", "severity"),
-          "structured_scope"    => issue.dig("relationships", "structured_scope").compact,
+          "attributes" => issue["attributes"].compact,
+          "severity" => issue.dig("relationships", "severity"),
+          "structured_scope" => issue.dig("relationships", "structured_scope").compact,
           "custom_field_values" => issue.dig("relationships", "custom_field_values").compact
         }
       end
 
       def extract_definition(issue)
-        {
-          # "name"       => issue.dig("attributes", "title"),
+        definition = {
           "scanner_type" => "HackerOne",
-          "cwe_id"       => issue.dig("relationships", "weakness", "data", "attributes", "external_id"),
-          "name"         => issue.dig("relationships", "weakness", "data", "attributes", "name"),
-          "description"  => issue.dig("relationships", "weakness", "data", "attributes", "description"),
-        }.compact
+          "cwe_identifiers" => (issue["relationships"]["weakness"]["data"]["attributes"]["external_id"] || "").scan(/CWE-\d*/i).join(", "),
+          "name" => issue.dig("relationships", "weakness", "data", "attributes", "name"),
+          "description" => issue.dig("relationships", "weakness", "data", "attributes", "description")
+        }
+
+        definition.compact
       end
 
       def submissions_filter
-        CGI::parse(@filters)
+        CGI.parse(@filters)
       end
 
       def convert_date(date_string)
@@ -199,10 +199,10 @@ module Kenna
       end
 
       SEVERITY_VALUE = {
-        "none"     => 0,
-        "low"      => 3,
-        "medium"   => 5,
-        "high"     => 8,
+        "none" => 0,
+        "low" => 3,
+        "medium" => 5,
+        "high" => 8,
         "critical" => 10
       }.freeze
 
