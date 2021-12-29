@@ -27,16 +27,11 @@ module Kenna
               required: true,
               default: nil,
               description: "HackerOne API Programs" },
-            { name: "hackerone_issue_severity",
-              type: "string",
-              required: false,
-              default: "none, low, medium, high, critical",
-              description: "A list of [none, low, medium, high, critical] (comma separated)" },
             { name: "page_number",
               type: "integer",
               required: false,
               default: 1,
-              description: "The page to retrieve from." },
+              description: "The pages to retrieve from 1." },
             { name: "page_size",
               type: "integer",
               required: false,
@@ -155,7 +150,7 @@ module Kenna
         {
           "scanner_type" => "HackerOne",
           "scanner_identifier" => issue["id"],
-          "vuln_def_name" => issue.dig("attributes", "title"),
+          "vuln_def_name" => issue.dig("relationships", "weakness", "data", "attributes", "name"),
           "severity" => SEVERITY_VALUE[issue.dig("relationships", "severity", "data", "attributes", "rating")],
           "triage_state" => map_state_to_triage_state(issue.dig("attributes", "state")),
           "created_at" => convert_date(issue.dig("attributes", "created_at")),
@@ -164,23 +159,20 @@ module Kenna
       end
 
       def extract_additional_fields(issue)
-        {
-          "attributes" => issue["attributes"].compact,
-          "severity" => issue.dig("relationships", "severity"),
-          "structured_scope" => issue.dig("relationships", "structured_scope").compact,
-          "custom_field_values" => issue.dig("relationships", "custom_field_values").compact
-        }
+        fields = {}
+        fields["Severity"]            = issue.dig("relationships", "severity", "data", "attributes")
+        fields["Structured Scope"]    = issue.dig("relationships", "structured_scope", "data", "attributes")
+        fields["Custom Field Values"] = issue.dig("relationships", "custom_field_values", "data")
+        fields.merge(issue["attributes"].compact)
       end
 
       def extract_definition(issue)
-        definition = {
+        {
           "scanner_type" => "HackerOne",
-          "cwe_identifiers" => (issue["relationships"]["weakness"]["data"]["attributes"]["external_id"] || "").scan(/CWE-\d*/i).join(", "),
+          "cwe_identifiers" => (issue["relationships"]["weakness"]["data"]["attributes"]["external_id"] || "").upcase.scan(/CWE-\d*/).join(", "),
           "name" => issue.dig("relationships", "weakness", "data", "attributes", "name"),
           "description" => issue.dig("relationships", "weakness", "data", "attributes", "description")
-        }
-
-        definition.compact
+        }.compact
       end
 
       def submissions_filter
