@@ -19,7 +19,7 @@ Recommended Steps:
 1. Create Kenna Data Importer connector in Kenna (example name: WIZ KDI) 
 1, Manually run the connector with the json from step 1 
 1. Click on the name of the connector to get the connector id
-1. Run the task with WIZ Keys and Kenna K ey/con nector  i d
+1. Run the task with WIZ Keys and Kenna Key/connector id
 
 
 
