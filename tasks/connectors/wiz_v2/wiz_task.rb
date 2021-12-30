@@ -47,6 +47,11 @@ module Kenna
               required: false,
               default: nil,
               description: "Array of object types for VULNS import. Allowed values: VIRTUAL_MACHINE,CONTAINER_IMAGE,SERVERLESS. Import all if not present." },
+            { name: "severity",
+              type: "string",
+              required: false,
+              default: nil,
+              description: "Array of severity types for VULNS and ISSUES (ALL) import. Allowed values: CRITICAL,HIGH,MEDIUM,LOW,INFO. Import all if not present." },
             { name: "issue_status",
               type: "string",
               required: false,
@@ -99,7 +104,7 @@ module Kenna
       attr_reader :client
 
       def initialize_client
-        @client = WizV2::Client.new(@client_id, @client_secret, @auth_endpoint, @api_host, @page_size, @days_back, @vuln_object_types, @issue_status)
+        @client = WizV2::Client.new(@client_id, @client_secret, @auth_endpoint, @api_host, @page_size, @days_back, @vuln_object_types, @severity, @issue_status)
       end
 
       def initialize_options
@@ -108,6 +113,7 @@ module Kenna
         @auth_endpoint = @options[:wiz_auth_endpoint].start_with?("http") ? "#{@options[:wiz_auth_endpoint]}/oauth/token" : "https://#{@options[:wiz_auth_endpoint]}/oauth/token"
         @api_host = @options[:wiz_api_host].start_with?("http") ? "#{@options[:wiz_api_host]}/graphql" : "https://#{@options[:wiz_api_host]}/graphql"
         @vuln_object_types = extract_list(:vuln_object_types)
+        @severity = extract_list(:severity)
         @issue_status = extract_list(:issue_status)
         @days_back = @options[:days_back].to_i if @options[:days_back].present?
         @page_size = @options[:wiz_page_size].to_i if @options[:wiz_page_size].present?

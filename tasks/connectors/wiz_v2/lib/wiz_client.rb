@@ -6,11 +6,12 @@ module Kenna
       class Client
         class ApiError < StandardError; end
 
-        def initialize(client_id, client_secret, auth_endpoint, api_host, page_size, days_back, vuln_object_types, issue_status)
+        def initialize(client_id, client_secret, auth_endpoint, api_host, page_size, days_back, vuln_object_types, severity, issue_status)
           @api_host = api_host
           @page_size = page_size
           @days_back = days_back
           @vuln_object_types = vuln_object_types
+          @severity = severity
           @issue_status = issue_status
           auth_token = auth(client_id, client_secret, auth_endpoint)
           @headers = { "content-type": "application/json", "accept": "application/json", "Authorization": "Bearer #{auth_token}" }
@@ -167,6 +168,7 @@ module Kenna
           params[:after] = after if after
           params[:filterBy][:createdAt] = { after: (Date.today - @days_back).to_datetime } if @days_back
           params[:filterBy][:status] = @issue_status if @issue_status
+          params[:filterBy][:severity] = @severity if @severity
 
           params
         end
@@ -241,6 +243,7 @@ module Kenna
           params[:after] = after if after
           params[:filterBy][:createdAfter] = (Date.today - @days_back).to_datetime if @days_back
           params[:filterBy][:assetType] = @vuln_object_types if @vuln_object_types
+          params[:filterBy][:vendorSeverity] = @severity if @severity
 
           params
         end
