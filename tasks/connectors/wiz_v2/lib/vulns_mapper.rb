@@ -27,6 +27,10 @@ module Kenna
           asset
         end
 
+        def extract_file(vuln)
+          vuln["description"]&.match(/.*located\sat\s`(.*?)`/)&.captures&.first
+        end
+
         def extract_tags(vuln)
           tags = vuln["vulnerableAsset"]["tags"].map { |k, v| "#{k}:#{v}" }
           tags << "Region:#{vuln['vulnerableAsset']['region']}" if vuln["vulnerableAsset"]["region"].present?
@@ -65,6 +69,10 @@ module Kenna
           details = {
             "Vuln ID" => vuln["id"],
             "Cloud Provider URL" => vuln["vulnerableAsset"]["cloudProviderURL"],
+            "Detailed File Path" => extract_file(vuln),
+            "Description" => vuln["description"],
+            "Version" => vuln["version"],
+            "Fixed Version" => vuln["fixedVersion"],
             "Score" => vuln["score"],
             "Exploitability Score" => vuln["exploitabilityScore"],
             "Impact Score" => vuln["impactScore"],
