@@ -22,7 +22,7 @@ module Kenna
 
         def extract_asset(issue)
           {
-            "external_id" => issue["entitySnapshot"]["resourceGroupExternalId"] || issue["entitySnapshot"]["providerId"],
+            "external_id" => extract_external_id(issue),
             "owner" => issue["entitySnapshot"]["subscriptionId"],
             "tags" => extract_tags(issue)
           }.compact
@@ -69,6 +69,16 @@ module Kenna
             "Entity Snapshot" => issue["entitySnapshot"].except("tags")
           }.compact
           JSON.pretty_generate(details)
+        end
+
+        private
+
+        def extract_external_id(issue)
+          if issue["entitySnapshot"]["resourceGroupExternalId"].present?
+            issue["entitySnapshot"]["resourceGroupExternalId"]
+          else
+            issue["entitySnapshot"]["providerId"]
+          end
         end
       end
     end
