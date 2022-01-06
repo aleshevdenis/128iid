@@ -16,8 +16,8 @@ module Kenna
         end
 
         def get_vulns(tags, environments, severities, exclude_closed, offset, limit)
-          quickFilter = exclude_closed ? "OPEN" : ""
-          url = "#{@base_url}/orgtraces/filter?expand=application&quickFilter=#{quickFilter}&offset=#{offset}&limit=#{limit}&applicationTags=#{tags}&environments=#{environments}&severities=#{severities}&licensedOnly=true"
+          quick_filter = exclude_closed ? "OPEN" : ""
+          url = "#{@base_url}/orgtraces/filter?expand=application&quickFilter=#{quick_filter}&offset=#{offset}&limit=#{limit}&applicationTags=#{tags}&environments=#{environments}&severities=#{severities}&licensedOnly=true"
           response = http_get(url, @headers, 1)
           return nil if response.nil?
 
