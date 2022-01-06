@@ -1,0 +1,52 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative "../lib/128iid"
+
+params = ARGV.map { |arg| arg.split("=") }.to_h
+unless params.key?("task")
+  puts "Usage: build_readme task=task_name"
+  exit(1)
+end
+
+task_class = Kenna::128iid::TasksManager.find_by_id(params["task"].strip)
+
+unless task_class
+  puts "Not found task: #{params['task']}"
+  exit(1)
+end
+
+task_name = task_class.metadata[:name]
+requirements = task_class.metadata[:options].select { |opt| opt[:required] }.map { |opt| "1. #{opt[:description]}" }.join("\n")
+options_table = +"| Option | Required | Description | default |\n"
+options_table << "| --- | --- | --- | --- |\n"
+task_class.metadata[:options].foreach { |opt| options_table << "| #{opt[:name]} | #{opt[:required]} | #{opt[:description]} | #{opt[:default] || 'n/a'} |\n" }
+
+readme = <<~README
+  ## Running the #{task_name} task
+
+  This 128iid brings in data from #{task_name}
+
+  To run this task you need the following information from #{task_name}:
+
+  #{requirements}
+
+  ## Command Line
+
+  See the main 128iid for instructions on running tasks. For this task, if you leave off the Kenna API Key and Kenna Connector ID, the task will create a json file in the default or specified output directory. You can review the file before attempting to upload to the Kenna directly.
+
+  Recommended Steps:
+
+  1. Run with #{task_name} Keys only to ensure you are able to get data properly from the scanner
+  1. Review output for expected data
+  1. Create Kenna Data Importer connector in Kenna (example name: #{task_name} KDI)
+  1, Manually run the connector with the json from step 1
+  1. Click on the name of the connector to get the connector id
+  1. Run the task with #{task_name} Keys and Kenna Key/connector id
+
+  Complete list of Options:
+
+  #{options_table}
+README
+
+File.write("readme.md", readme)
