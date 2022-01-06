@@ -53,6 +53,11 @@ module Kenna
               required: false,
               default: true,
               description: "Include vulnerabilities from Contrast Assess" },
+            { name: "contrast_exclude_closed_vulns",
+              type: "boolean",
+              required: false,
+              default: false,
+              description: "Optional filter to exclude vulnerabilities with a Closed status" },
             { name: "contrast_environments",
               type: "string",
               required: false,
@@ -72,7 +77,7 @@ module Kenna
               type: "integer",
               required: false,
               default: 500,
-              description: "Maximum number of issues to retrieve in batches." },
+              description: "Maximum number of records to retrieve in batches." },
             { name: "kenna_api_key",
               type: "api_key",
               required: false,
@@ -118,6 +123,7 @@ module Kenna
         contrast_severities&.upcase! # unless contrast_severities.nil?
         contrast_include_libs = @options[:contrast_include_libs]
         contrast_include_vulns = @options[:contrast_include_vulns]
+        contrast_exclude_closed_vulns = @options[:contrast_exclude_closed_vulns]
         output_directory = "#{$basedir}/#{@options[:output_directory]}"
 
         batch_size = @options[:batch_size].to_i
@@ -136,7 +142,7 @@ module Kenna
 
           while more_results
             # Fetch vulnerabilities from the Contrast API
-            results = @client.get_vulns(contrast_application_tags, contrast_environments, contrast_severities, offset, batch_size)
+            results = @client.get_vulns(contrast_application_tags, contrast_environments, contrast_severities, contrast_exclude_closed_vulns, offset, batch_size)
 
             fail_task "Unable to retrieve vulnerabilities, please check credentials" if results.nil?
 
@@ -235,7 +241,7 @@ module Kenna
             batch_size = 50
           end
 
-          more_results = apps.count.postive?
+          more_results = apps.count.positive?
           offset = 0
           while more_results
             results = @client.get_vulnerable_libraries(apps, offset, batch_size)
