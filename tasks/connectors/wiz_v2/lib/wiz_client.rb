@@ -200,6 +200,7 @@ module Kenna
             version
             fixedVersion
             link
+            locationPath
 
             vulnerableAsset {
                 ... on VulnerableAssetBase {
