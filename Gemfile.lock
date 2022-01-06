@@ -1,7 +1,7 @@
 GEM
   remote: https://rubygems.org/
   specs:
-    activesupport (6.1.4.1)
+    activesupport (6.1.4.4)
       concurrent-ruby (~> 1.0, >= 1.0.2)
       i18n (>= 1.6, < 2)
       minitest (>= 5.1)
@@ -11,17 +11,17 @@ GEM
       public_suffix (>= 2.0.2, < 5.0)
     ast (2.4.2)
     aws-eventstream (1.2.0)
-    aws-partitions (1.536.0)
-    aws-sdk-core (3.123.0)
+    aws-partitions (1.543.0)
+    aws-sdk-core (3.125.0)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.525.0)
       aws-sigv4 (~> 1.1)
       jmespath (~> 1.0)
-    aws-sdk-guardduty (1.50.0)
-      aws-sdk-core (~> 3, >= 3.122.0)
+    aws-sdk-guardduty (1.52.0)
+      aws-sdk-core (~> 3, >= 3.125.0)
       aws-sigv4 (~> 1.1)
-    aws-sdk-inspector (1.39.0)
-      aws-sdk-core (~> 3, >= 3.122.0)
+    aws-sdk-inspector (1.41.0)
+      aws-sdk-core (~> 3, >= 3.125.0)
       aws-sigv4 (~> 1.1)
     aws-sigv4 (1.4.0)
       aws-eventstream (~> 1, >= 1.0.2)
@@ -57,15 +57,15 @@ GEM
     mime-types (3.4.1)
       mime-types-data (~> 3.2015)
     mime-types-data (3.2021.1115)
-    minitest (5.14.4)
+    minitest (5.15.0)
     multi_xml (0.6.0)
     netrc (0.11.0)
+    nokogiri (1.12.5-arm64-darwin)
+      racc (~> 1.4)
     nokogiri (1.12.5-x86_64-darwin)
       racc (~> 1.4)
-    nokogiri (1.12.5-x86_64-linux)
-      racc (~> 1.4)
     parallel (1.21.0)
-    parser (3.0.3.1)
+    parser (3.0.3.2)
       ast (~> 2.4.1)
     pry (0.14.1)
       coderay (~> 1.1)
@@ -77,7 +77,7 @@ GEM
     racc (1.6.0)
     rack (2.2.3)
     rainbow (3.0.0)
-    regexp_parser (2.1.1)
+    regexp_parser (2.2.0)
     rest-client (2.1.0)
       http-accept (>= 1.7.0, < 2.0)
       http-cookie (>= 1.0.2, < 2.0)
@@ -99,23 +99,23 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.10.0)
     rspec-support (3.10.3)
-    rubocop (1.6.1)
+    rubocop (1.13.0)
       parallel (~> 1.10)
-      parser (>= 2.7.1.5)
+      parser (>= 3.0.0.0)
       rainbow (>= 2.2.2, < 4.0)
       regexp_parser (>= 1.8, < 3.0)
       rexml
       rubocop-ast (>= 1.2.0, < 2.0)
       ruby-progressbar (~> 1.7)
-      unicode-display_width (>= 1.4.0, < 2.0)
-    rubocop-ast (1.13.0)
+      unicode-display_width (>= 1.4.0, < 3.0)
+    rubocop-ast (1.15.0)
       parser (>= 3.0.1.1)
     rubocop-github (0.16.2)
       rubocop (<= 1.13.0)
       rubocop-performance (<= 1.11.0)
       rubocop-rails (<= 2.7.1)
-    rubocop-performance (1.10.2)
-      rubocop (>= 0.90.0, < 2.0)
+    rubocop-performance (1.11.0)
+      rubocop (>= 1.7.0, < 2.0)
       rubocop-ast (>= 0.4.0)
     rubocop-rails (2.7.1)
       activesupport (>= 4.2.0)
@@ -157,7 +157,7 @@ GEM
     unf (0.1.4)
       unf_ext
     unf_ext (0.0.8)
-    unicode-display_width (1.8.0)
+    unicode-display_width (2.1.0)
     unicode_utils (1.4.0)
     webrick (1.7.0)
     yard (0.9.27)
@@ -167,7 +167,6 @@ GEM
 PLATFORMS
   universal-darwin-21
   x86_64-darwin-20
-  x86_64-linux
 
 DEPENDENCIES
   activesupport
@@ -182,7 +181,7 @@ DEPENDENCIES
   rest-client
   rexml (>= 3.2.5)
   rspec
-  rubocop (~> 1.6.1)
+  rubocop (~> 1.13)
   rubocop-github
   rubocop-performance
   rubocop-rails
