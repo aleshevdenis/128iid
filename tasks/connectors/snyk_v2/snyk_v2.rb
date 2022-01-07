@@ -99,20 +99,17 @@ module Kenna
         org_json = snyk_get_orgs(snyk_api_token)
         fail_task "Unable to retrieve data from API, please check credentials" if org_json.nil?
 
-        projects = []
+        projects = {}
         project_ids = []
-        org_ids = []
         pagenum = 0
-        org_json.foreach do |org|
-          org_ids << org.fetch("id")
-        end
+        org_ids = org_json.map { |org| org.fetch("id") }
         print_debug org_json
         print_debug "orgs = #{org_ids}"
 
-        org_ids.foreach do |org|
-          project_json = snyk_get_projects(snyk_api_token, org)
+        org_json.foreach do |org|
+          project_json = snyk_get_projects(snyk_api_token, org.fetch("id"))
           project_json.foreach do |project|
-            projects << [project.fetch("name"), project.fetch("id")]
+            projects[project.fetch("id")] = project.merge("org" => org)
             project_ids << project.fetch("id")
           end
         end
@@ -170,6 +167,7 @@ module Kenna
             tags = []
             tags << project.fetch("source") if project.key?("source")
             tags << package_manager if !package_manager.nil? && !package_manager.empty?
+            tags << "Org:#{projects[project.fetch('id')]['org']['name']}"
 
             asset = {
               "file" => target_file,
