@@ -62,6 +62,11 @@ module Kenna
               required: false,
               default: "ALL",
               description: "What to import, ISSUES, VULNS or ALL" },
+            { name: "external_id_attr",
+              type: "string",
+              required: false,
+              default: nil,
+              description: "For ISSUES, the entitySnapshot attribute used to map Kenna asset's external_id, for instance, `providerId` or `resourceGroupExternalId`. If not present or the value for the passed attribute is not present the provideId attribute value is used." },
             { name: "kenna_api_key",
               type: "api_key",
               required: false,
@@ -118,6 +123,7 @@ module Kenna
         @days_back = @options[:days_back].to_i if @options[:days_back].present?
         @page_size = @options[:wiz_page_size].to_i if @options[:wiz_page_size].present?
         @import_type = @options[:import_type].downcase
+        @external_id_attr = @options[:external_id_attr]
         @output_directory = @options[:output_directory]
         @kenna_api_host = @options[:kenna_api_host]
         @kenna_api_key = @options[:kenna_api_key]
@@ -139,7 +145,7 @@ module Kenna
 
       def import_issues
         print_good "Issues import started."
-        import(client.paged_issues, WizV2::IssuesMapper.new)
+        import(client.paged_issues, WizV2::IssuesMapper.new(@external_id_attr))
       end
 
       def import_vulns

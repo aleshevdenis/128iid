@@ -12,6 +12,11 @@ module Kenna
           "rejected" => "closed"
         }.freeze
 
+        def initialize(external_id_attr = "providerId")
+          super()
+          @external_id_attr = external_id_attr
+        end
+
         def name
           "Issue"
         end
@@ -74,8 +79,8 @@ module Kenna
         private
 
         def extract_external_id(issue)
-          if issue["entitySnapshot"]["resourceGroupExternalId"].present?
-            issue["entitySnapshot"]["resourceGroupExternalId"]
+          if issue["entitySnapshot"][@external_id_attr].present?
+            issue["entitySnapshot"][@external_id_attr]
           else
             issue["entitySnapshot"]["providerId"]
           end
