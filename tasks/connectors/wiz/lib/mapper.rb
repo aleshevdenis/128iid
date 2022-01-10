@@ -2,9 +2,9 @@
 
 module Kenna
   module 128iid
-    module WizV2
+    module Wiz
       class Mapper
-        SCANNER_TYPE = "WizV2"
+        SCANNER_TYPE = "Wiz"
         SEVERITY_MAP = {
           "info" => 0,
           "low" => 3,

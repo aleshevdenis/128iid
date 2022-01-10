@@ -3,7 +3,7 @@
 require_relative "mapper"
 module Kenna
   module 128iid
-    module WizV2
+    module Wiz
       class VulnsMapper < Mapper
         def name
           "Vuln"
