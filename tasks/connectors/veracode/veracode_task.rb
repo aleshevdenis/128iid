@@ -49,7 +49,7 @@ module Kenna
               { name: "veracode_custom_field_filter",
                 type: "string",
                 required: false,
-                default: ",",
+                default: "",
                 description: "Optional parameter to allow for filtering apps by a custom field. Comma-delimited 'name,value'. " },
               { name: "batch_size",
                 type: "integer",
@@ -115,8 +115,8 @@ module Kenna
           @kenna_connector_id = options[:kenna_connector_id]
           @output_dir = "#{$basedir}/#{options[:output_directory]}"
           @filename = ".json"
-          @custom_field_name = options[:veracode_custom_field_filter].split(",")[0].to_s
-          @custom_field_value = options[:veracode_custom_field_filter].split(",")[1].to_s
+          @custom_field_name = options[:veracode_custom_field_filter].split(",")[0].to_s if options[:veracode_custom_field_filter].present?
+          @custom_field_value = options[:veracode_custom_field_filter].split(",")[1].to_s if options[:veracode_custom_field_filter].present?
           @file_count = 0
 
           # rubocop: disable Style/GuardClause
@@ -171,7 +171,7 @@ module Kenna
             end
           end
           # At this point, maybe there are some issues not uploaded yet
-          @veracode_assets.concat(@assets)
+          @veracode_assets.concat(@assets) unless @assets.nil?
           upload_file_for_app(app_name)
         end
 
