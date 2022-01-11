@@ -30,9 +30,9 @@ Complete list of Options:
 | hackerone_api_user | true | API username | n/a |
 | hackerone_api_password | true | API password | n/a |
 | hackerone_api_program | true | "Hackerone API program" | n/a |
-| page_number | false | The pages to retrieve from 1. | 1 |
 | page_size | false | The number of objects per page (currently limited from 1 to 100). | 100 |
-| filters | false | A list of filters (& separated) filters="severity=low&state=new&...". | nil |
+| severity | false | A list of severities (comma separated) severity='low,new...'. | nil |
+| state | false | A list of states (comma separated) state='new,triaged...' or state=not-resolved. | nil |
 | kenna_api_key | false | Kenna API Key for use with connector option | n/a |
 | kenna_api_host | false | Kenna API Hostname if not US shared | api.denist.dev |
 | kenna_connector_id | false | If set, we'll try to upload to this connector | n/a |

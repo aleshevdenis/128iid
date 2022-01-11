@@ -22,26 +22,16 @@ module Kenna
               required: true,
               default: nil,
               description: "HackerOne API Password" },
-            { name: "hackerone_api_program",
+            { name: "hackerone_program_name",
               type: "api_key",
               required: true,
               default: nil,
-              description: "HackerOne API Programs" },
-            { name: "page_number",
-              type: "integer",
-              required: false,
-              default: 1,
-              description: "The pages to retrieve from 1." },
+              description: "HackerOne API Program Name" },
             { name: "page_size",
               type: "integer",
               required: false,
               default: 100,
               description: "The number of objects per page (currently limited from 1 to 100)." },
-            { name: "filters",
-              type: "string",
-              required: false,
-              default: nil,
-              description: "A list of filters (& separated) filters=string with severity=low&state=new" },
             { name: "kenna_api_key",
               type: "api_key",
               required: false,
@@ -72,7 +62,7 @@ module Kenna
         initialize_options
         initialize_client
 
-        offset = @page_number
+        offset = 1
 
         loop do
           response = client.get_reports(offset, @page_size, submissions_filter)
@@ -103,26 +93,23 @@ module Kenna
       attr_reader :client
 
       def initialize_client
-        @client = Kenna::128iid::Hackerone::HackeroneClient.new(@api_user, @api_password, @api_program)
+        @client = Kenna::128iid::Hackerone::HackeroneClient.new(@api_user, @api_password, @program_name)
       end
 
       def initialize_options
         @api_user           = @options[:hackerone_api_user]
         @api_password       = @options[:hackerone_api_password]
-        @api_program        = @options[:hackerone_api_program]
+        @program_name       = @options[:hackerone_program_name]
         @output_directory   = @options[:output_directory]
-        @filters            = @options[:filters].to_s
         @issue_severities   = extract_list(:hackerone_issue_severity, %w[none low medium high critical])
         @kenna_api_host     = @options[:kenna_api_host]
         @kenna_api_key      = @options[:kenna_api_key]
         @kenna_connector_id = @options[:kenna_connector_id]
-        @page_number        = @options[:page_number].to_i
         @page_size          = @options[:page_size].to_i
         @skip_autoclose     = false
         @retries            = 3
         @kdi_version        = 2
         fail_task "The number of objects per page (currently limited from 1 to 100)." unless @page_size.between?(1, 100)
-        fail_task "The number of page need to be >= 1." if @page_number < 1
       end
 
       def extract_asset(issue)
@@ -176,7 +163,18 @@ module Kenna
       end
 
       def submissions_filter
-        CGI.parse(@filters)
+        {
+          "severity" => extract_list(:severity),
+          "state" => check_state(@options[:state])
+        }.compact
+      end
+
+      def check_state(state)
+        if state == "not-resolved"
+          NOT_RESOLVED
+        else
+          extract_list(:state)
+        end
       end
 
       def convert_date(date_string)
@@ -190,6 +188,9 @@ module Kenna
         list.empty? ? default : list
       end
 
+      NOT_RESOLVED = %w[new pending-program-review triaged needs-more-info not-applicable
+                        informative duplicate spam retesting].freeze
+
       SEVERITY_VALUE = {
         "none" => 0,
         "low" => 3,
@@ -200,9 +201,9 @@ module Kenna
 
       def map_state_to_triage_state(hackerone_state)
         case hackerone_state
-        when "new", "triaged", "resolved", "pending-program-review"
+        when "new", "triaged", "resolved"
           hackerone_state
-        when "needs-more-info", "retesting"
+        when "pending-program-review", "needs-more-info", "retesting"
           "in_progress"
         else
           "not_a_security_issue"
