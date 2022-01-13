@@ -5,7 +5,7 @@ require "json"
 module Kenna
   module 128iid
     module CheckmarxSastHelper
-      attr_reader :username, :password, :grant_type, :scope, :checkmarx_sast_url, :client_id, :client_secret
+      attr_reader :username, :password, :checkmarx_sast_url, :client_id, :client_secret
 
       # Method for generating token using username & pwd, client ID and secret
       def request_checkmarx_sast_token
@@ -14,11 +14,11 @@ module Kenna
         # Retrieve an OAuth access token to be used against Checkmarx SAST API"
         headers = { "content-type" => "application/x-www-form-urlencoded" }
         payload = {
-          grant_type: grant_type,
-          scope: scope,
+          grant_type: "password",
+          scope: "sast_api",
           username: username,
           password: password,
-          client_id: client_id,
+          client_id: "resource_owner_sast_client",
           client_secret: client_secret
         }
 
@@ -27,13 +27,12 @@ module Kenna
           return unless auth_response
 
           token = JSON.parse(auth_response)["access_token"]
-          print_debug token.to_s
-          token
         rescue JSON::ParserError
           print_error "Unable to process Auth Token response!"
         rescue StandardError => e
           print_error "Failed to retrieve Auth Token #{e.message}"
         end
+        token
       end
 
       # method to get all projects using user credentials
@@ -69,7 +68,7 @@ module Kenna
 
       def generate_report_id_from_scan(token, scan_id)
         sast_report_generation_api_url = "https://#{checkmarx_sast_url}/cxrestapi/reports/sastScan"
-        headers = bearer_token_headers(token)
+        headers = post_bearer_token_headers(token)
         payload = {
           ScanId: scan_id,
           reportType: "XML"
@@ -101,6 +100,13 @@ module Kenna
 
       private
 
+      def post_bearer_token_headers(token)
+        {
+          "accept" => "application/json",
+          "Authorization" => "Bearer #{token}",
+          "content-type" => "application/x-www-form-urlencoded"
+        }
+      end
       def bearer_token_headers(token)
         {
           "Content-Type" => "application/json",

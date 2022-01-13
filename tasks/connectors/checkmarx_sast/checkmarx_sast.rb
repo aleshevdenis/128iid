@@ -25,7 +25,7 @@ module Kenna
               default: nil,
               description: "Your checkmarx_sast Console port, e.g. 8080" },
             { name: "checkmarx_sast_user",
-              type: "user",
+              type: "string",
               required: true,
               default: nil,
               description: "checkmarx_sast Username" },
@@ -34,26 +34,11 @@ module Kenna
               required: true,
               default: nil,
               description: "checkmarx_sast Password" },
-            { name: "client_id",
-              type: "client detail",
-              required: false,
-              default: "resource_owner_sast_client",
-              description: "client id of checkmarx SAST" },
             { name: "client_secret",
               type: "client secret",
-              required: true,
+              required: false,
               default: "014DF517-39D1-4453-B7B3-9930C563627C",
               description: "client secret of checkmarx SAST" },
-            { name: "grant_type",
-              type: "grant access type",
-              required: false,
-              default: "password",
-              description: "grant access type" },
-            { name: "scope",
-              type: "api scope",
-              required: false,
-              default: "access_control_api sast_api",
-              description: "scope API" },
             { name: "kenna_api_key",
               type: "api_key",
               required: false,
@@ -101,12 +86,13 @@ module Kenna
           scan_results = fetch_all_scans_of_project(token, project_id)
           print_good "No Scan Results found for the project - #{project['name']}" unless scan_results.present?
 
-          vuln_severity = { "High" => 9, "Medium" => 6, "Low" => 3, "Informational" => 0 }
+          vuln_severity = { "High" => 9, "Medium" => 6, "Low" => 3, "Information" => 0 }
           scan_results.foreach do |scan|
             report_id = generate_report_id_from_scan(token, scan["id"])
             sleep(10)
             print_good "Fetching Scan Reports..."
             scan_reports = fetch_scan_reports(token, report_id)
+            next if scan_reports.nil?
             print_good "Found Scan reports!!"
             print_good "\n"
 
@@ -179,7 +165,7 @@ module Kenna
           ### Write KDI format
           output_dir = "#{$basedir}/#{@options[:output_directory]}"
           filename = "checkmarx_sast_kdi_#{project_id}.json"
-          kdi_upload output_dir, filename, @kenna_connector_id, @kenna_api_host, @kenna_api_key, false, @retries, @kdi_version
+          kdi_upload output_dir, filename, @kenna_connector_id, @kenna_api_host, @kenna_api_key, false, @retries, @kdi_version unless @assets.nil?
           print_good "\n"
         end
         kdi_connector_kickoff @kenna_connector_id, @kenna_api_host, @kenna_api_key
@@ -190,9 +176,6 @@ module Kenna
       def initialze_options
         @username = @options[:checkmarx_sast_user]
         @password = @options[:checkmarx_sast_password]
-        @grant_type = @options[:grant_type]
-        @scope = @options[:scope]
-        @client_id = @options[:client_id]
         @client_secret = @options[:client_secret]
         @checkmarx_sast_url = if @options[:checkmarx_sast_console_port]
                                 "#{@options[:checkmarx_sast_console]}:#{@options[:checkmarx_sast_console_port]}"
