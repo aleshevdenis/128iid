@@ -13,12 +13,12 @@ module Kenna
           @page_size = page_size
         end
 
-        def vulnerabilities(severity, days_back, &block)
-          return to_enum(__method__, severity, days_back) unless block
+        def vulnerabilities(severity, days_back, scope_type, &block)
+          return to_enum(__method__, severity, days_back, scope_type) unless block
 
           payload = {
             "queryType": "vuln",
-            "scopeType": "static",
+            "scopeType": scope_type,
             "limit": @page_size - 1
           }
           vuln_filter = {}
@@ -38,6 +38,16 @@ module Kenna
             break unless response_hash.fetch("canLoadMore")
 
             offset += vulns.count
+          end
+        end
+
+        def vuln_definitions(vuln_ids)
+          definitions = {}
+          vuln_ids.foreach_slice(100) do |ids|
+            response = http_get("#{@base_path}/api/scanning/v1/anchore/query/vulnerabilities?id=#{ids.join(',')}")
+            raise ApiError, "Unable to retrieve vulnerability definitions." unless response
+
+            def_data = JSON.parse(response)
           end
         end
       end

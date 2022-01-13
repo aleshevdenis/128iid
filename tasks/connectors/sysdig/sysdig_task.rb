@@ -42,6 +42,11 @@ module Kenna
               required: false,
               default: nil,
               description: "Get results n days back up to today. If absent, retrieves all history." },
+            { name: "import_type",
+              type: "string",
+              required: false,
+              default: "ALL",
+              description: "Choose what to import: STATIC, RUNTIME or ALL." },
             { name: "kenna_api_key",
               type: "api_key",
               required: false,
@@ -68,28 +73,13 @@ module Kenna
 
       def run(opts)
         super
-
         initialize_options
+        initialize_client
 
-        client = Kenna::128iid::Sysdig::Client.new(@host, @api_token, @page_size)
-
-        pos = 0
-        client.vulnerabilities(@vuln_severity, @days_back).foreach do |vulns|
-          vulns.foreach do |foreach_vuln|
-            asset = extract_asset(foreach_vuln)
-            vuln = extract_vuln(foreach_vuln)
-            definition = extract_definition(foreach_vuln)
-
-            create_kdi_asset_vuln(asset, vuln)
-
-            create_kdi_vuln_def(definition)
-          end
-          print_good "Processed #{vulns.count} vulnerabilities."
-          kdi_upload(@output_directory, "sysdig_vulns_report_#{pos}.json", @kenna_connector_id, @kenna_api_host, @kenna_api_key, @skip_autoclose, @retries, @kdi_version)
-          pos += vulns.count
+        import_types = %w[static runtime].include?(@import_type) ? [@import_type] : %w[static runtime]
+        import_types.foreach do |type|
+          import(type)
         end
-
-        print_good "A total of #{pos} vulnerabilities where processed."
         kdi_connector_kickoff(@kenna_connector_id, @kenna_api_host, @kenna_api_key)
       rescue Kenna::128iid::Sysdig::Client::ApiError => e
         fail_task e.message
@@ -104,6 +94,7 @@ module Kenna
         @vuln_severity = extract_list(:sysdig_vuln_severity)
         @days_back = @options[:days_back].to_i
         @page_size = @options[:sysdig_page_size].to_i
+        @import_type = @options[:import_type].downcase
         @output_directory = @options[:output_directory]
         @kenna_api_host = @options[:kenna_api_host]
         @kenna_api_key = @options[:kenna_api_key]
@@ -122,6 +113,33 @@ module Kenna
         mappings.split(",").map { |key_value| key_value.split(":") }.to_h.transform_values!(&:to_i)
       end
 
+      def initialize_client
+        @client = Kenna::128iid::Sysdig::Client.new(@host, @api_token, @page_size)
+      end
+
+      def import(import_type)
+        pos = 0
+        @client.vulnerabilities(@vuln_severity, @days_back, import_type).foreach do |vulns|
+          # non_standard_vuln_ids = vulns.map { |v| v["vulnId"] }.reject { |id| id.match?(/CVE-.*|CWE-.*|WASC-.*/) }.to_set
+          # sysdig_vuln_definitions = @client.vuln_definitions(non_standard_vuln_ids)
+
+          vulns.foreach do |foreach_vuln|
+            asset = extract_asset(foreach_vuln)
+            vuln = extract_vuln(foreach_vuln, import_type)
+            definition = extract_definition(foreach_vuln)
+
+            create_kdi_asset_vuln(asset, vuln)
+
+            create_kdi_vuln_def(definition)
+          end
+          print_good "Processed #{vulns.count} #{import_type} vulnerabilities."
+          kdi_upload(@output_directory, "sysdig_#{import_type}_vulns_report_#{pos}.json", @kenna_connector_id, @kenna_api_host, @kenna_api_key, @skip_autoclose, @retries, @kdi_version)
+          pos += vulns.count
+        end
+
+        print_good "A total of #{pos} #{import_type} vulnerabilities where processed."
+      end
+
       def extract_asset(vuln)
         asset = {
           "asset_type" => "image",
@@ -131,10 +149,10 @@ module Kenna
         asset.compact
       end
 
-      def extract_vuln(vuln)
+      def extract_vuln(vuln, import_type)
         {
           "scanner_type" => SCANNER_TYPE,
-          "scanner_identifier" => [vuln.fetch("imageName"), vuln.fetch("pkgName"), vuln.fetch("vulnId")].join(":"),
+          "scanner_identifier" => [vuln.fetch("imageName"), vuln.fetch("pkgName"), vuln.fetch("vulnId"), import_type.upcase].join(":"),
           "vuln_def_name" => vuln.fetch("vulnId"),
           "scanner_score" => @severity_mapping.fetch(vuln.fetch("severity")),
           "details" => JSON.pretty_generate(extract_additional_fields(vuln))
@@ -162,7 +180,8 @@ module Kenna
           "Fixed in" => vuln["fixedIn"],
           "Sysdig Severity" => vuln["severity"],
           "Links" => vuln["links"],
-          "Image Digest" => vuln["imageDigest"]
+          "Image Digest" => vuln["imageDigest"],
+          "Runtime" => vuln["runtime"]
         }.compact
       end
     end
