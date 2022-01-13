@@ -25,13 +25,12 @@ Complete list of Options:
 
 | Option | Required | Description | default |
 | --- | --- | --- | --- |
+| checkmarx_sast_console | true | Checkmarx SAST console hostname | n/a |
+| checkmarx_sast_console_port | true | Checkmarx SAST console port | n/a |
 | checkmarx_sast_user | true | Checkmarx SAST username | n/a |
 | checkmarx_sast_password | true | Checkmarx SAST password | n/a |
-| client_id | false | Checkmarx SAST Client ID | n/a |
 | client_secret | true | Checkmarx SAST Client Secret | n/a |
-| grant_type | false | password | n/a |
 | scope | false | access_control_api sast_api | n/a |
-| kenna_api_key | false | Kenna API Key for use with connector option | n/a |
 | kenna_api_host | false | Kenna API Hostname if not US shared | api.denist.dev |
 | kenna_connector_id | false | If set, we'll try to upload to this connector | n/a |
 | output_directory | false | If set, will write a file upon completion. Path is relative to #{$basedir} | output/checkmarx_sast |
@@ -44,11 +43,5 @@ Recommended Steps:
 
 For extracting Image vulnerability data:
 
-    128iid:latest task=checkmarx_sast checkmarx_sast_console=xxx checkmarx_sast_user=xxx checkmarx_sast_password=xxx
-    checkmarx_sast_base_api_url=partners9x.checkmarx.net/cxrestapi container_data=false kenna_connector_id=15xxxx
-    kenna_api_host=api.sandbox.us.denist.dev kenna_api_key=xxx
-
-For extracting Container vulnerability data in addition to Images:
-
-    128iid:latest task=checkmarx_sast checkmarx_sast_console=xxx checkmarx_sast_user=xxx checkmarx_sast_password=xxx checkmarx_sast_base_api_url=partners9x.checkmarx.net/cxrestapi container_data=true kenna_connector_id=15xxxx
-    kenna_api_host=api.sandbox.us.denist.dev kenna_api_key=xxx
+    128iid:latest task=checkmarx_sast checkmarx_sast_console=xxx checkmarx_sast_user=xxx checkmarx_sast_password=xxx 
+    kenna_connector_id=15xxxx kenna_api_host=api.sandbox.us.denist.dev kenna_api_key=xxx
