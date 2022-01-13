@@ -93,6 +93,7 @@ module Kenna
             print_good "Fetching Scan Reports..."
             scan_reports = fetch_scan_reports(token, report_id)
             next if scan_reports.nil?
+
             print_good "Found Scan reports!!"
             print_good "\n"
 

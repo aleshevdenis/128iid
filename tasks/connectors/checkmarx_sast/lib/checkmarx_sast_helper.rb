@@ -107,6 +107,7 @@ module Kenna
           "content-type" => "application/x-www-form-urlencoded"
         }
       end
+
       def bearer_token_headers(token)
         {
           "Content-Type" => "application/json",
