@@ -1,47 +1,38 @@
-# Snyk 128iid Task to Kenna.VM
+## Running the Snyk V2 task
 
-## This Task will use the Snyk API to
+This 128iid brings in data from Snyk V2
 
-- [Get a list of Orgs](https://snyk.io/api/v1/orgs) to which the user has permission
-- [Get a list of Projects](https://snyk.io/api/v1/org/#{org}/projects) using the retrieved Orgs
-- [Get a list of Issues](https://snyk.io/api/v1/reporting/issues) for the Projects & Orgs
-- Output a json file in the Kenna Data Importer (KDI) format.
-- Post the file to Kenna if API Key and Connector ID are provided
+To run this task you need the following information from Snyk V2:
 
-## Things you will need
+1. Snyk API Token
 
-- Snyk API Key (Required)
-- Kenna API Key (Optional but needed for automatic upload to Kenna)
-- Kenna Connector ID (Optional but needed for automatic upload to Kenna)
+## Command Line
 
-Running the Task:
+See the main 128iid for instructions on running tasks. For this task, if you leave off the Kenna API Key and Kenna Connector ID, the task will create a json file in the default or specified output directory. You can review the file before attempting to upload to the Kenna directly.
 
-- Retrieve the Snyk API Key from the Synk UI.
-  - From Name Dropdown (Upper right corner) select General Settings
-  - On the Account Settings tab you will see a section for API Token. Show, create or regenerate a token.
-- Retrieve the Kenna API Key from the Kenna UI.
-  - From the Gear icon (Upper right corner) select API Keys
-  - Copy the key using the copy button to the left of the obscured key
-- Retrieve the Kenna Connector ID  
-  - If not already created, select the Add Connector button to create a connector of type Kenna Data Importer. Be sure to rename the connector using 'Snyk' in the name.
-  - Click on the name of the connector and from the resulting page, copy the Connector ID.
+Recommended Steps:
 
-Run the Snyk task following the guidelines on the main [128iid help page](https://github.com/KennaPublicSamples/128iid#calling-a-specific-task) adding options as necessary
+1. Run with Snyk V2 Keys only to ensure you are able to get data properly from the scanner
+1. Review output for expected data
+1. Create Kenna Data Importer connector in Kenna (example name: Snyk V2 KDI)
+1, Manually run the connector with the json from step 1
+1. Click on the name of the connector to get the connector id
+1. Run the task with Snyk V2 Keys and Kenna Key/connector id
 
-## Options
+Complete list of Options:
 
-| Name | Type | Required | Description |
-| ---- | ---- | ---- | ---- |
-| snyk_api_token |api_key | true | Snyk API Token |
-| import_type | string | false | What to import, "vulns" or "findings". By default "vulns". |
-| kenna_api_key | api_key | false | Kenna API Key |
-| kenna_api_host | hostname | false | Kenna API Hostname |
-| include_license | boolean | false | retrieve license issues? |
-| kenna_connector_id | integer | false | If set, we'll try to upload to this connector |
-| output_directory | filename | false | Will alter default filename for output. Path is relative to #{$basedir} |
-
-
-## Example Command Line:
-
-    128iid:latest task=snyk_v2 snyk_api_token=xxx kenna_connector_id=156xxx kenna_api_key:xxx include_license=true
+| Option | Required | Description | default |
+| --- | --- | --- | --- |
+| snyk_api_token | true | Snyk API Token | n/a |
+| import_type | false | what to import "vulns" or "findings". By default "vulns" | vulns |
+| retrieve_from | false | default will be 90 days before today | 90 |
+| include_license | false | retrieve license issues. | n/a |
+| projectName_strip_colon | false | strip colon and following data from Project Name - used as application identifier | n/a |
+| packageManager_strip_colon | false | strip colon and following data from packageManager - used in asset file locator | n/a |
+| package_strip_colon | false | strip colon and following data from package - used in asset file locator | n/a |
+| application_locator_mapping | false | indicates which field should be used in application locator. Valid options are application and organization. Default is application. | application |
+| kenna_connector_id | false | If set, we'll try to upload to this connector | n/a |
+| kenna_api_key | false | Kenna API Key | n/a |
+| kenna_api_host | false | Kenna API Hostname | api.denist.dev |
+| output_directory | false | If set, will write a file upon completion. Path is relative to /Users/scalvo/Dev/128iid | output/snyk |
 

@@ -48,6 +48,11 @@ module Kenna
               required: false,
               default: false,
               description: "strip colon and following data from package - used in asset file locator" },
+            { name: "application_locator_mapping",
+              type: "string",
+              required: false,
+              default: "application",
+              description: "indicates which field should be used in application locator. Valid options are application and organization. Default is application." },
             { name: "kenna_connector_id",
               type: "integer",
               required: false,
@@ -164,14 +169,15 @@ module Kenna
               target_file = "#{target_file}#{package}"
             end
 
+            org_name = projects[project.fetch("id")]["org"]["name"]
             tags = []
             tags << project.fetch("source") if project.key?("source")
             tags << package_manager if !package_manager.nil? && !package_manager.empty?
-            tags << "Org:#{projects[project.fetch('id')]['org']['name']}"
+            tags << "Org:#{org_name}"
 
             asset = {
               "file" => target_file,
-              "application" => application,
+              "application" => @options[:application_locator_mapping] == "organization" ? org_name : application,
               "tags" => tags
             }
 
@@ -196,7 +202,7 @@ module Kenna
             semver = JSON.pretty_generate(issue.fetch("semver")) if issue.key?("semver")
             issue_severity = issue.fetch("severity") if issue.key?("severity")
             version = issue.fetch("version") if issue.key?("version")
-            description = issue.fetch("description") if issue.key?("description")
+            description = issue["description"] || title
             cves = nil
             cwes = nil
             unless identifiers.nil?
@@ -207,12 +213,12 @@ module Kenna
               cwes = cwe_array.join(",") unless cwe_array.nil? || cwe_array.length.zero?
             end
 
-            identifiers_af = CGI.unescapeHTML(identifiers.to_s) if identifiers
-
             additional_fields = {
               "url" => url,
               "id" => issue.fetch("id"),
               "title" => title,
+              "file" => target_file,
+              "application" => application,
               "introducedDate" => issue_obj.fetch("introducedDate"),
               "source" => source,
               "fixedIn" => fixed_in,
@@ -228,13 +234,13 @@ module Kenna
               "package" => package,
               "packageManager" => package_manager,
               "version" => version,
-              "identifiers" => identifiers_af,
+              "identifiers" => identifiers.to_json,
               "publicationTime" => publication_time
             }
 
             additional_fields.compact!
 
-            vuln_name = issue["title"]
+            vuln_name = vuln_def_name(cve_array, cwe_array, title)
 
             kdi_issue = {
               "scanner_identifier" => issue.fetch("id"),
@@ -282,6 +288,10 @@ module Kenna
         filename = "snyk_kdi_#{suffix}.json"
         kdi_upload output_dir, filename, @kenna_connector_id, @kenna_api_host, @kenna_api_key, skip_autoclose, retries, kdi_version
         kdi_connector_kickoff @kenna_connector_id, @kenna_api_host, @kenna_api_key if @kenna_connector_id && @kenna_api_host && @kenna_api_key
+      end
+
+      def vuln_def_name(cves, cwes, title)
+        cves&.first || cwes&.first || title
       end
     end
   end
