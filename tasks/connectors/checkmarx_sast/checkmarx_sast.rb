@@ -44,6 +44,11 @@ module Kenna
                 required: false,
                 default: 500,
                 description: "Number of issues to retrieve in foreach page. Currently used only for OSA vulnerabilities." },
+              { name: "checkmarx_sast_project",
+                type: "string",
+                required: false,
+                default: nil,
+                description: "A comma separated list of project ids to import. If none, import all projects." },
               { name: "import_type",
                 type: "string",
                 required: false,
@@ -85,6 +90,7 @@ module Kenna
 
           print_good "Fetching Projects..."
           projects = client.projects
+          projects = projects.select { |p| @filter_projects.include?(p["id"]) } if @filter_projects.present?
           print_good "Found #{projects.count} Projects"
 
           import_sast(projects) if %w[all sast].include?(@import_type)
@@ -106,6 +112,7 @@ module Kenna
           @password = @options[:checkmarx_sast_password]
           @client_secret = @options[:checkmarx_sast_client_secret]
           @page_size = @options[:checkmarx_sast_page_size].to_i
+          @filter_projects = (@options[:checkmarx_sast_project] || "").split(",").map { |id| id.strip.to_i }
           @import_type = @options[:import_type].downcase
           @batch_size = @options[:kenna_batch_size].to_i
           @kenna_api_host = @options[:kenna_api_host]
