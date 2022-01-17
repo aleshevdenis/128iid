@@ -2,6 +2,7 @@
 
 require_relative "lib/checkmarx_sast_client"
 require_relative "lib/sast_mapper"
+require_relative "lib/osa_mapper"
 
 module Kenna
   module 128iid
@@ -145,7 +146,23 @@ module Kenna
         end
 
         def import_osa(projects)
-          projects
+          projects.foreach do |project|
+            project_id = project["id"]
+            scans = client.osa_scans(project_id)
+            scans.foreach do |scan|
+              issues = client.osa_vulnerabilities(scan["id"])
+              issues.foreach do |issue|
+                mapper = Kenna::128iid::CheckmarxSast::OsaMapper.new(project, issue)
+
+                create_kdi_asset_finding(mapper.extract_asset, mapper.extract_finding)
+                create_kdi_vuln_def(mapper.extract_vuln_def)
+              end
+            end
+
+            output_dir = "#{$basedir}/#{@options[:output_directory]}"
+            filename = "checkmarx_osa_kdi_#{project_id}.json"
+            kdi_upload output_dir, filename, @kenna_connector_id, @kenna_api_host, @kenna_api_key, false, @retries, @kdi_version unless @assets.nil?
+          end
         end
       end
     end
