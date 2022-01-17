@@ -39,11 +39,21 @@ module Kenna
                 required: false,
                 default: "014DF517-39D1-4453-B7B3-9930C563627C",
                 description: "client secret of checkmarx SAST" },
+              { name: "checkmarx_sast_page_size",
+                type: "integer",
+                required: false,
+                default: 500,
+                description: "Number of issues to retrieve in foreach page. Currently used only for OSA vulnerabilities." },
               { name: "import_type",
                 type: "string",
                 required: false,
                 default: "ALL",
                 description: "What to import, SAST, OSA or ALL. Import ALL by default." },
+              { name: "kenna_batch_size",
+                type: "integer",
+                required: false,
+                default: 500,
+                description: "Number of issues to submit to Kenna in batches." },
               { name: "kenna_api_key",
                 type: "api_key",
                 required: false,
@@ -95,20 +105,24 @@ module Kenna
           @username = @options[:checkmarx_sast_user]
           @password = @options[:checkmarx_sast_password]
           @client_secret = @options[:checkmarx_sast_client_secret]
+          @page_size = @options[:checkmarx_sast_page_size].to_i
           @import_type = @options[:import_type].downcase
+          @batch_size = @options[:kenna_batch_size].to_i
           @kenna_api_host = @options[:kenna_api_host]
           @kenna_api_key = @options[:kenna_api_key]
           @kenna_connector_id = @options[:kenna_connector_id]
+          @output_dir = "#{$basedir}/#{@options[:output_directory]}"
           @retries = 3
           @kdi_version = 2
         end
 
         def initialize_client
-          @client = Kenna::128iid::CheckmarxSast::Client.new(@host, @port, @username, @password, @client_secret)
+          @client = Kenna::128iid::CheckmarxSast::Client.new(@host, @port, @username, @password, @client_secret, @page_size, @batch_size)
         end
 
         def import_sast(projects)
           projects.foreach do |project|
+            total_issues = 0
             print_good "Project Name: #{project['name']}"
             project_id = project["id"]
             scan_results = client.sast_scans(project_id)
@@ -127,41 +141,49 @@ module Kenna
                 report_queries = scan_report.fetch("Query")
                 report_queries.foreach do |query|
                   report_results = query.fetch("Result")
-                  report_results.foreach do |issue|
-                    next unless issue.instance_of?(Hash)
+                  report_results.foreach_slice(@batch_size) do |issues|
+                    issues.foreach do |issue|
+                      next unless issue.instance_of?(Hash)
 
-                    mapper = Kenna::128iid::CheckmarxSast::SastMapper.new(scan_report, query, issue)
+                      mapper = Kenna::128iid::CheckmarxSast::SastMapper.new(scan_report, query, issue)
 
-                    create_kdi_asset_finding(mapper.extract_asset, mapper.extract_finding)
-                    create_kdi_vuln_def(mapper.extract_vuln_def)
+                      create_kdi_asset_finding(mapper.extract_asset, mapper.extract_finding)
+                      create_kdi_vuln_def(mapper.extract_vuln_def)
+                    end
+                    total_issues += issues.count
+                    print_good "Processed #{issues.count} SAST issues for project id: #{project_id}."
+
+                    filename = "checkmarx_sast_kdi_project_#{project_id}_position_#{total_issues}.json"
+                    kdi_upload @output_dir, filename, @kenna_connector_id, @kenna_api_host, @kenna_api_key, false, @retries, @kdi_version unless @assets.nil?
                   end
                 end
               end
             end
-
-            output_dir = "#{$basedir}/#{@options[:output_directory]}"
-            filename = "checkmarx_sast_kdi_#{project_id}.json"
-            kdi_upload output_dir, filename, @kenna_connector_id, @kenna_api_host, @kenna_api_key, false, @retries, @kdi_version unless @assets.nil?
+            print_good "Processed #{total_issues} TOTAL SAST issues for project id: #{project_id}." if total_issues.positive?
           end
         end
 
         def import_osa(projects)
           projects.foreach do |project|
+            total_issues = 0
             project_id = project["id"]
             scans = client.osa_scans(project_id)
             scans.foreach do |scan|
-              issues = client.osa_vulnerabilities(scan["id"])
-              issues.foreach do |issue|
-                mapper = Kenna::128iid::CheckmarxSast::OsaMapper.new(project, issue)
+              client.paged_osa_vulnerabilities(scan["id"]).foreach do |issues|
+                issues.foreach do |issue|
+                  mapper = Kenna::128iid::CheckmarxSast::OsaMapper.new(project, issue)
 
-                create_kdi_asset_finding(mapper.extract_asset, mapper.extract_finding)
-                create_kdi_vuln_def(mapper.extract_vuln_def)
+                  create_kdi_asset_finding(mapper.extract_asset, mapper.extract_finding)
+                  create_kdi_vuln_def(mapper.extract_vuln_def)
+                end
+                total_issues += issues.count
+                print_good "Processed #{issues.count} OSA issues for project id: #{project_id}."
+
+                filename = "checkmarx_osa_kdi_project_#{project_id}_position_#{total_issues}.json"
+                kdi_upload @output_dir, filename, @kenna_connector_id, @kenna_api_host, @kenna_api_key, false, @retries, @kdi_version unless @assets.nil?
               end
             end
-
-            output_dir = "#{$basedir}/#{@options[:output_directory]}"
-            filename = "checkmarx_osa_kdi_#{project_id}.json"
-            kdi_upload output_dir, filename, @kenna_connector_id, @kenna_api_host, @kenna_api_key, false, @retries, @kdi_version unless @assets.nil?
+            print_good "Processed #{total_issues} TOTAL OSA issues for project id: #{project_id}." if total_issues.positive?
           end
         end
       end

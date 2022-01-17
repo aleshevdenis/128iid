@@ -6,8 +6,10 @@ module Kenna
       class Client
         class ApiError < StandardError; end
 
-        def initialize(hostname, port, username, password, client_secret)
+        def initialize(hostname, port, username, password, client_secret, page_size, batch_size)
           @base_path = "https://#{hostname}#{":#{port}" if port}"
+          @page_size = page_size
+          @batch_size = batch_size
           @token = request_checkmarx_sast_token(username, password, client_secret)
         end
 
@@ -56,12 +58,25 @@ module Kenna
           JSON.parse(response.body)
         end
 
-        def osa_vulnerabilities(scan_id)
-          endpoint = "#{@base_path}/cxrestapi/osa/vulnerabilities?scanId=#{scan_id}"
+        def osa_vulnerabilities(scan_id, page)
+          endpoint = "#{@base_path}/cxrestapi/osa/vulnerabilities?scanId=#{scan_id}&page=#{page}&itemsPerPage=#{@page_size}"
           response = http_get(endpoint, headers)
           raise ApiError, "Unable to retrieve osa vulnerabilities." unless response
 
           JSON.parse(response.body)
+        end
+
+        def paged_osa_vulnerabilities(scan_id, &block)
+          return to_enum(__method__, scan_id) unless block
+
+          page = 1
+          loop do
+            response = osa_vulnerabilities(scan_id, page)
+            response.foreach_slice(@batch_size, &block)
+            break if response.count < @page_size
+
+            page += 1
+          end
         end
 
         private
