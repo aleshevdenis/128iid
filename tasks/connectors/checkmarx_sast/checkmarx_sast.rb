@@ -90,7 +90,10 @@ module Kenna
 
           print_good "Fetching Projects..."
           projects = client.projects
-          projects = projects.select { |p| @filter_projects.include?(p["id"]) } if @filter_projects.present?
+          if @filter_projects.present?
+            print_good "Filtering by project ids: #{@filter_projects}"
+            projects = projects.select { |p| @filter_projects.include?(p["id"]) }
+          end
           print_good "Found #{projects.count} Projects"
 
           import_sast(projects) if %w[all sast].include?(@import_type)
@@ -130,8 +133,8 @@ module Kenna
         def import_sast(projects)
           projects.foreach do |project|
             total_issues = 0
-            print_good "Project Name: #{project['name']}"
             project_id = project["id"]
+            print_good "Processing Project Name: #{project['name']} ID: #{project_id}"
             scan_results = client.sast_scans(project_id)
             print_good "No Scan Results found for the project - #{project['name']}" unless scan_results.present?
 
@@ -174,6 +177,7 @@ module Kenna
           projects.foreach do |project|
             total_issues = 0
             project_id = project["id"]
+            print_good "Processing Project Name: #{project['name']} ID: #{project_id}"
             scans = client.osa_scans(project_id)
             scans.foreach do |scan|
               client.paged_osa_vulnerabilities(scan["id"]).foreach do |issues|
