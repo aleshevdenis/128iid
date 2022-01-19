@@ -36,6 +36,7 @@ module Kenna
             "created_at" => (iso_date(issue["DetectionDate"]) if issue["DetectionDate"].present?),
             "severity" => SEVERITY_MAP[issue["Severity"]],
             "vuln_def_name" => vuln_def_name,
+            "triage_state" => triage_state(issue.fetch("state")),
             "additional_fields" => extract_additional_fields
           }.compact
         end
@@ -88,6 +89,19 @@ module Kenna
 
         def iso_date(date)
           DateTime.strptime(date, "%m/%d/%Y %k:%M:%S %p").iso8601
+        end
+
+        # SAST States are: "To Verify" => "0", "Not Exploitable" => "1", "Confirmed" => "2", "Urgent" => "3", "Propose Not Exploitable" => "4"
+        # Kenna States are: "new", "in_progress", "triaged", "resolved", "false_positive", "risk_accepted", "duplicate", "not_a_security_issue".
+        def triage_state(sast_state)
+          case sast_state
+          when "2"
+            "risk_accepted"
+          when "1", "4"
+            "not_a_security_issue"
+          else
+            "new"
+          end
         end
       end
     end
