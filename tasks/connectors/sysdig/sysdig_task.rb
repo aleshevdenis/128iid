@@ -44,6 +44,11 @@ module Kenna
                 required: false,
                 default: "ALL",
                 description: "Choose what to import: STATIC, RUNTIME or ALL." },
+              { name: "kenna_batch_size",
+                type: "integer",
+                required: false,
+                default: 500,
+                description: "Maximum number of issues to upload to kenna in batches." },
               { name: "kenna_api_key",
                 type: "api_key",
                 required: false,
@@ -91,6 +96,7 @@ module Kenna
           @page_size = @options[:sysdig_page_size].to_i
           @import_type = @options[:import_type].downcase
           @output_directory = @options[:output_directory]
+          @batch_size = @options[:kenna_batch_size].to_i
           @kenna_api_host = @options[:kenna_api_host]
           @kenna_api_key = @options[:kenna_api_key]
           @kenna_connector_id = @options[:kenna_connector_id]
@@ -123,20 +129,21 @@ module Kenna
 
         def import_vulnerabilities(paged_vulns, mapper_class)
           total_vulns = 0
-          batch_idx = 1
 
-          paged_vulns.foreach do |vulns|
-            add_vuln_definitions(vulns)
-            vulns.foreach do |vuln|
-              mapper = mapper_class.new(vuln, @severity_mapping, @vuln_definitions)
-              create_kdi_asset_vuln(mapper.extract_asset, mapper.extract_vuln)
-              create_kdi_vuln_def(mapper.extract_definition)
+          kdi_batch_upload(@batch_size, @output_directory, "sysdig_#{mapper_class.import_type.downcase}.json", @kenna_connector_id, @kenna_api_host, @kenna_api_key, @skip_autoclose, @retries, @kdi_version) do |batch|
+            paged_vulns.foreach do |vulns|
+              add_vuln_definitions(vulns)
+              vulns.foreach do |vuln|
+                batch.append do
+                  mapper = mapper_class.new(vuln, @severity_mapping, @vuln_definitions)
+                  create_kdi_asset_vuln(mapper.extract_asset, mapper.extract_vuln)
+                  create_kdi_vuln_def(mapper.extract_definition)
+                end
+              end
+
+              print_good "Processed #{vulns.count} #{mapper_class.import_type} vulnerabilities."
+              total_vulns += vulns.count
             end
-
-            print_good "Processed #{vulns.count} #{mapper_class.import_type} vulnerabilities."
-            kdi_upload(@output_directory, "sysdig_#{mapper_class.import_type}_vulns_batch_#{batch_idx}.json", @kenna_connector_id, @kenna_api_host, @kenna_api_key, @skip_autoclose, @retries, @kdi_version)
-            total_vulns += vulns.count
-            batch_idx += 1
           end
 
           print_good "A total of #{total_vulns} #{mapper_class.import_type} vulnerabilities processed."

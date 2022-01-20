@@ -29,7 +29,6 @@ module Kenna
               sha = result.fetch("imageDigest")
               print "Getting vulnerabilities of image: #{sha}"
               vulns_offset = 0
-              vulns = []
               loop do
                 url = "#{@base_path}/api/scanning/v1/images/#{sha}/vulnDirect/all?offset=#{vulns_offset}&limit=#{@page_size}"
                 url += "&filters=#{@vuln_severity}" if @vuln_severity.present?
@@ -37,16 +36,9 @@ module Kenna
                 raise ApiError, "Unable to retrieve vulnDirect." unless vulns_response
 
                 vulns_hash = JSON.parse(vulns_response)
-                vulns.concat(vulns_hash.fetch("vulns").map { |vuln| vuln.merge("scan_data" => result) })
+                block.yield(vulns_hash.fetch("vulns").map { |vuln| vuln.merge("scan_data" => result) })
+                break unless vulns_hash.fetch("canLoadMore")
 
-                if vulns_hash.fetch("canLoadMore")
-                  # Consume only available batches
-                  block.yield(vulns.shift(@batch_size)) while vulns.count >= @batch_size
-                else
-                  # Consume all available batches and also remaining vulns
-                  block.yield(vulns.shift(@batch_size)) while vulns.present?
-                  break
-                end
                 vulns_offset += vulns_hash.fetch("vulns").count
               end
             end
@@ -72,7 +64,6 @@ module Kenna
               mac_address = result.fetch("macAddress")
               print "Getting vulnerabilities of host: #{hostname} mac: #{mac_address}"
               vulns_offset = 0
-              vulns = []
               loop do
                 url = "#{@base_path}/api/scanning/v1/hosts/#{hostname}/#{mac_address}?vtype=all&offset=#{vulns_offset}&limit=#{@page_size}"
                 url += "&filters=#{@vuln_severity}" if @vuln_severity.present?
@@ -80,16 +71,9 @@ module Kenna
                 raise ApiError, "Unable to retrieve host vulnerabilities." unless vulns_response
 
                 vulns_hash = JSON.parse(vulns_response)
-                vulns.concat((vulns_hash["vulnerabilities"] || []).map { |vuln| vuln.merge("scan_data" => vulns_hash.except("options", "vulnerabilities")) })
+                block.yield((vulns_hash["vulnerabilities"] || []).map { |vuln| vuln.merge("scan_data" => vulns_hash.except("options", "vulnerabilities")) })
+                break unless vulns_hash.fetch("options").fetch("canLoadMore")
 
-                if vulns_hash.fetch("options").fetch("canLoadMore")
-                  # Consume only available batches
-                  block.yield(vulns.shift(@batch_size)) while vulns.count >= @batch_size
-                else
-                  # Consume all available batches and also remaining vulns
-                  block.yield(vulns.shift(@batch_size)) while vulns.present?
-                  break
-                end
                 vulns_offset += vulns_hash.fetch("vulnerabilities").count
               end
             end

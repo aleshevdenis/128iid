@@ -30,6 +30,7 @@ Complete list of Options:
 | sysdig_vuln_severity | false | A comma separated list of severity types to import. Allowed are Critical, High, Medium, Low, Negligible, Unknown. Import all if absent. | n/a |
 | sysdig_page_size | false | Maximum number of issues to retrieve in foreach page. | 500 |
 | import_type | false | Choose what to import: STATIC, RUNTIME or ALL. | ALL |
+| kenna_batch_size | false | Maximum number of issues to upload to kenna in batches. | 500 |
 | kenna_api_key | false | Kenna API Key | n/a |
 | kenna_api_host | false | Kenna API Hostname | api.denist.dev |
 | kenna_connector_id | false | If set, we'll try to upload to this connector | n/a |
