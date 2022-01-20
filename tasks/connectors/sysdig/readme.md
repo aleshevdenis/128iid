@@ -29,9 +29,9 @@ Complete list of Options:
 | sysdig_severity_mapping | false | Maps Severity name to 0-10 Kenna severity score. The score has effect on non CVE vulnerabilities, e.g. VULNDB | Critical:8,High:7,Medium:5,Low:3,Negligible:0,Unknown:0 |
 | sysdig_vuln_severity | false | A comma separated list of severity types to import. Allowed are Critical, High, Medium, Low, Negligible, Unknown. Import all if absent. | n/a |
 | sysdig_page_size | false | Maximum number of issues to retrieve in foreach page. | 500 |
-| days_back | false | Get results n days back up to today. If absent, retrieves all history. | n/a |
+| import_type | false | Choose what to import: STATIC, RUNTIME or ALL. | ALL |
 | kenna_api_key | false | Kenna API Key | n/a |
 | kenna_api_host | false | Kenna API Hostname | api.denist.dev |
 | kenna_connector_id | false | If set, we'll try to upload to this connector | n/a |
-| output_directory | false | If set, will write a file upon completion. Path is relative to /Users/scalvo/Dev/128iid | output/sysdig |
+| output_directory | false | If set, will write a file upon completion. Path is relative to 128iid root directory | output/sysdig |
 

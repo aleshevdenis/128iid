@@ -49,4 +49,6 @@ readme = <<~README
   #{options_table}
 README
 
-File.write("readme.md", readme)
+output = readme.gsub(/Path is relative to \S*/, "Path is relative to 128iid root directory")
+
+File.write("readme.md", output)
