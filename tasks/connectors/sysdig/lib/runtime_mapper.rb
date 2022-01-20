@@ -19,6 +19,12 @@ module Kenna
           }
           asset.compact
         end
+
+        def extract_vuln
+          super.merge(
+            "created_at" => scan_data.fetch("lastScanDate")
+          )
+        end
       end
     end
   end

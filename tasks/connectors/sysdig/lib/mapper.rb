@@ -17,6 +17,10 @@ module Kenna
           @scan_data = vuln.fetch("scan_data")
         end
 
+        def extract_asset
+          raise "Subclass responsibility"
+        end
+
         def extract_vuln
           {
             "scanner_type" => SCANNER_TYPE,

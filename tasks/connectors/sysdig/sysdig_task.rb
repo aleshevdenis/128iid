@@ -128,8 +128,6 @@ module Kenna
         end
 
         def import_vulnerabilities(paged_vulns, mapper_class)
-          # non_standard_vuln_ids = vulns.map { |v| v["vulnId"] }.reject { |id| id.match?(/CVE-.*|CWE-.*|WASC-.*/) }.to_set
-          # sysdig_vuln_definitions = @client.vuln_definitions(non_standard_vuln_ids)
           total_vulns = 0
           batch_idx = 1
 
@@ -150,8 +148,7 @@ module Kenna
           print_good "A total of #{total_vulns} #{mapper_class.import_type} vulnerabilities processed."
         end
 
-        # Kenna only knows vuln ids from CVE, CWE o WASC
-        # This method asks
+        # Kenna only knows vuln ids from CVE, CWE o WASC so wee need to get unknown definitions from Sysdig.
         def add_vuln_definitions(vulns)
           non_standard_vuln_ids = vulns.map { |v| v["vuln"] }.reject { |id| id.match?(/CVE-.*|CWE-.*|WASC-.*/) }.uniq
           @client.vuln_definitions(non_standard_vuln_ids).foreach do |vuln_def|
