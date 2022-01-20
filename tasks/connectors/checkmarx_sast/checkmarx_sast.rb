@@ -124,6 +124,7 @@ module Kenna
           @output_dir = "#{$basedir}/#{@options[:output_directory]}"
           @retries = 3
           @kdi_version = 2
+          @filename = ""
         end
 
         def initialize_client
@@ -162,15 +163,18 @@ module Kenna
                     end
                     total_issues += issues.count
                     print_good "Processed #{issues.count} SAST issues for project id: #{project_id}."
-
-                    filename = "checkmarx_sast_kdi_project_#{project_id}_position_#{total_issues}.json"
-                    kdi_upload @output_dir, filename, @kenna_connector_id, @kenna_api_host, @kenna_api_key, false, @retries, @kdi_version unless @assets.nil?
+                    if total_issues > @batch_size
+                      @filename = "checkmarx_sast_kdi_project_#{project_id}_position_#{total_issues}.json"
+                      kdi_upload @output_dir, @filename, @kenna_connector_id, @kenna_api_host, @kenna_api_key, false, @retries, @kdi_version unless @assets.nil?
+                    end
                   end
                 end
               end
             end
             print_good "Processed #{total_issues} TOTAL SAST issues for project id: #{project_id}." if total_issues.positive?
+            @filename = "checkmarx_sast_kdi_project_#{project_id}_position_#{total_issues}.json"
           end
+          kdi_upload @output_dir, @filename, @kenna_connector_id, @kenna_api_host, @kenna_api_key, false, @retries, @kdi_version unless @assets.nil?
         end
 
         def import_osa(projects)
@@ -189,13 +193,16 @@ module Kenna
                 end
                 total_issues += issues.count
                 print_good "Processed #{issues.count} OSA issues for project id: #{project_id}."
-
-                filename = "checkmarx_osa_kdi_project_#{project_id}_position_#{total_issues}.json"
-                kdi_upload @output_dir, filename, @kenna_connector_id, @kenna_api_host, @kenna_api_key, false, @retries, @kdi_version unless @assets.nil?
+                if total_issues > @batch_size
+                  @filename = "checkmarx_osa_kdi_project_#{project_id}_position_#{total_issues}.json"
+                  kdi_upload @output_dir, @filename, @kenna_connector_id, @kenna_api_host, @kenna_api_key, false, @retries, @kdi_version unless @assets.nil?
+                end
               end
             end
             print_good "Processed #{total_issues} TOTAL OSA issues for project id: #{project_id}." if total_issues.positive?
+            @filename = "checkmarx_osa_kdi_project_#{project_id}_position_#{total_issues}.json"
           end
+          kdi_upload @output_dir, @filename, @kenna_connector_id, @kenna_api_host, @kenna_api_key, false, @retries, @kdi_version unless @assets.nil?
         end
       end
     end
