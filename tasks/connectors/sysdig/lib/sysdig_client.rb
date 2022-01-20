@@ -32,7 +32,9 @@ module Kenna
               vulns_offset = 0
               vulns = []
               loop do
-                vulns_response = http_get("#{@base_path}/api/scanning/v1/images/#{sha}/vulnDirect/all?offset=#{vulns_offset}&limit=#{@page_size}", @headers)
+                url = "#{@base_path}/api/scanning/v1/images/#{sha}/vulnDirect/all?offset=#{vulns_offset}&limit=#{@page_size}"
+                url += "&filters=#{@vuln_severity}" if @vuln_severity.present?
+                vulns_response = http_get(url, @headers)
                 raise ApiError, "Unable to retrieve vulnDirect." unless vulns_response
 
                 vulns_hash = JSON.parse(vulns_response)
@@ -73,11 +75,13 @@ module Kenna
               vulns_offset = 0
               vulns = []
               loop do
-                vulns_response = http_get("#{@base_path}/api/scanning/v1/hosts/#{hostname}/#{mac_address}?vtype=all&offset=#{vulns_offset}&limit=#{@page_size}", @headers)
+                url = "#{@base_path}/api/scanning/v1/hosts/#{hostname}/#{mac_address}?vtype=all&offset=#{vulns_offset}&limit=#{@page_size}"
+                url += "&filters=#{@vuln_severity}" if @vuln_severity.present?
+                vulns_response = http_get(url, @headers)
                 raise ApiError, "Unable to retrieve host vulnerabilities." unless vulns_response
 
                 vulns_hash = JSON.parse(vulns_response)
-                vulns.concat(vulns_hash.fetch("vulnerabilities").map { |vuln| vuln.merge("scan_data" => vulns_hash.except("options", "vulnerabilities")) })
+                vulns.concat((vulns_hash["vulnerabilities"] || []).map { |vuln| vuln.merge("scan_data" => vulns_hash.except("options", "vulnerabilities")) })
 
                 if vulns_hash.fetch("options").fetch("canLoadMore")
                   # Consume only available batches
