@@ -39,11 +39,6 @@ module Kenna
                 required: false,
                 default: 500,
                 description: "Maximum number of issues to retrieve in foreach page." },
-              { name: "days_back",
-                type: "integer",
-                required: false,
-                default: nil,
-                description: "Get results n days back up to today. If absent, retrieves all history." },
               { name: "import_type",
                 type: "string",
                 required: false,
@@ -93,7 +88,6 @@ module Kenna
           @api_token = @options[:sysdig_api_token]
           @severity_mapping = build_severity_mappings(@options[:sysdig_severity_mapping])
           @vuln_severity = extract_list(:sysdig_vuln_severity)
-          @days_back = @options[:days_back].to_i
           @page_size = @options[:sysdig_page_size].to_i
           @import_type = @options[:import_type].downcase
           @output_directory = @options[:output_directory]
@@ -116,7 +110,7 @@ module Kenna
         end
 
         def initialize_client
-          @client = Kenna::128iid::Sysdig::Client.new(@host, @api_token, @page_size, @vuln_severity, @days_back)
+          @client = Kenna::128iid::Sysdig::Client.new(@host, @api_token, @page_size, @vuln_severity)
         end
 
         def import_static

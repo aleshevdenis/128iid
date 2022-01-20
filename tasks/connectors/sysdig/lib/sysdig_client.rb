@@ -6,14 +6,13 @@ module Kenna
       class Client
         class ApiError < StandardError; end
 
-        def initialize(host, api_token, page_size, vuln_severity, days_back)
+        def initialize(host, api_token, page_size, vuln_severity)
           @base_path = "https://#{host}"
           @headers = { "Content-Type": "application/json", "Accept": "application/json",
                        "Accept-Encoding": "gzip, deflate, sdch", "Authorization": "Bearer #{api_token}" }
           @page_size = page_size
           @batch_size = 500
           @vuln_severity = vuln_severity.join(",") if vuln_severity
-          @days_back = days_back
         end
 
         def static_vulnerabilities(&block)
