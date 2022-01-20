@@ -10,9 +10,10 @@ module Kenna
           name.demodulize.gsub("Mapper", "")
         end
 
-        def initialize(vuln, severity_mapping)
+        def initialize(vuln, severity_mapping, vuln_definitions)
           @vuln = vuln
           @severity_mapping = severity_mapping
+          @vuln_definitions = vuln_definitions
           @scan_data = vuln.fetch("scan_data")
         end
 
@@ -29,7 +30,8 @@ module Kenna
         def extract_definition
           definition = {
             "scanner_type" => SCANNER_TYPE,
-            "name" => vuln.fetch("vuln")
+            "name" => vuln.fetch("vuln"),
+            "description" => vuln_definitions[vuln.fetch("vuln")]&.fetch("description")
           }
           definition["cwe_identifiers"] = vuln["vuln"] if vuln["vuln"].start_with?("CWE")
           definition["cve_identifiers"] = vuln["vuln"] if vuln["vuln"].start_with?("CVE")
@@ -40,7 +42,7 @@ module Kenna
 
         private
 
-        attr_reader :vuln, :severity_mapping, :scan_data
+        attr_reader :vuln, :severity_mapping, :vuln_definitions, :scan_data
 
         def extract_additional_fields
           {

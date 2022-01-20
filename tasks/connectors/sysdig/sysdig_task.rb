@@ -103,6 +103,7 @@ module Kenna
           @skip_autoclose = false
           @retries = 3
           @kdi_version = 2
+          @vuln_definitions = {}
         end
 
         def extract_list(key, default = nil)
@@ -133,8 +134,9 @@ module Kenna
           batch_idx = 1
 
           paged_vulns.foreach do |vulns|
+            add_vuln_definitions(vulns)
             vulns.foreach do |vuln|
-              mapper = mapper_class.new(vuln, @severity_mapping)
+              mapper = mapper_class.new(vuln, @severity_mapping, @vuln_definitions)
               create_kdi_asset_vuln(mapper.extract_asset, mapper.extract_vuln)
               create_kdi_vuln_def(mapper.extract_definition)
             end
@@ -145,7 +147,16 @@ module Kenna
             batch_idx += 1
           end
 
-          print_good "A total of #{total_vulns} #{mapper_class.import_type} vulnerabilities where processed."
+          print_good "A total of #{total_vulns} #{mapper_class.import_type} vulnerabilities processed."
+        end
+
+        # Kenna only knows vuln ids from CVE, CWE o WASC
+        # This method asks
+        def add_vuln_definitions(vulns)
+          non_standard_vuln_ids = vulns.map { |v| v["vuln"] }.reject { |id| id.match?(/CVE-.*|CWE-.*|WASC-.*/) }.uniq
+          @client.vuln_definitions(non_standard_vuln_ids).foreach do |vuln_def|
+            @vuln_definitions[vuln_def["name"]] = vuln_def
+          end
         end
       end
     end

@@ -98,13 +98,17 @@ module Kenna
         end
 
         def vuln_definitions(vuln_ids)
-          definitions = {}
+          definitions = []
+          # Slice by 100 to avoid exceeding HTTP GET max size
           vuln_ids.foreach_slice(100) do |ids|
-            response = http_get("#{@base_path}/api/scanning/v1/anchore/query/vulnerabilities?id=#{ids.join(',')}")
+            response = http_get("#{@base_path}/api/scanning/v1/anchore/query/vulnerabilities?id=#{ids.join(',')}", @headers)
             raise ApiError, "Unable to retrieve vulnerability definitions." unless response
 
             def_data = JSON.parse(response)
+
+            definitions.concat(def_data.fetch("vulnerabilities").map { |vuln_def| { "name" => vuln_def["id"], "description" => vuln_def["description"] || vuln_def["link"] || "n/a" } })
           end
+          definitions
         end
       end
     end
