@@ -188,6 +188,45 @@ module Kenna
         regex = /<("[^"]*"|'[^']*'|[^'">])*>/
         string.gsub(regex, "")
       end
+
+      def kdi_batch_upload(batch_size, output_dir, filename, kenna_connector_id, kenna_api_host, kenna_api_key, skip_autoclose = false, max_retries = 3, version = 1, &block)
+        send_batch = proc { |batch|
+          kdi_upload(output_dir,
+                     "#{File.basename(filename, '.*')}_batch_#{batch.batch_count}#{File.extname(filename)}",
+                     kenna_connector_id,
+                     kenna_api_host,
+                     kenna_api_key,
+                     skip_autoclose,
+                     max_retries,
+                     version)
+        }
+        batch = Batch.new(batch_size, send_batch)
+        block.yield(batch)
+        batch.execute
+      end
+
+      class Batch
+        attr_reader :batch_count
+
+        def initialize(batch_size, callback)
+          @batch_size = batch_size
+          @callback = callback
+          @size = 0
+          @batch_count = 1
+        end
+
+        def append(&block)
+          yield block
+          @size += 1
+          execute if @batch_size == @size
+        end
+
+        def execute
+          @callback.call(self)
+          @size = 0
+          @batch_count += 1
+        end
+      end
     end
   end
 end
