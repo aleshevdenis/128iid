@@ -81,24 +81,27 @@ module Kenna
           super
           initialize_options
           client = Kenna::128iid::CarbonBlack::Client.new(@host, @api_id, @api_secret_key, @org_key, @page_size)
-          client.vulnerable_devices(@device_type).foreach do |devices|
-            devices.foreach do |device|
-              print "Processing device #{device['name']} of type #{device['type']}."
-              asset = extract_asset(device)
-              client.device_vulnerabilities(device["device_id"], @severity).foreach do |issues, num_found, offset|
-                issues.foreach do |issue|
-                  vuln = extract_vuln(issue)
-                  definition = extract_definition(issue)
 
-                  create_kdi_asset_vuln(asset, vuln)
-                  create_kdi_vuln_def(definition)
+          kdi_batch_upload(@batch_size, @output_directory, "carbon_black.json", @kenna_connector_id, @kenna_api_host, @kenna_api_key, @skip_autoclose, @retries, @kdi_version) do |batch|
+            client.vulnerable_devices(@device_type).foreach do |devices|
+              devices.foreach do |device|
+                print "Processing device #{device['name']} of type #{device['type']}."
+                asset = extract_asset(device)
+                client.device_vulnerabilities(device["device_id"], @severity).foreach do |issues, num_found, offset|
+                  issues.foreach do |issue|
+                    vuln = extract_vuln(issue, device)
+                    definition = extract_definition(issue)
+                    batch.append do
+                      create_kdi_asset_vuln(asset, vuln)
+                      create_kdi_vuln_def(definition)
+                    end
+                  end
+
+                  print_good("   Processed #{offset + issues.count} of #{num_found} vulnerabilities.")
                 end
-
-                print_good("   Processed #{offset + issues.count} of #{num_found} vulnerabilities.")
               end
             end
           end
-          kdi_upload(@output_directory, "carbon_black.json", @kenna_connector_id, @kenna_api_host, @kenna_api_key, @skip_autoclose, @retries, @kdi_version)
           kdi_connector_kickoff(@kenna_connector_id, @kenna_api_host, @kenna_api_key)
         rescue Kenna::128iid::Sample::Client::ApiError => e
           fail_task e.message
@@ -148,11 +151,11 @@ module Kenna
           }.compact
         end
 
-        def extract_vuln(issue)
+        def extract_vuln(issue, device)
           product_info = issue["product_info"]
           vuln_info = issue["vuln_info"]
           {
-            "scanner_identifier" => [issue["os_product_id"], product_info["vendor"], product_info["product"], product_info["version"], product_info["release"], vuln_info["cve_id"]].compact.join(":"),
+            "scanner_identifier" => [device.fetch("device_id"), issue["os_product_id"], product_info["vendor"], product_info["product"], product_info["version"], product_info["release"], vuln_info["cve_id"]].compact.join(":"),
             "scanner_type" => SCANNER_TYPE,
             "created_at" => vuln_info["created_at"],
             "vuln_def_name" => vuln_info["cve_id"],
