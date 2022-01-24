@@ -37,5 +37,5 @@ Complete list of Options:
 | kenna_api_key | false | Kenna API Key | n/a |
 | kenna_api_host | false | Kenna API Hostname | api.denist.dev |
 | kenna_connector_id | false | If set, we'll try to upload to this connector | n/a |
-| output_directory | false | If set, will write a file upon completion. Path is relative to /Users/scalvo/Dev/128iid | output/carbon_black |
+| output_directory | false | If set, will write a file upon completion. Path is relative to 128iid root directory | output/carbon_black |
 
