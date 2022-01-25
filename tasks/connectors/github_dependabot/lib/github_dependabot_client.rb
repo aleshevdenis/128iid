@@ -15,9 +15,14 @@ module Kenna
 
         def security_advisory_response
           response = http_post(@endpoint, @headers, query(security_advisory_query, organization_name: @organization_name))
-          raise ApiError, "Unable to retrieve last scheduled scan, please check credentials" unless response
+          raise ApiError, "Unable to retrieve data from GitHub GraphQL API, please check credentials" unless response
 
-          JSON.parse(response)["data"]["organization"]["repositories"]["nodes"]
+          response_hash = JSON.parse(response)
+          raise ApiError, "Unable to retrieve data. GitHub GraphQL API returned the following errors:\n\n#{build_api_errors_string(response_hash['errors'])}" if response_hash["errors"]
+
+          raise ApiError, "GitHub GraphQL API unrecognized response format." unless response_hash.dig("data", "organization", "repositories", "nodes")
+
+          response_hash["data"]["organization"]["repositories"]["nodes"]
         end
 
         private
@@ -65,6 +70,10 @@ module Kenna
             }
           }
         }"
+        end
+
+        def build_api_errors_string(errors)
+          errors.map { |e| "[#{e['type']}] #{e['message']}" }.join("\n")
         end
       end
     end
