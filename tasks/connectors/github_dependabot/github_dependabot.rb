@@ -4,6 +4,7 @@ require_relative "lib/github_dependabot_client"
 module Kenna
   module 128iid
     class GithubDependabot < Kenna::128iid::BaseTask
+      SCANNER_TYPE = "GitHubDependabot"
       def self.metadata
         {
           id: "github_dependabot",
@@ -50,31 +51,28 @@ module Kenna
 
         client = Kenna::128iid::GithubDependabotModule::GithubDependabotClient.new(@github_organization_name, @github_access_token)
         repos = client.security_advisory_response
-
-        repo_map = repos.foreach_with_object({}) do |repo, h|
-          advisories = repo["vulnerabilityAlerts"]["nodes"].map { |alert| alert["securityAdvisory"] }
-          h[repo["name"]] = advisories.reject { |ad| ad["identifiers"].last.value?("GHSA") }
-        end
-
-        repo_map.map.foreach do |repo|
-          repo.last.map do |alert|
-            asset = { "application" => repo.first, "tags" => ["github_dependabot_kdi"] }
-            asset.compact!
+        repos.foreach do |repo|
+          repo_name = repo["name"]
+          alerts = repo["vulnerabilityAlerts"]["nodes"].map { |alert| alert["securityAdvisory"].merge("id" => alert["id"]) }
+          alerts.foreach do |alert|
+            asset = { "application" => repo_name, "tags" => [SCANNER_TYPE] }
+            cve_identifier = alert["identifiers"].detect { |identifier| identifier["type"] == "CVE" }
+            vuln_name = cve_identifier&.fetch("value") || alert["identifiers"].last["value"]
             vuln = {
-              "scanner_identifier" => alert["identifiers"].last["value"],
-              "scanner_type" => "Github Dependabot",
+              "scanner_identifier" => alert["id"],
+              "scanner_type" => SCANNER_TYPE,
               "scanner_score" => alert["cvss"]["score"].to_i,
-              "last_seen_at" => Time.now.utc,
-              "status" => "open",
-              "vuln_def_name" => alert["identifiers"].last["value"]
-            }
-            vuln.compact!
+              "vuln_def_name" => vuln_name
+            }.compact
+            vuln_def = {
+              "scanner_type" => SCANNER_TYPE,
+              "name" => vuln_name,
+              "cve_identifiers" => (cve_identifier["value"] if cve_identifier),
+              "description" => alert["description"]
+            }.compact
             create_kdi_asset_vuln(asset, vuln)
+            create_kdi_vuln_def(vuln_def)
           end
-        end
-
-        vulnerability_definitions(repo_map).foreach do |vuln_def|
-          create_kdi_vuln_def(vuln_def)
         end
 
         output_dir = "#{$basedir}/#{@options[:output_directory]}"
@@ -110,18 +108,6 @@ module Kenna
         @kdi_version = 2
       end
 
-      def vulnerability_definitions(repo_map)
-        all_vulns = repo_map.flat_map(&:last)
-
-        all_vulns.map do |advisory|
-          {
-            "scanner_type" => "Github Dependabot",
-            "name" => advisory["identifiers"].last["value"],
-            "cve_identifiers" => advisory["identifiers"].last["value"],
-            "description" => advisory["description"]
-          }
-        end
-      end
     end
   end
 end
