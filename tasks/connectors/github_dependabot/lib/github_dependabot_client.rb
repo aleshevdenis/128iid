@@ -6,23 +6,52 @@ module Kenna
       class GithubDependabotClient
         class ApiError < StandardError; end
 
-        def initialize(organization_name, github_token)
+        def initialize(organization_name, github_token, page_size)
           @github_token = github_token
           @organization_name = organization_name
+          @page_size = page_size
           @endpoint = "https://api.github.com/graphql"
           @headers = { "content-type": "application/json", "Authorization": "Bearer #{github_token}" }
         end
 
-        def security_advisory_response
-          response = http_post(@endpoint, @headers, query(security_advisory_query, organization_name: @organization_name))
-          raise ApiError, "Unable to retrieve data from GitHub GraphQL API, please check credentials" unless response
+        def repositories(&block)
+          return to_enum(__method__) unless block
 
-          response_hash = JSON.parse(response)
-          raise ApiError, "Unable to retrieve data. GitHub GraphQL API returned the following errors:\n\n#{build_api_errors_string(response_hash['errors'])}" if response_hash["errors"]
+          end_cursor = nil
+          loop do
+            response = http_post(@endpoint, @headers, query(repositories_query, organization_name: @organization_name, end_cursor: end_cursor, page_size: @page_size))
+            raise ApiError, "Unable to retrieve data from GitHub GraphQL API, please check credentials" unless response
 
-          raise ApiError, "GitHub GraphQL API unrecognized response format." unless response_hash.dig("data", "repositoryOwner", "repositories", "nodes")
+            response_hash = JSON.parse(response)
+            raise ApiError, "Unable to retrieve data. GitHub GraphQL API returned the following errors:\n\n#{build_api_errors_string(response_hash['errors'])}" if response_hash["errors"]
 
-          response_hash["data"]["repositoryOwner"]["repositories"]["nodes"]
+            raise ApiError, "GitHub GraphQL API unrecognized response format." unless response_hash.dig("data", "repositoryOwner", "repositories", "nodes")
+
+            response_hash["data"]["repositoryOwner"]["repositories"]["nodes"].map { |node| node["name"] }.foreach(&block)
+            break unless response_hash["data"]["repositoryOwner"]["repositories"]["pageInfo"]["hasNextPage"]
+
+            end_cursor = response_hash["data"]["repositoryOwner"]["repositories"]["pageInfo"]["endCursor"]
+          end
+        end
+
+        def vulnerabilities(repo_name, &block)
+          return to_enum(__method__, repo_name) unless block
+
+          end_cursor = nil
+          loop do
+            response = http_post(@endpoint, @headers, query(vulnerabilities_query, repo_name: repo_name, repo_owner: @organization_name, end_cursor: end_cursor, page_size: @page_size))
+            raise ApiError, "Unable to retrieve data from GitHub GraphQL API, please check credentials" unless response
+
+            response_hash = JSON.parse(response)
+            raise ApiError, "Unable to retrieve data. GitHub GraphQL API returned the following errors:\n\n#{build_api_errors_string(response_hash['errors'])}" if response_hash["errors"]
+
+            raise ApiError, "GitHub GraphQL API unrecognized response format." unless response_hash.dig("data", "repository", "vulnerabilityAlerts", "nodes")
+
+            response_hash["data"]["repository"]["vulnerabilityAlerts"]["nodes"].map { |alert| alert["securityAdvisory"].merge("id" => alert["id"], "securityVulnerability" => alert["securityVulnerability"], "createdAt" => alert["createdAt"]) }.foreach(&block)
+            break unless response_hash["data"]["repository"]["vulnerabilityAlerts"]["pageInfo"]["hasNextPage"]
+
+            end_cursor = response_hash["data"]["repository"]["vulnerabilityAlerts"]["pageInfo"]["endCursor"]
+          end
         end
 
         private
@@ -32,15 +61,30 @@ module Kenna
           query.to_json
         end
 
-        def security_advisory_query
-          "query($organization_name: String!) {
-          repositoryOwner(login: $organization_name) {
-            repositories(orderBy: {field: UPDATED_AT, direction: DESC}, first: 50) {
-              nodes {
-              name
-                vulnerabilityAlerts(last: 50) {
+        def repositories_query
+          "query($organization_name: String!, $end_cursor: String, $page_size: Int!) {
+            repositoryOwner(login: $organization_name) {
+              repositories(first: $page_size, after: $end_cursor) {
+                nodes {
+                  name
+                }
+                totalCount
+                pageInfo {
+                  endCursor
+                  hasNextPage
+                }
+              }
+            }
+          }"
+        end
+
+        def vulnerabilities_query
+          "query($repo_name: String!, $repo_owner: String!, $end_cursor: String, $page_size: Int!) {
+          repository(name: $repo_name, owner: $repo_owner) {
+                vulnerabilityAlerts(first: $page_size, after: $end_cursor) {
                   nodes {
                     id
+                    createdAt
                     securityAdvisory {
                       description
                       cvss {
@@ -52,24 +96,26 @@ module Kenna
                         value
                       }
                       summary
-                      vulnerabilities(last: 50) {
-                        nodes {
-                          package {
-                            name
-                          }
-                          severity
-                          firstPatchedVersion {
-                            identifier
-                          }
-                        }
-                      }
                     }
+                    securityVulnerability {
+                      package {
+                        name
+                      }
+                      severity
+                      firstPatchedVersion {
+                        identifier
+                      }
+                      vulnerableVersionRange
+                    }
+                  }
+                  totalCount
+                  pageInfo {
+                    endCursor
+                    hasNextPage
                   }
                 }
               }
-            }
-          }
-        }"
+            }"
         end
 
         def build_api_errors_string(errors)
