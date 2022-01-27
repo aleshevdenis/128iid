@@ -29,6 +29,7 @@ module Kenna
 
         def extract_tags(vuln)
           tags = vuln["vulnerableAsset"]["tags"].map { |k, v| "#{k}:#{v}" }
+          tags << "WizAssetType:#{vuln['vulnerableAsset']['type']}" if vuln["vulnerableAsset"]["type"].present?
           tags << "Region:#{vuln['vulnerableAsset']['region']}" if vuln["vulnerableAsset"]["region"].present?
           tags << "CloudPlatform:#{vuln['vulnerableAsset']['cloudPlatform']}" if vuln["vulnerableAsset"]["cloudPlatform"].present?
         end
