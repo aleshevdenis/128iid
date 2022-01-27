@@ -25,6 +25,8 @@ module Kenna
             response_hash = JSON.parse(response)
             raise ApiError, "Unable to retrieve data. GitHub GraphQL API returned the following errors:\n\n#{build_api_errors_string(response_hash['errors'])}" if response_hash["errors"]
 
+            raise ApiError, "GitHub GraphQL API unrecognized owner. Check github_organization_name parameter is a valid user or organization." unless response_hash.dig("data", "repositoryOwner")
+
             raise ApiError, "GitHub GraphQL API unrecognized response format." unless response_hash.dig("data", "repositoryOwner", "repositories", "nodes")
 
             response_hash["data"]["repositoryOwner"]["repositories"]["nodes"].map { |node| node["name"] }.foreach(&block)
@@ -64,7 +66,7 @@ module Kenna
         def repositories_query
           "query($organization_name: String!, $end_cursor: String, $page_size: Int!) {
             repositoryOwner(login: $organization_name) {
-              repositories(first: $page_size, after: $end_cursor) {
+              repositories(first: $page_size, after: $end_cursor, affiliations: OWNER) {
                 nodes {
                   name
                 }

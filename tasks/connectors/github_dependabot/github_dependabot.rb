@@ -64,6 +64,7 @@ module Kenna
 
         kdi_batch_upload(@batch_size, @output_directory, "github_dependabot_kdi.json", @kenna_connector_id, @kenna_api_host, @kenna_api_key, @skip_autoclose, @retries, @kdi_version) do |batch|
           client.repositories.foreach do |repo_name|
+            print_good "Processing repository #{@github_organization_name}/#{repo_name}."
             client.vulnerabilities(repo_name).foreach do |alert|
               batch.append do
                 process_alert(repo_name, alert)
