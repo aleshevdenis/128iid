@@ -41,7 +41,7 @@ GEM
     httparty (0.20.0)
       mime-types (~> 3.0)
       multi_xml (>= 0.5.2)
-    i18n (1.8.11)
+    i18n (1.9.0)
       concurrent-ruby (~> 1.0)
     jaro_winkler (1.5.4)
     jmespath (1.4.0)
@@ -65,7 +65,7 @@ GEM
     nokogiri (1.12.5-x86_64-darwin)
       racc (~> 1.4)
     parallel (1.21.0)
-    parser (3.0.3.2)
+    parser (3.1.0.0)
       ast (~> 2.4.1)
     pry (0.14.1)
       coderay (~> 1.1)
@@ -76,7 +76,7 @@ GEM
     public_suffix (4.0.6)
     racc (1.6.0)
     rack (2.2.3)
-    rainbow (3.0.0)
+    rainbow (3.1.1)
     regexp_parser (2.2.0)
     rest-client (2.1.0)
       http-accept (>= 1.7.0, < 2.0)
@@ -99,28 +99,28 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.10.0)
     rspec-support (3.10.3)
-    rubocop (1.13.0)
+    rubocop (1.25.0)
       parallel (~> 1.10)
-      parser (>= 3.0.0.0)
+      parser (>= 3.1.0.0)
       rainbow (>= 2.2.2, < 4.0)
       regexp_parser (>= 1.8, < 3.0)
       rexml
-      rubocop-ast (>= 1.2.0, < 2.0)
+      rubocop-ast (>= 1.15.1, < 2.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 1.4.0, < 3.0)
-    rubocop-ast (1.15.0)
+    rubocop-ast (1.15.1)
       parser (>= 3.0.1.1)
-    rubocop-github (0.16.2)
-      rubocop (<= 1.13.0)
-      rubocop-performance (<= 1.11.0)
-      rubocop-rails (<= 2.7.1)
-    rubocop-performance (1.11.0)
+    rubocop-github (0.17.0)
+      rubocop
+      rubocop-performance
+      rubocop-rails
+    rubocop-performance (1.13.2)
       rubocop (>= 1.7.0, < 2.0)
       rubocop-ast (>= 0.4.0)
-    rubocop-rails (2.7.1)
+    rubocop-rails (2.13.2)
       activesupport (>= 4.2.0)
       rack (>= 1.1)
-      rubocop (>= 0.87.0)
+      rubocop (>= 1.7.0, < 2.0)
     ruby-progressbar (1.11.0)
     sanitize (6.0.0)
       crass (~> 1.0.2)
@@ -162,7 +162,7 @@ GEM
     webrick (1.7.0)
     yard (0.9.27)
       webrick (~> 1.7.0)
-    zeitwerk (2.5.1)
+    zeitwerk (2.5.3)
 
 PLATFORMS
   universal-darwin-21
@@ -181,8 +181,8 @@ DEPENDENCIES
   rest-client
   rexml (>= 3.2.5)
   rspec
-  rubocop (~> 1.13)
-  rubocop-github
+  rubocop (~> 1.25)
+  rubocop-github (~> 0.17)
   rubocop-performance
   rubocop-rails
   sanitize

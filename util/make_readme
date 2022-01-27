@@ -3,7 +3,7 @@
 
 require_relative "../lib/128iid"
 
-params = ARGV.map { |arg| arg.split("=") }.to_h
+params = ARGV.to_h { |arg| arg.split("=") }
 unless params.key?("task")
   puts "Usage: build_readme task=task_name"
   exit(1)

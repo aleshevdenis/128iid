@@ -302,7 +302,7 @@ module Kenna
       private
 
       def _kenna_api_request(method, resource, body = nil)
-        headers = { 'X-Risk-Token': @token.to_s }
+        headers = { "X-Risk-Token": @token.to_s }
         endpoint = "#{@base_url}/#{resource}"
         out = { method: method.to_s, resource: resource.to_s }
 

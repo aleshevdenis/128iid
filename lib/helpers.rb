@@ -83,13 +83,13 @@ module Kenna
       ### Helper to read a file consistently
       ###
       def read_input_file(filename)
-        output = File.open(filename, "r").read.delete!("\r")
+        output = File.read(filename).delete!("\r")
         output.sanitize_unicode
       end
 
       def print_readme(task_name)
         if File.exist?("#{$basedir}/tasks/#{task_name}/readme.md")
-          readme = File.open("#{$basedir}/tasks/#{task_name}/readme.md").read
+          readme = File.read("#{$basedir}/tasks/#{task_name}/readme.md")
           readme_header = "\n \n \n \n# ***********************************************\n"
           +readme_header << "#     Displaying readme.md for #{task_name} \n "
           +readme_header << "\n# ***********************************************\n"
