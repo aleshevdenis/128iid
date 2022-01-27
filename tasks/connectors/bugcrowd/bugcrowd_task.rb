@@ -159,7 +159,7 @@ module Kenna
         # 3. program must be present
         asset = {}
         url = issue["attributes"]["bug_url"]
-        external_id = issue["target"] && issue["target"]["name"] || issue["program"]["name"]
+        external_id = (issue["target"] && issue["target"]["name"]) || issue["program"]["name"]
 
         if url.nil? || url.empty? || !valid_uri?(url)
           print_error "Cannot build an asset locator. This should no happen. Review you data" if external_id.nil? || external_id.empty?

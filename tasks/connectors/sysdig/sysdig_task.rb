@@ -112,7 +112,7 @@ module Kenna
         end
 
         def build_severity_mappings(mappings)
-          mappings.split(",").map { |key_value| key_value.split(":") }.to_h.transform_values!(&:to_i)
+          mappings.split(",").to_h { |key_value| key_value.split(":") }.transform_values!(&:to_i)
         end
 
         def initialize_client
@@ -151,7 +151,7 @@ module Kenna
 
         # Kenna only knows vuln ids from CVE, CWE o WASC so wee need to get unknown definitions from Sysdig.
         def add_vuln_definitions(vulns)
-          non_standard_vuln_ids = vulns.map { |v| v["vuln"] }.reject { |id| id.match?(/CVE-.*|CWE-.*|WASC-.*/) }.uniq
+          non_standard_vuln_ids = vulns.map { |v| v["vuln"] }.grep_v(/CVE-.*|CWE-.*|WASC-.*/).uniq
           @client.vuln_definitions(non_standard_vuln_ids).foreach do |vuln_def|
             @vuln_definitions[vuln_def["name"]] = vuln_def
           end
