@@ -35,6 +35,7 @@ module Kenna
 
         def extract_tags(issue)
           tags = issue["entitySnapshot"]["tags"].map { |k, v| "#{k}:#{v}" }
+          tags << "WizEntityType:#{issue['entitySnapshot']['type']}" if issue["entitySnapshot"]["type"].present?
           tags << "Region:#{issue['entitySnapshot']['region']}" if issue["entitySnapshot"]["region"].present?
           tags << "CloudPlatform:#{issue['entitySnapshot']['cloudPlatform']}" if issue["entitySnapshot"]["cloudPlatform"].present?
         end
