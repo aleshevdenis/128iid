@@ -22,7 +22,7 @@ module Kenna
               { name: "checkmarx_sast_port",
                 type: "integer",
                 required: false,
-                default: nil,
+                default: 443,
                 description: "Your checkmarx_sast Console port, e.g. 8080" },
               { name: "checkmarx_sast_user",
                 type: "string",
