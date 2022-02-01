@@ -14,7 +14,7 @@ module Kenna
           @application = application
           @issue_severities = issue_severities
           @page_size = page_size
-          @days_back = days_back
+          @days_back = days_back unless days_back.zero?
           @verify_ssl = verify_ssl
           @headers = { "content-type": "application/json", "accept": "application/json" }
         end
