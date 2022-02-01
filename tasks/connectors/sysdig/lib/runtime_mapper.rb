@@ -8,8 +8,7 @@ module Kenna
       class RuntimeMapper < Mapper
         def extract_asset
           asset = {
-            "asset_type" => "container",
-            "container_id" => scan_data["hostId"],
+            "external_id" => scan_data["hostId"],
             "hostname" => scan_data["hostname"],
             "mac_address" => scan_data["macAddress"],
             "os" => scan_data["operatingSystem"],
