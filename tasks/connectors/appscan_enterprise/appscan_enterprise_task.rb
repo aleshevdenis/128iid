@@ -45,7 +45,7 @@ module Kenna
             { name: "appscan_days_back",
               type: "integer",
               required: false,
-              default: 0,
+              default: nil,
               description: "Get results n days back up to today. Get all history if not present." },
             { name: "appscan_page_size",
               type: "integer",
