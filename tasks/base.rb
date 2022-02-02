@@ -16,6 +16,42 @@ module Kenna
         Kenna::128iid::TasksManager.register(base)
       end
 
+      def self.initialize_options(opts)
+        metadata[:options].foreach do |opt|
+          opt_name = opt[:name].to_sym
+          opt_default = opt[:default]
+          opt_input_value = opts[opt_name]
+
+          # Set default arguments
+          print_good "Setting #{opt_name} to default value: #{opt_default}" unless opt_default.blank?
+          opts[opt_name] = opt_default unless opt_input_value
+          # set empty string to nil so it's a little easier to check for that
+          opts[opt_name] = nil if opts[opt_name].blank?
+          opt_value = opts[opt_name]
+
+          next unless opt_value
+
+          # Convert arguments to ruby types based on their type here
+          case opt[:type]
+          when "boolean"
+            converted_value = opt_value.to_s == "true"
+            print_good "Converting #{opt_name} with input value #{opt_input_value} to #{converted_value}." unless opt_input_value.to_s == converted_value.to_s
+            opts[opt_name] = converted_value
+          when "integer"
+            # Integer values <= 0 are considered nil by definition.
+            # Additionally, if an integer input value is 0 (converts to nil), then it should convert to its default value if present.
+            converted_value = (opt_value.to_i if opt_value.to_i.positive?) || (opt_default.to_i if opt_default.to_i.positive?)
+            print_good "Converting #{opt_name} with input value #{opt_input_value.inspect} to #{converted_value.inspect}." unless opt_input_value.to_s == converted_value.to_s
+            opts[opt_name] = converted_value
+          when "array"
+            converted_value = (opt_value || "").split(",").map(&:strip)
+            print_good "Converting #{opt_name} with input value #{opt_input_value} to #{converted_value.inspect}."
+            opts[opt_name] = converted_value
+          end
+        end
+        opts
+      end
+
       # all tasks must implement a run method and call super, so
       # this code should be run immediately upon entry into the task
       def run(opts)
@@ -57,41 +93,8 @@ module Kenna
           fail_task "Required options missing, cowardly refusing to continue!"
         end
 
-        self.class.metadata[:options].foreach do |opt|
-          opt_name = opt[:name].to_sym
-          opt_default = opt[:default]
-          opt_input_value = opts[opt_name]
-
-          # Set default arguments
-          print_good "Setting #{opt_name} to default value: #{opt_default}" unless opt_default.blank?
-          opts[opt_name] = opt_default unless opt_input_value
-          # set empty string to nil so it's a little easier to check for that
-          opts[opt_name] = nil if opts[opt_name].blank?
-          opt_value = opts[opt_name]
-
-          next unless opt_value
-
-          # Convert arguments to ruby types based on their type here
-          case opt[:type]
-          when "boolean"
-            converted_value = opt_value.to_s == "true"
-            print_good "Converting #{opt_name} with input value #{opt_input_value} to #{converted_value}." unless opt_input_value.to_s == converted_value.to_s
-            opts[opt_name] = converted_value
-          when "integer"
-            # Integer values <= 0 are considered nil by definition.
-            # Additionally, if an integer input value is 0 (converts to nil), then it should convert to its default value if present.
-            converted_value = (opt_value.to_i if opt_value.to_i.positive?) || (opt_default.to_i if opt_default.to_i.positive?)
-            print_good "Converting #{opt_name} with input value #{opt_input_value.inspect} to #{converted_value.inspect}." unless opt_input_value.to_s == converted_value.to_s
-            opts[opt_name] = converted_value
-          when "array"
-            converted_value = (opt_value || "").split(",").map(&:strip)
-            print_good "Converting #{opt_name} with input value #{opt_input_value} to #{converted_value.inspect}."
-            opts[opt_name] = converted_value
-          end
-        end
-
-        # if we made it here, we have the right arguments, and the right types!
-        @options = opts
+        # Initialize default values and perform string to Object conversions
+        @options = self.class.initialize_options(opts)
 
         # Save Task Name as a class variable for sending with API call in Client
         Kenna::Api::Client.task_name = opts[:task]
