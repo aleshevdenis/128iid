@@ -44,7 +44,7 @@ module Kenna
             print_good "Converting #{opt_name} with input value #{opt_input_value.inspect} to #{converted_value.inspect}." unless opt_input_value.to_s == converted_value.to_s
             opts[opt_name] = converted_value
           when "array"
-            converted_value = (opt_value || "").split(",").map(&:strip)
+            converted_value = opt_value.is_a?(Array) ? opt_value : (opt_value || "").split(",").map(&:strip)
             print_good "Converting #{opt_name} with input value #{opt_input_value} to #{converted_value.inspect}."
             opts[opt_name] = converted_value
           end
