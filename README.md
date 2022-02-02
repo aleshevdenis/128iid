@@ -32,6 +32,12 @@ In this case, the extend task:
 
     docker pull denistreshchev/128iid && docker run -it denistreshchev/128iid task=kenna_api_key_check kenna_api_key=$KENNA_API_KEY
 
+## Running on GitHub Actions
+
+You can execute the 128iid on GitHub Actions by utilizing the CI/CD minutes that are available to you.
+
+
+
 ## Building your own Image
 
 ---
