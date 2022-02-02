@@ -2,7 +2,7 @@
 
 require "rspec_helper"
 
-RSpec.specialize Kenna::128iid::WhitehatSentinel::ApiClient do
+RSpec.specialize Kenna::128iid::NTTSentinelDynamic::ApiClient do
   subject(:api_client) { specialized_class.new(api_key: "0xdeadbeef") }
 
   specialize "#vulns" do

@@ -2,7 +2,7 @@
 
 require "rspec_helper"
 
-RSpec.specialize Kenna::128iid::WhitehatSentinel::Mapper do
+RSpec.specialize Kenna::128iid::NTTSentinelDynamic::Mapper do
   let(:scoring_system) { :legacy }
 
   subject(:mapper) { specialized_class.new(scoring_system) }
@@ -21,7 +21,7 @@ RSpec.specialize Kenna::128iid::WhitehatSentinel::Mapper do
     subject(:finding_hash) { mapper.finding_hash(node) }
 
     it { is_expected.to include(scanner_identifier: node_id) }
-    it { is_expected.to include(scanner_type: "Whitehat Sentinel") }
+    it { is_expected.to include(scanner_type: "NTT Sentinel Dynamic") }
     it { is_expected.to include(created_at: found) }
     it { is_expected.to_not include(:last_fixed_on) }
     it { is_expected.to_not include(:closed_at) }
