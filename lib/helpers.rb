@@ -63,7 +63,7 @@ module Kenna
       end
 
       def print_debug(message = nil)
-        puts "[D] (#{timestamp_long}) #{message}" if @options && @options[:debug]
+        puts "[D] (#{timestamp_long}) #{message}" if debug?
       end
 
       def print_task_help(task_name)

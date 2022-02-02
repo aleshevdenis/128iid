@@ -10,6 +10,7 @@ require "csv"
 require "json-write-stream"
 
 # initialize monkeypatches & other hacks
+require_relative "../initialize/object"
 require_relative "../initialize/hash"
 require_relative "../initialize/string"
 

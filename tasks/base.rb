@@ -19,6 +19,9 @@ module Kenna
       # all tasks must implement a run method and call super, so
       # this code should be run immediately upon entry into the task
       def run(opts)
+        # Set global debug. You can get its value calling debug? method globally
+        $128iid_debug = opts[:debug] == "true"
+
         # pull our required arguments out
         required_options = self.class.metadata[:options].select { |a| a[:required] }
 

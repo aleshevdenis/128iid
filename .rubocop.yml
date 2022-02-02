@@ -387,3 +387,4 @@ Style/GlobalVars:
     - $date_format_in 
     - $map_locator
     - $skip_autoclose
+    - $128iid_debug
