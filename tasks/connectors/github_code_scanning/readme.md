@@ -23,7 +23,7 @@ Recommended Steps:
 1. Click on the name of the connector to get the connector id
 1. Run the task with GitHub Keys and Kenna Key/connector id
 
-
+**IMPORTANT: severity and security_severity are POST processing filters and will not reduce the amount of data pulled from GitHub
 
 Complete list of Options:
 
@@ -41,3 +41,10 @@ Complete list of Options:
 | kenna_api_host           | false    | Kenna API Hostname if not US shared                                                                                                                                        | api.denist.dev       |
 | kenna_connector_id       | false    | If set, we'll try to upload to this connector                                                                                                                              | n/a                         |
 | output_directory         | false    | If set, will write a file upon completion. Path is relative to #{$basedir}                                                                                                 | output/github_code_scanning |
+
+
+## Example Command Line:
+
+For extracting Image vulnerability data:
+
+    task=github_code_scanning github_token=ghp_xxx kenna_connector_id=15xxxx github_username=myuser kenna_api_host=api.denist.dev kenna_api_key=xxx github_repositories=myuser/WebGoat,myuser/juice-shop
