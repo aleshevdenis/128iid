@@ -26,7 +26,7 @@ module Kenna
 
         # do things here
         print_good "Morpheus believes he is the one."
-        print_debug "Everybody falls the first time" if @options[:debug]
+        print_debug "Everybody falls the first time"
         print_error "I'm just the messenger..."
         print "I know kung fu."
       end
