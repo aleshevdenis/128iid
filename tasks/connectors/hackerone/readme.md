@@ -29,7 +29,7 @@ Complete list of Options:
 | --- | --- | --- | --- |
 | hackerone_api_user | true | API username | n/a |
 | hackerone_api_password | true | API password | n/a |
-| hackerone_api_program | true | "Hackerone API program" | n/a |
+| hackerone_program_name | true | "Hackerone API program" | n/a |
 | page_size | false | The number of objects per page (currently limited from 1 to 100). | 100 |
 | severity | false | A list of severities (comma separated) severity='low,new...'. | nil |
 | state | false | A list of states (comma separated) state='new,triaged...' or state=not-resolved. | nil |
