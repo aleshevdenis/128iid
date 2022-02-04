@@ -42,12 +42,12 @@ module Kenna
                 type: "string",
                 required: false,
                 default: nil,
-                description: "A list of [error, warning, note] (comma separated). Only secret scanning alerts with one of these severities are imported. If not present, ALL will be imported." },
+                description: "A list of [error, warning, note] (comma separated). Only code scanning alerts with one of these severities are imported. If not present, ALL will be imported." },
               { name: "github_security_severity",
                 type: "string",
                 required: false,
                 default: nil,
-                description: "A list of [critical, high, medium, or low] (comma separated). Only secret scanning alerts with one of these severities are imported. If not present, ALL will be imported." },
+                description: "A list of [critical, high, medium, or low] (comma separated). Only code scanning alerts with one of these severities are imported. If not present, ALL will be imported." },
               { name: "github_page_size",
                 type: "integer",
                 required: false,
@@ -133,8 +133,6 @@ module Kenna
         def validate_options
           fail_task("Invalid task parameters. Maximum page size is 100.") if @page_size > 100
           fail_task("Invalid task parameters. state must be one of [open, fixed, dismissed] if present.") unless [nil, "open", "fixed", "dismissed"].include?(@state)
-          fail_task("Invalid task parameters. severity must be one of [error, warning, note] if present.") unless [nil, "error", "warning", "note"].include?(@state)
-          fail_task("Invalid task parameters. security_severity must be one of [critical, high, medium, or low] if present.") unless [nil, "critical", "high", "medium", "low"].include?(@state)
         end
 
         def import_alerts(repo, endpoint)
@@ -187,9 +185,9 @@ module Kenna
         def extract_definition(alert)
           definition = {
             "name" => vuln_def_name(alert),
-            "description" => alert.dig("rule", "description"),
             "scanner_type" => SCANNER_TYPE
           }
+          definition["description"] = alert.dig("rule", "description") unless alert.dig("rule", "description").empty?
           definition.compact
         end
 
@@ -208,7 +206,7 @@ module Kenna
         end
 
         def vuln_def_name(alert)
-          alert.fetch("rule").fetch("id")
+          alert.fetch("rule").fetch("name")
         end
 
         def triage_value(triage)
