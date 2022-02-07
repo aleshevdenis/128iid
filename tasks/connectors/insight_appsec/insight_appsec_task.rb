@@ -1,29 +1,28 @@
 # frozen_string_literal: true
 
 require_relative "lib/insight_appsec_client"
-require "pry"
 
 module Kenna
   module 128iid
     class InsightAppSecTask < Kenna::128iid::BaseTask
-      SCANNER_TYPE = "Insight AppSec"
+      SCANNER_TYPE = "InsightAppSec"
 
       def self.metadata
         {
           id: "insight_appsec",
-          name: "Insight AppSec",
+          name: "InsightAppSec",
           description: "Pulls assets and vulnerabilities from insight_appsec",
           options: [
             { name: "insight_appsec_api_key",
               type: "api_key",
               required: true,
               default: nil,
-              description: "Insight AppSec User API key" },
+              description: "InsightAppSec User API key" },
             { name: "insight_appsec_app_name",
               type: "string",
               required: true,
               default: nil,
-              description: "Insight AppSec application name" },
+              description: "InsightAppSec application name" },
             { name: "insight_appsec_issue_severity",
               type: "string",
               required: false,
@@ -67,19 +66,21 @@ module Kenna
         super
         initialize_options
         initialize_client
+
+        app = client.receive_app
+        counter = 0
         offset = 0
 
         kdi_batch_upload(@batch_size, @output_directory, "insight_appsec_submissions_report_#{offset}.json",
                          @kenna_connector_id, @kenna_api_host, @kenna_api_key, @skip_autoclose, @retries,
                          @kdi_version) do |batch|
           loop do
-            app       = client.get_app_by_name(@app_name)
-            app_vulns = client.get_vulns(app["id"], submissions_filter, offset, @page_size)
+            app_vulns = client.receive_vulns(app["id"], submissions_filter, offset, @page_size)
 
             break unless app_vulns["data"].any?
 
             app_vulns["data"].foreach do |issue|
-              vuln_module = client.get_module(issue["variances"].first["module"]["id"])
+              vuln_module = client.receive_module(issue["variances"].first["module"]["id"])
               asset       = extract_asset(app, issue)
               finding     = extract_finding(issue, vuln_module)
               definition  = extract_definition(vuln_module)
@@ -88,9 +89,10 @@ module Kenna
                 create_kdi_asset_finding(asset, finding)
                 create_kdi_vuln_def(definition)
               end
+              counter += 1
             end
 
-            print_good("Processed #{offset} submissions.")
+            print_good("Processed #{counter} submissions.")
             offset += 1
           end
         end
@@ -105,7 +107,7 @@ module Kenna
       attr_reader :client
 
       def initialize_client
-        @client = Kenna::128iid::InsightAppSec::Client.new(@api_key)
+        @client = Kenna::128iid::InsightAppSec::Client.new(@api_key, @app_name)
       end
 
       def initialize_options
@@ -131,7 +133,7 @@ module Kenna
         asset = {}
 
         asset[:application] = app["name"]
-        asset[:url]         = issue.dig("root_cause", "url")
+        asset[:url]         = issue.fetch("root_cause")["url"]
 
         asset.compact
       end
@@ -139,7 +141,7 @@ module Kenna
       def extract_finding(issue, vuln_module)
         {
           "scanner_type" => SCANNER_TYPE,
-          "scanner_identifier" => issue["id"],
+          "scanner_identifier" => issue.fetch("id"),
           "vuln_def_name" => vuln_module["name"],
           "triage_state" => map_state_to_triage_state(issue["status"]),
           "severity" => SEVERITY_VALUE[issue["severity"]],
@@ -162,7 +164,7 @@ module Kenna
         fields["Vector string"]               = issue["vector_string"]
         fields["Vulnerability score"]         = issue["vulnerability_score"]
         fields["Insight ui url"]              = issue["insight_ui_url"]
-        fields["Links"]                       = issue["links"]
+        fields["Links"]                       = issue["links"].first["href"]
         fields.compact
       end
 
