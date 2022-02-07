@@ -74,11 +74,7 @@ module Kenna
         kdi_batch_upload(@batch_size, @output_directory, "insight_appsec_submissions_report_#{offset}.json",
                          @kenna_connector_id, @kenna_api_host, @kenna_api_key, @skip_autoclose, @retries,
                          @kdi_version) do |batch|
-          loop do
-            app_vulns = client.receive_vulns(app["id"], submissions_filter, offset, @page_size)
-
-            break unless app_vulns["data"].any?
-
+          client.fetch_vulns(app["id"], submissions_filter, offset, @page_size) do |app_vulns|
             app_vulns["data"].foreach do |issue|
               vuln_module = client.receive_module(issue["variances"].first["module"]["id"])
               asset       = extract_asset(app, issue)
@@ -91,10 +87,9 @@ module Kenna
               end
               counter += 1
             end
-
-            print_good("Processed #{counter} submissions.")
-            offset += 1
           end
+
+          print_good("Processed #{counter} submissions.")
         end
 
         kdi_connector_kickoff(@kenna_connector_id, @kenna_api_host, @kenna_api_key)
@@ -133,7 +128,7 @@ module Kenna
         asset = {}
 
         asset[:application] = app["name"]
-        asset[:url]         = issue.fetch("root_cause")["url"]
+        asset[:url]         = issue["root_cause"]["url"]
 
         asset.compact
       end

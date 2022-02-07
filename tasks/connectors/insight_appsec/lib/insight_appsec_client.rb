@@ -38,6 +38,17 @@ module Kenna
           JSON.parse(response)
         end
 
+        def fetch_vulns(app_id, filters, page_number, page_size)
+          loop do
+            app_vulns = receive_vulns(app_id, filters, page_number, page_size)
+
+            break unless app_vulns["data"].any?
+
+            yield app_vulns
+            page_number += 1
+          end
+        end
+
         private
 
         def receive_query(app_id, filters)
