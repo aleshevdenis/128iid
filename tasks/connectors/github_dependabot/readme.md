@@ -31,4 +31,4 @@ Start here to learn how to get personal access token:
 
 For extracting Image vulnerability data:
 
-   128iid:latest task=github_dependabot github_access_token=v954xxxxxx kenna_connector_id=15xxxx kenna_api_host=api.sandbox.us.denist.dev kenna_api_key=xxx
+   128iid:latest task=github_dependabot github_access_token=v954xxxxxx kenna_connector_id=15xxxx kenna_api_host=api.denist.dev kenna_api_key=xxx

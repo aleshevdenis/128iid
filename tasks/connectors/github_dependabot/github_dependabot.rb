@@ -17,7 +17,7 @@ module Kenna
               required: true,
               default: nil,
               description: "github organization name" },
-            { name: "github_access_token",
+            { name: "github_token",
               type: "api_key",
               required: true,
               default: nil,
@@ -80,7 +80,7 @@ module Kenna
 
       def initialize_options
         @github_organization_name = @options[:github_organization_name]
-        @github_access_token = @options[:github_access_token]
+        @github_access_token = @options[:github_token]
         @page_size = @options[:github_page_size].to_i
         @batch_size = @options[:kenna_batch_size].to_i
         @output_directory = @options[:output_directory]
