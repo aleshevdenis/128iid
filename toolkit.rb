@@ -1,4 +1,4 @@
-#!/usr/bin/ruby
+#!/usr/bin/env ruby
 # frozen_string_literal: true
 
 # all dependencies
@@ -21,9 +21,10 @@ args_array.foreach do |arg|
   arg_value = name_value[1]
 
   # handle a request for just "help" as a special case
-  # if arg_name = "help"
-  #  print_usage && exit
-  # end
+  if arg_name == :help
+    print_usage
+    exit
+  end
 
   # make sure all arguments were well formed
   unless arg_name && arg_value
@@ -47,7 +48,8 @@ end
 # handle task request
 case args[:task]
 when "help"
-  print_usage && exit
+  print_usage
+  exit
 else
   task_class = Kenna::128iid::TasksManager.find_by_id((args[:task]).to_s.strip)
   if task_class
