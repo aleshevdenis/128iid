@@ -4,7 +4,7 @@ This 128iid brings in data from github graphql (https://api.github.com/graphql)
 
 To run this task you need the following information from Github account: 
 
-1. Github personal access token
+1. Github personal access token. If GitHub 2FA is enabled, the access token MUST be configured for SSO.
 
 
 Start here to learn how to get personal access token:
