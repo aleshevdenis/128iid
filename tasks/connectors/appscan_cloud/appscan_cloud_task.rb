@@ -67,7 +67,7 @@ module Kenna
         @applications.foreach do |application_id|
           pos = 0
           loop do
-            issues_data = @client.issues(application_id, pos, @page_size, @severities)
+            issues_data = @client.issues(app_identifier(application_id), pos, @page_size, @severities)
             issues = issues_data.fetch("Items")
             total_issues = issues_data.fetch("Count")
             issues.foreach do |issue|
@@ -126,8 +126,8 @@ module Kenna
 
       def extract_asset(issue)
         {
-          # TO-DO "url" => issue["Location"],
-          # TO-DO "file" => issue["SourceFile"],
+          "url" => issue["Location"], # or ["Source"]
+          "file" => issue["SourceFile"],
           "external_id" => issue["Location"],
           "application" => application_names.fetch(issue["ApplicationId"])
         }.compact
@@ -148,9 +148,9 @@ module Kenna
 
       def extract_definition(issue)
         {
+          # "solution" => nil,                                                     # TO-DO
           "name" => issue["IssueTypeId"],
-          "description" => issue["IssueType"], # TO-DO
-          "solution" => nil, # TO-DO
+          "description" => issue["IssueType"],
           "scanner_type" => "AppScanCloud",
           "cve_identifiers" => issue["Cve"],
           "cwe_identifiers" => ("CWE-#{issue['Cwe']}" if issue["Cwe"])
@@ -236,6 +236,10 @@ module Kenna
           apps = @client.applications
           apps.foreach_with_object({}) { |elem, index| index[elem["Id"]] = elem["Name"] }
         end
+      end
+
+      def app_identifier(application_id)
+        @client.applications.detect { |value| value["Name"] = application_id }.fetch("Id")
       end
     end
   end
