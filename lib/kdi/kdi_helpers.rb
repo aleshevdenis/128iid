@@ -225,7 +225,7 @@ module Kenna
 
       def kdi_connector_kickoff(kenna_connector_id, kenna_api_host, kenna_api_key)
         ### Finish by uploading if we're all configured
-        return if @uploaded_files.nil?
+        return if @uploaded_files.blank?
 
         print_good "Attempting to run to Kenna Connector at #{@kenna_api_host}"
         run_files_on_kenna_connector(kenna_connector_id, kenna_api_host, kenna_api_key, @uploaded_files)

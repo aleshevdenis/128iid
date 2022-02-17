@@ -1,0 +1,19 @@
+type,name,cwe or source,score or vuln_regx,port,description,remediation
+definition,Accessible UPNP server,,90,,A upn Device is accessible from the internet at this location,"This service should not be visible on the public Internet. Please refer to the details provided and remediate these vulnerabilities as soon as possible by closing the affected ports, removing the instance if it is no longer needed, or implementing appropriate security controls to limit visibility. "
+match,Accessible UPNP server,SecurityScorecard,/^upnp_accessible$/i,,,
+definition,Application Content Security Policy Issue,CWE-358,40,,A problem with this application's content security policy was identified.,"Update the certificate to include the hostname, or ensure that clients access the host from the matched hostname."
+match,Application Content Security Policy Issue,SecurityScorecard,/^csp_no_policy$/i,,,
+match,Application Content Security Policy Issue,SecurityScorecard,/^csp_unsafe_policy$/i,,,
+match,Application Content Security Policy Issue,SecurityScorecard,/^csp_too_broad$/i,,,
+definition,Application Security Headers,CWE-693,30,,One or more application security headers was detected missing or misconfigured.,Correct the header configuration on the server.
+match,Application Security Headers,SecurityScorecard,/^x_xss_protection_incorrect$/i,,,
+match,Application Security Headers,SecurityScorecard,/^x_content_type_options_incorrect$/i,,,
+match,Application Security Headers,SecurityScorecard,/^x_frame_options_incorrect$/i,,,
+match,Application Security Headers,Bitsight,/^web_application_headers$/i,,,
+match,Application Security Headers,Bitsight,/^application_security$/i,,,
+definition,Application Software Version Detected,CWE-693,20,,Software details were detected.,Verify this is not leaking sensitive data:.
+match,Application Software Version Detected,Bitsight,/^server_software$/i,,,
+definition,Accessible HTTP server Detected,,90,,This is a test for HTTP,This is a test for HTTP
+match,Accessible HTTP server Detected,TestScanner,/^http_accessible_server_detected$/i,"80,8080",,
+definition,Accessible HTTPS server Detected,,90,,This is a test for HTTPS,This is a test for HTTPS
+match,Accessible HTTPS server Detected,TestScanner,/^http_accessible_server_detected$/i,"443,8443",,

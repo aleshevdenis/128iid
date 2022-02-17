@@ -18,7 +18,7 @@ module Kenna
           description: "This task connects to the Expanse API and pulls results into the Kenna Platform.",
           options: [
             { name: "extend_api_key",
-              type: "string",
+              type: "api_key",
               required: true,
               default: "",
               description: "This is the Expanse key used to query the API." },
@@ -95,7 +95,7 @@ module Kenna
 
         # create an api client
         @client = Kenna::128iid::ExpanseIssues::ExpanseIssuesClient.new(extend_api_key)
-        @fm = Kenna::128iid::Data::Mapping::DigiFootprintFindingMapper.new(@output_dir, @options[:input_directory], @options[:df_mapping_filename])
+        @fm = Kenna::128iid::Data::Mapping::DigiFootprintFindingMapper.new(@output_dir, @options[:input_directory], @options[:df_mapping_filename]) if @options[:input_directory] && @options[:df_mapping_filename]
 
         @assets = []
         @vuln_defs = []

@@ -42,5 +42,4 @@ $basedir = File.expand_path("..", File.dirname(__FILE__)).to_s
 ### END GLOBALS
 
 # Tasks
-Dir.glob("#{$basedir}/tasks/*/*.rb").foreach { |file| require_relative(file) }
-Dir.glob("#{$basedir}/tasks/*/*/*.rb").foreach { |file| require_relative(file) }
+Dir.glob("#{$basedir}/tasks/**/*.rb").foreach { |file| require_relative(file) }

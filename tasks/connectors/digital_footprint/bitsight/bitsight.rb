@@ -14,7 +14,7 @@ module Kenna
           description: "This task connects to the Bitsight API and pulls results into the Kenna Platform.",
           options: [
             { name: "bitsight_api_key",
-              type: "string",
+              type: "api_key",
               required: true,
               default: "",
               description: "This is the Bitsight key used to query the API." },
@@ -87,7 +87,7 @@ module Kenna
         else
           fail_task "Unable to proceed, invalid key for Bitsight?"
         end
-        fm = Kenna::128iid::Data::Mapping::DigiFootprintFindingMapper.new(@output_dir, @options[:input_directory], @options[:df_mapping_filename])
+        fm = Kenna::128iid::Data::Mapping::DigiFootprintFindingMapper.new(@output_dir, @options[:input_directory], @options[:df_mapping_filename]) if @options[:input_directory] && @options[:df_mapping_filename]
         bitsight_findings_and_create_kdi(bitsight_create_benign_findings, benign_finding_grades, company_guids, fm, @options[:bitsight_lookback])
 
         ### Write KDI format

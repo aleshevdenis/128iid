@@ -24,7 +24,7 @@ module Kenna
           description: "This task connects to the Security Scorecard API and pulls results into the Kenna Platform.",
           options: [
             { name: "ssc_api_key",
-              type: "string",
+              type: "api_key",
               required: true,
               default: "",
               description: "This is the Security Scorecard key used to query the API." },
@@ -137,7 +137,7 @@ module Kenna
         issue_type = issue["type"]
 
         # handle patching cadence differently, these will have CVEs
-        if issue_type =~ /patching_cadence/ || issue_type =~ /service_vuln/
+        if issue_type.include?("patching_cadence") || issue_type.include?("service_vuln")
 
           vuln_attributes = {
             "scanner_identifier" => issue["vulnerability_id"] || issue["cve"],
@@ -178,7 +178,7 @@ module Kenna
           ###
 
           # fm = Kenna::128iid::Data::Mapping::DigiFootprintFindingMapper
-          vuln_def_attributes = @fm.get_canonical_vuln_details("SecurityScorecard", temp_vuln_def_attributes)
+          vuln_def_attributes = @fm.present? ? @fm.get_canonical_vuln_details("SecurityScorecard", temp_vuln_def_attributes, port) : extract_vuln_def(issue)
 
           vuln_attributes = {
             "scanner_identifier" => issue_type,
@@ -203,6 +203,21 @@ module Kenna
         [vuln_attributes, vuln_def_attributes]
       end
 
+      def extract_vuln_def(issue)
+        score = map_ssc_to_kdi_severity(issue["issue_type_severity"] || issue["severity"])
+        {
+          name: issue["type"],
+          scanner_score: score,
+          override_score: score * 10,
+          description: issue["type"].humanize,
+          scanner_type: "SecurityScorecard"
+        }.compact.stringify_keys
+      end
+
+      def map_ssc_to_kdi_severity(severity)
+        { "low" => 3, "medium" => 6, "high" => 10 }.fetch(severity, 0)
+      end
+
       def run(options)
         super
 
@@ -215,7 +230,7 @@ module Kenna
         ssc_portfolio_ids = @options[:ssc_portfolio_ids]&.split(",")
         @output_dir = "#{$basedir}/#{@options[:output_directory]}"
         issue_types = nil # all
-        @fm = Kenna::128iid::Data::Mapping::DigiFootprintFindingMapper.new(@output_dir, @options[:input_directory], @options[:df_mapping_filename])
+        @fm = Kenna::128iid::Data::Mapping::DigiFootprintFindingMapper.new(@output_dir, @options[:input_directory], @options[:df_mapping_filename]) if @options[:input_directory] && @options[:df_mapping_filename]
 
         client = Kenna::128iid::Ssc::Client.new(ssc_api_key)
 

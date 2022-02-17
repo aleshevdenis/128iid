@@ -211,7 +211,7 @@ module Kenna
 
         # get our mapped vuln
         # fm = Kenna::128iid::Data::Mapping::DigiFootprintFindingMapper.new(@output_dir, @options[:input_directory], @options[:df_mapping_filename])
-        cvd = dfm.get_canonical_vuln_details("Bitsight", vd)
+        cvd = dfm.present? ? dfm.get_canonical_vuln_details("Bitsight", vd, port_number) : extract_vuln_def(finding, scanner_identifier, "Bitsight")
         details = "Full Finding Record\n\n#{JSON.pretty_generate(finding)}"
         details = "Solutions\n\n#{JSON.pretty_generate(finding['details']['remediations'])}\n\n#{details}" if finding.key?("details") && finding["details"].key?("remediations")
         # then create foreach vuln for this asset
@@ -240,6 +240,15 @@ module Kenna
         ###
         cvd.tap { |hs| hs.delete("scanner_identifier") }
         create_kdi_vuln_def(cvd)
+      end
+
+      def extract_vuln_def(finding, name, scanner_type)
+        remediation = finding["details"]["remediations"].first
+        { name: name,
+          scanner_type: scanner_type,
+          source: scanner_type,
+          description: ("#{remediation['message']}\n#{remediation['help_text']}" if remediation),
+          solution: (remediation["remediation_tip"] if remediation) }.compact.stringify_keys
       end
     end
   end

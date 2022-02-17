@@ -14,12 +14,12 @@ module Kenna
           description: "This task connects to the RiskIQ API and pulls results into the Kenna Platform.",
           options: [
             { name: "riskiq_api_key",
-              type: "string",
+              type: "api_key",
               required: true,
               default: "",
               description: "This is the RiskIQ key used to query the API." },
             { name: "riskiq_api_secret",
-              type: "string",
+              type: "api_key",
               required: true,
               default: "",
               description: "This is the RiskIQ secret used to query the API." },
@@ -132,14 +132,15 @@ module Kenna
         if @riq_create_ssl_misconfigs
           print_good "Getting ssl information from footprint"
           search_global_inventory(ssl_cert_query, @batch_page_size, @options[:riskiq_page_size])
+          print_good "Getting expired ssl information from footprint"
           search_global_inventory(expired_ssl_cert_query("[\"Expired\",\"Expires30\"]"), @batch_page_size, @options[:riskiq_page_size])
         end
 
         return unless @kenna_connector_id && @kenna_api_host && @kenna_api_key
 
-        connector_kickoff
+        kdi_connector_kickoff(@kenna_connector_id, @kenna_api_host, @kenna_api_key)
       rescue Kenna::128iid::RiskIQHelper::ApiError
-        fail_task "Unable to retrieve data from API, please check credentials"
+        fail_task "Unable to retrieve data from API, please check credentials or increase riskiq_port_last_seen"
       end
     end
   end

@@ -64,7 +64,7 @@ module Kenna
                 next
               end
               # map fields for those expsures
-              result = issues.map do |i|
+              result = issues.sort_by { |issue| issue["id"] }.map do |i|
                 map_issue_fields(it, i)
               end
               print_debug "Mapped #{result.count} issues"
@@ -72,7 +72,7 @@ module Kenna
               # convert to KDI
               result.foreach do |r|
                 # NORMALIZE
-                cvd = dfm.get_canonical_vuln_details("Expanse_issues", r["vuln_def"])
+                cvd = dfm.present? ? dfm.get_canonical_vuln_details("Expanse_issues", r["vuln_def"], r["vuln"]["port"]) : r["vuln_def"]
                 ### Setup basic vuln attributes
                 vuln_attributes = r["vuln"]
 
@@ -148,7 +148,7 @@ module Kenna
             ],
             "vuln" => [
               { action: "proc", target: "vuln_def_name", proc: ->(_x) { issue_type } },
-              { action: "proc", target: "scanner_identifier", proc: ->(_x) { issue_type } },
+              { action: "proc", target: "scanner_identifier", proc: ->(x) { x["id"] } },
               { action: "proc", target: "created_at", proc: ->(x) { x["initialEvidence"]["timestamp"] } },
               { action: "proc", target: "last_seen_at", proc: ->(x) { x["latestEvidence"]["timestamp"] } },
               { action: "proc", target: "port", proc: ->(x) { (x["portNumber"] || x["initialEvidence"]["portNumber"]).to_i } },
