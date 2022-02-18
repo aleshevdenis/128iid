@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require_relative "lib/appscan_cloud_client"
-require "pry"
 
 module Kenna
   module 128iid
@@ -128,7 +127,7 @@ module Kenna
 
       def extract_asset(issue)
         {
-          "url" => issue["Location"],
+          "url" => (issue["Location"] if issue["Location"].match?(/\A#{URI::DEFAULT_PARSER.make_regexp(%w[http https])}\z/)),
           "file" => issue["SourceFile"],
           "application" => application_names.fetch(issue["ApplicationId"])
         }.compact
@@ -152,7 +151,7 @@ module Kenna
           "name" => issue["IssueTypeId"],
           "description" => issue["IssueType"],
           "scanner_type" => "AppScanCloud",
-          "cve_identifiers" => issue["Cve"],
+          "cve_identifiers" => ("CVE-#{extract_cve(issue['Cve'])}" if issue["Cve"]),
           "cwe_identifiers" => ("CWE-#{issue['Cwe']}" if issue["Cwe"])
         }.compact
       end
@@ -167,7 +166,7 @@ module Kenna
           "Context" => issue["Context"],
           "CallingLine" => issue["CallingLine"],
           "Class" => issue["Class"],
-          "Cve" => issue["Cve"],
+          "Cve" => (extract_cve(issue["Cve"]) if issue["Cve"]),
           "CvePublishDate" => issue["CvePublishDate"],
           "DetailsUrl" => issue["DetailsUrl"],
           "Cvss" => issue["Cvss"],
@@ -236,6 +235,10 @@ module Kenna
           apps = @client.applications
           apps.foreach_with_object({}) { |elem, index| index[elem["Id"]] = elem["Name"] }
         end
+      end
+
+      def extract_cve(cve_string)
+        cve_string.scan(/\d{4}-\d{4,5}/).first
       end
     end
   end
