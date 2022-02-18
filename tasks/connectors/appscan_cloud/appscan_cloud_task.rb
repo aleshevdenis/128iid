@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative "lib/appscan_cloud_client"
+
 module Kenna
   module 128iid
     class AppScanCloudTask < Kenna::128iid::BaseTask
@@ -126,9 +127,8 @@ module Kenna
 
       def extract_asset(issue)
         {
-          # TO-DO "url" => issue["Location"],
-          # TO-DO "file" => issue["SourceFile"],
-          "external_id" => issue["Location"],
+          "url" => (issue["Location"] if issue["Location"].match?(/\A#{URI::DEFAULT_PARSER.make_regexp(%w[http https])}\z/)),
+          "file" => issue["SourceFile"],
           "application" => application_names.fetch(issue["ApplicationId"])
         }.compact
       end
@@ -149,10 +149,9 @@ module Kenna
       def extract_definition(issue)
         {
           "name" => issue["IssueTypeId"],
-          "description" => issue["IssueType"], # TO-DO
-          "solution" => nil, # TO-DO
+          "description" => issue["IssueType"],
           "scanner_type" => "AppScanCloud",
-          "cve_identifiers" => issue["Cve"],
+          "cve_identifiers" => (extract_cve(issue["Cve"]) if issue["Cve"]),
           "cwe_identifiers" => ("CWE-#{issue['Cwe']}" if issue["Cwe"])
         }.compact
       end
@@ -167,7 +166,7 @@ module Kenna
           "Context" => issue["Context"],
           "CallingLine" => issue["CallingLine"],
           "Class" => issue["Class"],
-          "Cve" => issue["Cve"],
+          "Cve" => (extract_cve(issue["Cve"]) if issue["Cve"]),
           "CvePublishDate" => issue["CvePublishDate"],
           "DetailsUrl" => issue["DetailsUrl"],
           "Cvss" => issue["Cvss"],
@@ -236,6 +235,10 @@ module Kenna
           apps = @client.applications
           apps.foreach_with_object({}) { |elem, index| index[elem["Id"]] = elem["Name"] }
         end
+      end
+
+      def extract_cve(cve_string)
+        cve_string.scan(/CVE-\d{4}-\d{4,5}/).first
       end
     end
   end
