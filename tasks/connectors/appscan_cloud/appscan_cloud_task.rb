@@ -151,7 +151,7 @@ module Kenna
           "name" => issue["IssueTypeId"],
           "description" => issue["IssueType"],
           "scanner_type" => "AppScanCloud",
-          "cve_identifiers" => ("CVE-#{extract_cve(issue['Cve'])}" if issue["Cve"]),
+          "cve_identifiers" => (extract_cve(issue["Cve"]) if issue["Cve"]),
           "cwe_identifiers" => ("CWE-#{issue['Cwe']}" if issue["Cwe"])
         }.compact
       end
@@ -238,7 +238,7 @@ module Kenna
       end
 
       def extract_cve(cve_string)
-        cve_string.scan(/\d{4}-\d{4,5}/).first
+        cve_string.scan(/CVE-\d{4}-\d{4,5}/).first
       end
     end
   end
