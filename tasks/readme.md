@@ -9,22 +9,41 @@
 
 | 3rd Party Product | Release Status | Maintained By |
 | --- | --- | --- |
+| Acunetix360 | - | - |
+| AppScan Cloud | - | - |
+| AppScan Enterprise | - | - |
 | aqua | Beta | Aqua |
 | aws_guardduty | Pre-Release/Beta | Kenna |
 | aws_inspector | Pre-Release/Beta | Kenna |
 | bitsight | Released | Kenna |
+| Bugcrowd | - | - |
+| Burp | - | - |
+| CarbonBlack | - | - |
+| Checkmarx Sast | - | - |
+| Checkmarx SCA | - | - |
 | cobaltio | Beta | Cobalt.io |
 | contrast | Beta | Contrast Security |
+| DigitalDefense | - | - |
 | edgescan | Pre-Release/Beta | edgescan |
 | extend | Pre-Released/Beta | Kenna |
 | extend_issues | Released | Kenna | 
+| GitHub Code Scanning | - | - |
+| GitHub Dependabot | - | - |
+| HackerOne | - | - |
+| InsightAppSec | - | - |
+| JFrog Xray | - | - |
+| Lacework | - | - |
 | ms_defender_atp | Released | Kenna and [MS Defender ATP](https://securitycenter.windows.com/) |
 | ms_defender_tvm | Pre-Released/Beta | Kenna and [MS Defender TVM](https://securitycenter.windows.com/) |
 | netsparker | Beta | Kenna |
 | nozomi | Released | Kenna and [Nozomi](https://www.nozominetworks.com/) |
+| Ntt Sentinel Dynamic | - | - |
+| QualysWAS | - | - |
 | riskiq | Released | Kenna |
 | security_scorecard | Released | Kenna |
 | snyk | Released| Kenna and [Snyk](https://snyk.io/) |
 | snyk_findings | Pre-Release | Kenna and [Snyk](https://snyk.io/) |
 | veracode_asset_vulns | Released | Kenna |
 | veracode_findings | Released | Kenna |
+| WhiteSource | - | - |
+| Wiz | - | - |
