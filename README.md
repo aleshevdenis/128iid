@@ -141,31 +141,7 @@ Configuring A Volume With Podman:
 
 ---
 
-These are the current tasks available:
-
-- aqua: This task pulls assets and vulnerabilities from Aqua and translates them into KDI JSON which is consumed by the Kenna platform
-- aws_guardduty: This task pulls results from AWS GuardDuty API and translates them into KDI JSON
-- aws_inspector: This task pulls results from AWS inspector API and translates them into KDI JSON
-- bitsight: This task connects to the Bitsight API and pulls results into the Kenna Platform.
-- cobaltio: This task connects to the Cobalt.io API and pulls findings into the Kenna Platform.
-- contrast: This task connects to the Contrast Security API and pulls results into the Kenna Platform.
-- csv2kdi: This task converts a csv formatted file to the Kenna JSON & optionally pulls results into Kenna
-- edgescan: Pulls assets and vulnerabilitiies from Edgescan
-- extend: This task connects to the Expanse API and pulls results into the Kenna Platform.
-- generator: This task generates some demo data in KDI format
-- kenna_api_key_check: This task simply verifies a Kenna API token vs a given host
-- ms_defender_atp: Pulls assets and vulnerabilities from Microsoft Defenders ATP
-- nozomi: Pulls assets and vulnerabilities/issues from Nozomi Networks
-- riskiq: This task connects to the RiskIQ API and pulls results into the Kenna Platform.
-- security_scorecard: This task connects to the Security Scorecard API and pulls results into the Kenna Platform.
-- snyk: Pulls assets and vulnerabilities from Snyk
-- lacework: Pulls assets and vulnerabilities from Lacework
-- upload_file: This task uploads a file to a specified connector
-- user_role_sync: This task creates users and assigns them to roles via the API
-- veracode_asset_vulns: This task pulls data from the Veracode API for the Asset and Vulns model of Kenna AppSec.
-- veracode_findings: This task pulls data from the Veracode API for the Findings model of Kenna AppSec.
-- qualys_was: This task pulls data from the Qualys Was API and pushes results into the Kenna Platform. 
-- github_dependabot: This task pulls data from the github for all repositories vulnerabilities using graphql and pushes results into the Kenna Platform.
+To see the current tasks available please visit the Tasks Library [here](https://github.com/denistreshchev/128iid/tree/main/tasks/readme.md)
 
 ## Advanced Usage
 
@@ -179,6 +155,7 @@ If you need to use a proxy with this container the suggested implementation is t
 ---
 
 You are free to make changes to this project by making your local copy without any problems
+
 
 
 
