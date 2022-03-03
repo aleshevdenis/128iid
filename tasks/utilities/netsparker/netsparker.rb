@@ -5,8 +5,8 @@ module Kenna
     class DeprecatedNetsparker < Kenna::128iid::BaseTask
       def self.metadata
         {
-          id: "netsparker",
-          name: "Netsparker",
+          id: "netsparker_old",
+          name: "Netsparker Old",
           maintainers: %w[dbro jcran],
           references: [
             "https://www.netsparkercloud.com/docs/index#!/Websites/Websites_List"
