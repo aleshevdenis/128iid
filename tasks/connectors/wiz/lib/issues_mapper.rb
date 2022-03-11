@@ -28,13 +28,13 @@ module Kenna
         def extract_asset(issue)
           {
             "external_id" => extract_external_id(issue),
-            "owner" => issue["entitySnapshot"]["subscriptionId"],
+            "owner" => issue["entitySnapshot"]["subscriptionExternalId"] || issue["entitySnapshot"]["subscriptionId"],
             "tags" => extract_tags(issue)
           }.compact
         end
 
         def extract_tags(issue)
-          tags = issue["entitySnapshot"]["tags"].map { |k, v| "#{k}:#{v}" }
+          tags = (issue["entitySnapshot"]["tags"] || []).map { |k, v| "#{k}:#{v}" }
           tags << "WizEntityType:#{issue['entitySnapshot']['type']}" if issue["entitySnapshot"]["type"].present?
           tags << "Region:#{issue['entitySnapshot']['region']}" if issue["entitySnapshot"]["region"].present?
           tags << "CloudPlatform:#{issue['entitySnapshot']['cloudPlatform']}" if issue["entitySnapshot"]["cloudPlatform"].present?
