@@ -132,7 +132,7 @@ module Kenna
 
       def submissions_filter
         {
-          include_duplicated: @options[:include_duplicated],
+          include_duplicated: @options[:include_duplicated].nil? ? false : @options[:include_duplicated],
           severity: @options[:severity],
           state: @options[:state],
           source: @options[:source],
