@@ -12,55 +12,55 @@ module Kenna
             verify_ssl: verify_ssl
           )
         rescue RestClient::TooManyRequests => e
-          puts "Exception! #{e}"
+          log_exception(e)
           retries ||= 0
           if retries < max_retries
             retries += 1
             sleep(15)
-            puts "Retrying!"
+            print "Retrying!"
             retry
           end
         rescue RestClient::UnprocessableEntity => e
-          puts "Exception! #{e}"
+          log_exception(e)
         rescue RestClient::BadRequest => e
-          puts "Exception! #{e}"
+          log_exception(e)
         rescue RestClient::InternalServerError => e
           retries ||= 0
           if retries < max_retries
             retries += 1
             sleep(15)
-            puts "Retrying!"
+            print "Retrying!"
             retry
           end
-          puts "Exception! #{e}"
+          log_exception(e)
         rescue RestClient::ServerBrokeConnection => e
-          puts "Exception! #{e}"
+          log_exception(e)
         rescue RestClient::ExceptionWithResponse => e
-          puts "Exception! #{e}"
+          log_exception(e)
           retries ||= 0
           if retries < max_retries
             retries += 1
-            puts "Retrying!"
+            print "Retrying!"
             sleep(15)
             retry
           end
         rescue RestClient::NotFound => e
-          puts "Exception! #{e}"
+          log_exception(e)
         rescue RestClient::Exception => e
-          puts "Exception! #{e}"
+          log_exception(e)
           retries ||= 0
           if retries < max_retries
             retries += 1
             sleep(15)
-            puts "Retrying!"
+            print "Retrying!"
             retry
           end
         rescue Errno::ECONNREFUSED => e
-          puts "Exception! #{e}"
+          log_exception(e)
           retries ||= 0
           if retries < max_retries
             retries += 1
-            puts "Retrying!"
+            print "Retrying!"
             sleep(15)
             retry
           end
@@ -75,58 +75,71 @@ module Kenna
             verify_ssl: verify_ssl
           )
         rescue RestClient::TooManyRequests => e
-          puts "Exception! #{e}"
+          log_exception(e)
           retries ||= 0
           if retries < max_retries
             retries += 1
-            puts "Retrying!"
+            print "Retrying!"
             sleep(15)
             retry
           end
         rescue RestClient::UnprocessableEntity => e
-          puts "Exception! #{e}"
+          log_exception(e)
         rescue RestClient::BadRequest => e
-          puts "Exception! #{e}"
+          log_exception(e)
         rescue RestClient::InternalServerError => e
-          puts "Exception! #{e}"
+          log_exception(e)
           retries ||= 0
           if retries < max_retries
             retries += 1
-            puts "Retrying!"
+            print "Retrying!"
             sleep(15)
             retry
           end
         rescue RestClient::ServerBrokeConnection => e
-          puts "Exception! #{e}"
+          log_exception(e)
         rescue RestClient::ExceptionWithResponse => e
-          puts "Exception! #{e}"
+          log_exception(e)
           retries ||= 0
           if retries < max_retries
             retries += 1
-            puts "Retrying!"
+            print "Retrying!"
             sleep(15)
             retry
           end
         rescue RestClient::NotFound => e
-          puts "Exception! #{e}"
+          log_exception(e)
         rescue RestClient::Exception => e
-          puts "Exception! #{e}"
+          log_exception(e)
           retries ||= 0
           if retries < max_retries
             retries += 1
-            puts "Retrying!"
+            print "Retrying!"
             sleep(15)
             retry
           end
         rescue Errno::ECONNREFUSED => e
-          puts "Exception! #{e}"
+          log_exception(e)
           retries ||= 0
           if retries < max_retries
             retries += 1
-            puts "Retrying!"
+            print "Retrying!"
             sleep(15)
             retry
           end
+        end
+
+        def log_exception(error)
+          print_error "Exception! #{error}"
+          return unless log_request?
+
+          print_debug "#{error.response.request.method.upcase}: #{error.response.request.url}"
+          print_debug "Request Payload: #{error.response.request.payload}"
+          print_debug "Server Response: #{error.response.body}"
+        end
+
+        def log_request?
+          debug? && running_local?
         end
       end
     end

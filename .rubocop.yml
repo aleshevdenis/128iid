@@ -331,7 +331,7 @@ Style/StringLiterals:
   EnforcedStyle: double_quotes
 
 Layout/SpaceAroundMethodCallOperator:
-  Enabled: true  
+  Enabled: true
 
 Lint/RaiseException:
   Enabled: true
@@ -383,8 +383,9 @@ Style/GlobalVars:
     - $basedir
     - $mapping_array
     - $assets
-    - $vuln_defs 
-    - $date_format_in 
+    - $vuln_defs
+    - $date_format_in
     - $map_locator
     - $skip_autoclose
     - $128iid_debug
+    - $128iid_running_local

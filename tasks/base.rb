@@ -57,6 +57,7 @@ module Kenna
       def run(opts)
         # Set global debug. You can get its value calling debug? method globally
         $128iid_debug = opts[:debug] == "true"
+        $128iid_running_local = !running_hosted?
 
         # pull our required arguments out
         required_options = self.class.metadata[:options].select { |a| a[:required] }
@@ -110,7 +111,24 @@ module Kenna
 
         print_good ""
         print_good "Launching the #{self.class.metadata[:name]} task!"
+        print_good "128iid running hosted" if running_hosted?
         print_good ""
+      end
+
+      private
+
+      def running_hosted?
+        @running_hosted ||= aws_host_info.present?
+      end
+
+      def aws_host_info
+        RestClient::Request.execute(
+          method: :get,
+          url: "http://169.254.169.254/latest/metadata/",
+          timeout: 1
+        )
+      rescue StandardError
+        nil
       end
     end
   end
