@@ -12,6 +12,11 @@ module Kenna
           "high" => 8,
           "critical" => 10
         }.freeze
+
+        def initialize(external_id_attr = "id")
+          super()
+          @external_id_attr = external_id_attr
+        end
       end
     end
   end

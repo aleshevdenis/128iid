@@ -15,7 +15,7 @@ module Kenna
 
         def extract_asset(vuln)
           asset = {
-            "external_id" => vuln["vulnerableAsset"]["providerUniqueId"],
+            "external_id" => extract_external_id(vuln),
             "owner" => vuln["vulnerableAsset"]["subscriptionExternalId"],
             "image_id" => (vuln["vulnerableAsset"]["imageId"] if vuln["vulnerableAsset"]["imageId"].present?),
             "hostname" => (vuln["vulnerableAsset"]["name"] if vuln["vulnerableAsset"]["type"] == "VIRTUAL_MACHINE"),
@@ -36,7 +36,7 @@ module Kenna
 
         def extract_vuln(vuln)
           vuln = {
-            "scanner_identifier" => vuln["vulnerableAsset"]["id"],
+            "scanner_identifier" => vuln["id"],
             "scanner_type" => SCANNER_TYPE,
             "vuln_def_name" => extract_vuln_def_name(vuln),
             "scanner_score" => SEVERITY_MAP[vuln["vendorSeverity"].downcase],
@@ -78,6 +78,14 @@ module Kenna
             "Vulnerable Asset" => vuln["vulnerableAsset"].except("tags", "cloudProviderURL")
           }.compact
           JSON.pretty_generate(details)
+        end
+
+        def extract_external_id(issue)
+          if issue["vulnerableAsset"][@external_id_attr].present?
+            issue["vulnerableAsset"][@external_id_attr]
+          else
+            issue["vulnerableAsset"]["id"]
+          end
         end
       end
     end

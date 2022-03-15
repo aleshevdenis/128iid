@@ -12,11 +12,6 @@ module Kenna
           "rejected" => "closed"
         }.freeze
 
-        def initialize(external_id_attr = "providerId")
-          super()
-          @external_id_attr = external_id_attr
-        end
-
         def name
           "Issue"
         end
@@ -42,7 +37,7 @@ module Kenna
 
         def extract_vuln(issue)
           vuln = {
-            "scanner_identifier" => issue["entitySnapshot"]["id"],
+            "scanner_identifier" => issue["id"],
             "scanner_type" => SCANNER_TYPE,
             "vuln_def_name" => extract_vuln_def_name(issue),
             "scanner_score" => SEVERITY_MAP[issue["severity"].downcase],
@@ -83,7 +78,7 @@ module Kenna
           if issue["entitySnapshot"][@external_id_attr].present?
             issue["entitySnapshot"][@external_id_attr]
           else
-            issue["entitySnapshot"]["providerId"]
+            issue["entitySnapshot"]["id"]
           end
         end
       end

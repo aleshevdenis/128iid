@@ -62,11 +62,16 @@ module Kenna
               required: false,
               default: "ALL",
               description: "What to import, ISSUES, VULNS or ALL" },
-            { name: "external_id_attr",
+            { name: "issues_external_id_attr",
               type: "string",
               required: false,
               default: nil,
               description: "For ISSUES, the entitySnapshot attribute used to map Kenna asset's external_id, for instance, `providerId` or `resourceGroupExternalId`. If not present or the value for the passed attribute is not present the provideId attribute value is used." },
+            { name: "vulns_external_id_attr",
+              type: "string",
+              required: false,
+              default: nil,
+              description: "For VULNS, the `vulnerableEntity` attribute used to map Kenna asset's external_id, for instance, `id`, `providerUniqueId` or `name`. If not present or the value for the passed attribute is not present the `id` attribute value is used." },
             { name: "kenna_api_key",
               type: "api_key",
               required: false,
@@ -113,6 +118,7 @@ module Kenna
       end
 
       def initialize_options
+        validate_options
         @client_id = @options[:wiz_client_id]
         @client_secret = @options[:wiz_client_secret]
         @auth_endpoint = @options[:wiz_auth_endpoint].start_with?("http") ? "#{@options[:wiz_auth_endpoint]}/oauth/token" : "https://#{@options[:wiz_auth_endpoint]}/oauth/token"
@@ -123,7 +129,8 @@ module Kenna
         @days_back = @options[:days_back].to_i if @options[:days_back].present?
         @page_size = @options[:wiz_page_size].to_i if @options[:wiz_page_size].present?
         @import_type = @options[:import_type].downcase
-        @external_id_attr = @options[:external_id_attr]
+        @issues_external_id_attr = @options[:issues_external_id_attr]
+        @vulns_external_id_attr = @options[:vulns_external_id_attr]
         @output_directory = @options[:output_directory]
         @kenna_api_host = @options[:kenna_api_host]
         @kenna_api_key = @options[:kenna_api_key]
@@ -132,6 +139,10 @@ module Kenna
         @skip_autoclose = false
         @retries = 3
         @kdi_version = 2
+      end
+
+      def validate_options
+        fail_task("`external_id_attr` option was renamed to `issues_external_id_attr`. Please update your task parameters.") if @options[:external_id_attr].present?
       end
 
       def extract_list(key, default = nil)
@@ -145,12 +156,12 @@ module Kenna
 
       def import_issues
         print_good "Issues import started."
-        import(client.paged_issues, Wiz::IssuesMapper.new(@external_id_attr))
+        import(client.paged_issues, Wiz::IssuesMapper.new(@issues_external_id_attr))
       end
 
       def import_vulns
         print_good "Vulns import started."
-        import(client.paged_vulns, Wiz::VulnsMapper.new)
+        import(client.paged_vulns, Wiz::VulnsMapper.new(@vulns_external_id_attr))
       end
 
       def import(pages, mapper)
