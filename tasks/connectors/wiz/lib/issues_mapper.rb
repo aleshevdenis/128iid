@@ -23,6 +23,7 @@ module Kenna
         def extract_asset(issue)
           {
             "external_id" => extract_external_id(issue),
+            "hostname" => (issue["entitySnapshot"]["name"] if issue.dig("entitySnapshot", "type") == "VIRTUAL_MACHINE"),
             "owner" => issue["entitySnapshot"]["subscriptionExternalId"] || issue["entitySnapshot"]["subscriptionId"],
             "tags" => extract_tags(issue)
           }.compact
@@ -30,7 +31,7 @@ module Kenna
 
         def extract_tags(issue)
           tags = (issue["entitySnapshot"]["tags"] || []).map { |k, v| "#{k}:#{v}" }
-          tags << "WizEntityType:#{issue['entitySnapshot']['type']}" if issue["entitySnapshot"]["type"].present?
+          tags << "WizAssetType:#{issue['entitySnapshot']['type']}" if issue["entitySnapshot"]["type"].present?
           tags << "Region:#{issue['entitySnapshot']['region']}" if issue["entitySnapshot"]["region"].present?
           tags << "CloudPlatform:#{issue['entitySnapshot']['cloudPlatform']}" if issue["entitySnapshot"]["cloudPlatform"].present?
         end
