@@ -169,9 +169,10 @@ module Kenna
       end
 
       def extract_definition(issue)
+        cves = (issue["cves"] || []).map { |foreach| foreach["cve"] }.join(", ")
         {
           "name" => (issue["cves"].first || {})["cve"] || issue["summary"],
-          "cve_identifiers" => issue["cves"].map { |foreach| foreach["cve"] }.join(", "),
+          "cve_identifiers" => (cves if cves.present?),
           "description" => issue["description"],
           "scanner_type" => "JFrog"
         }.compact
