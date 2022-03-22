@@ -375,7 +375,7 @@ module Kenna
         case status.upcase
         when "REPORTED", "SUSPICIOUS", "CONFIRMED"
           "open"
-        when "REMEDIATED", "FIXED", "NOT A PROBLEM"
+        when "REMEDIATED", "REMEDIATED - AUTO-VERIFIED", "FIXED", "NOT A PROBLEM"
           "closed"
         end
       end
@@ -388,7 +388,7 @@ module Kenna
           "in_progress"
         when "CONFIRMED"
           "triaged"
-        when "REMEDIATED", "FIXED"
+        when "REMEDIATED", "REMEDIATED - AUTO-VERIFIED", "FIXED"
           "resolved"
         when "NOT A PROBLEM"
           if sub_status.nil?
