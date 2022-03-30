@@ -18,7 +18,7 @@ module Kenna
             "external_id" => extract_external_id(vuln),
             "owner" => vuln["vulnerableAsset"]["subscriptionExternalId"],
             "image_id" => (vuln["vulnerableAsset"]["imageId"] if vuln["vulnerableAsset"]["imageId"].present?),
-            "hostname" => (vuln["vulnerableAsset"]["name"] if vuln["vulnerableAsset"]["type"] == "VIRTUAL_MACHINE"),
+            "hostname" => extract_hostname(vuln),
             "os" => (vuln["vulnerableAsset"]["operatingSystem"] if vuln["vulnerableAsset"]["type"] == "VIRTUAL_MACHINE"),
             "ip_address" => ((vuln["vulnerableAsset"]["ipAddresses"] || []).first if vuln["vulnerableAsset"]["type"] == "VIRTUAL_MACHINE"),
             "tags" => extract_tags(vuln)
@@ -80,11 +80,19 @@ module Kenna
           JSON.pretty_generate(details)
         end
 
-        def extract_external_id(issue)
-          if issue["vulnerableAsset"][@external_id_attr].present?
-            issue["vulnerableAsset"][@external_id_attr]
+        def extract_external_id(vuln)
+          if vuln["vulnerableAsset"][@external_id_attr].present?
+            vuln["vulnerableAsset"][@external_id_attr]
           else
-            issue["vulnerableAsset"]["id"]
+            vuln["vulnerableAsset"]["id"]
+          end
+        end
+
+        def extract_hostname(vuln)
+          if vuln["vulnerableAsset"][@hostname_attr].present?
+            vuln["vulnerableAsset"][@hostname_attr]
+          else
+            (vuln["vulnerableAsset"]["name"] if vuln["vulnerableAsset"]["type"] == "VIRTUAL_MACHINE")
           end
         end
       end

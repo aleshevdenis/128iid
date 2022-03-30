@@ -13,9 +13,10 @@ module Kenna
           "critical" => 10
         }.freeze
 
-        def initialize(external_id_attr = "id")
+        def initialize(external_id_attr = "id", hostname_attr = "name")
           super()
           @external_id_attr = external_id_attr
+          @hostname_attr = hostname_attr
         end
       end
     end

@@ -22,7 +22,9 @@ module Kenna
 
           next_page = nil
           loop do
-            response = api_request(query(issues_query, issues_params(next_page)))
+            # Only first page asks for totalCount for performance reasons
+            query = next_page.nil? ? issues_query : issues_query.gsub("totalCount", "")
+            response = api_request(query(query, issues_params(next_page)))
             yield(response["data"]["issues"])
             break unless response["data"]["issues"]["pageInfo"]["hasNextPage"]
 
@@ -35,7 +37,9 @@ module Kenna
 
           next_page = nil
           loop do
-            response = api_request(query(vulns_query, vulns_params(next_page)))
+            # Only first page asks for totalCount for performance reasons
+            query = next_page.nil? ? vulns_query : vulns_query.gsub("totalCount", "")
+            response = api_request(query(query, vulns_params(next_page)))
             yield(response["data"]["vulnerabilityFindings"])
             break unless response["data"]["vulnerabilityFindings"]["pageInfo"]["hasNextPage"]
 

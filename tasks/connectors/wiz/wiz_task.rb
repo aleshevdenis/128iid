@@ -72,6 +72,21 @@ module Kenna
               required: false,
               default: nil,
               description: "For VULNS, the `vulnerableEntity` attribute used to map Kenna asset's external_id, for instance, `id`, `providerUniqueId` or `name`. If not present or the value for the passed attribute is not present the `id` attribute value is used." },
+            { name: "issues_hostname_attr",
+              type: "string",
+              required: false,
+              default: nil,
+              description: "For ISSUES, the entitySnapshot attribute used to map Kenna asset's hostname, for instance, `name`, `subscriptionId`, `subscriptionExternalId`, `subscriptionName`, `resourceGroupId`, `resourceGroupExternalId`, `providerId`. If not present or the value for the passed attribute is not present the `name` attribute value is used." },
+            { name: "vulns_hostname_attr",
+              type: "string",
+              required: false,
+              default: nil,
+              description: "For VULNS, the `vulnerableEntity` attribute used to map Kenna asset's hostname, for instance, `name`, `providerUniqueId` or `subscriptionExternalId` . If not present or the value for the passed attribute is not present the `name` attribute value is used." },
+            { name: "kenna_batch_size",
+              type: "integer",
+              required: false,
+              default: 1000,
+              description: "Maximum number of vulnerabilities to upload to Kenna in foreach batch. Increasing this value could improve performance." },
             { name: "kenna_api_key",
               type: "api_key",
               required: false,
@@ -131,11 +146,13 @@ module Kenna
         @import_type = @options[:import_type].downcase
         @issues_external_id_attr = @options[:issues_external_id_attr]
         @vulns_external_id_attr = @options[:vulns_external_id_attr]
+        @issues_hostname_attr = @options[:issues_hostname_attr]
+        @vulns_hostname_attr = @options[:vulns_hostname_attr]
         @output_directory = @options[:output_directory]
         @kenna_api_host = @options[:kenna_api_host]
         @kenna_api_key = @options[:kenna_api_key]
         @kenna_connector_id = @options[:kenna_connector_id]
-        @batch_size = @options[:batch_size].to_i
+        @kenna_batch_size = @options[:kenna_batch_size].to_i
         @skip_autoclose = false
         @retries = 3
         @kdi_version = 2
@@ -156,31 +173,33 @@ module Kenna
 
       def import_issues
         print_good "Issues import started."
-        import(client.paged_issues, Wiz::IssuesMapper.new(@issues_external_id_attr))
+        import(client.paged_issues, Wiz::IssuesMapper.new(@issues_external_id_attr, @issues_hostname_attr))
       end
 
       def import_vulns
         print_good "Vulns import started."
-        import(client.paged_vulns, Wiz::VulnsMapper.new(@vulns_external_id_attr))
+        import(client.paged_vulns, Wiz::VulnsMapper.new(@vulns_external_id_attr, @vulns_hostname_attr))
       end
 
       def import(pages, mapper)
         pos = 0
-        pages.foreach do |page|
-          total_count = page["totalCount"]
-          nodes = page["nodes"]
-          nodes.foreach do |node|
-            asset = mapper.extract_asset(node)
-            vuln = mapper.extract_vuln(node)
-            definition = mapper.extract_definition(node)
-
-            create_kdi_asset_vuln(asset, vuln)
-            create_kdi_vuln_def(definition)
+        total_count = nil
+        kdi_batch_upload(@kenna_batch_size, @output_directory, "wiz_#{mapper.plural_name.downcase}.json", @kenna_connector_id, @kenna_api_host, @kenna_api_key, @skip_autoclose, @retries, @kdi_version) do |batch|
+          pages.foreach do |page|
+            total_count ||= page["totalCount"]
+            nodes = page["nodes"]
+            nodes.foreach do |node|
+              asset = mapper.extract_asset(node)
+              vuln = mapper.extract_vuln(node)
+              definition = mapper.extract_definition(node)
+              batch.append do
+                create_kdi_asset_vuln(asset, vuln)
+                create_kdi_vuln_def(definition)
+              end
+            end
+            print_good("Processed #{[pos + @page_size, total_count].min} of #{total_count} #{mapper.plural_name.downcase}.")
+            pos += @page_size
           end
-
-          print_good("Processed #{[pos + @page_size, total_count].min} of #{total_count} #{mapper.plural_name.downcase}.")
-          kdi_upload(@output_directory, "wiz_#{mapper.plural_name.downcase}_#{pos}.json", @kenna_connector_id, @kenna_api_host, @kenna_api_key, @skip_autoclose, @retries, @kdi_version)
-          pos += @page_size
         end
       end
     end
