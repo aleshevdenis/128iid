@@ -34,17 +34,17 @@ Run the NTT Sentinel task following the guidelines on the main [128iid help page
 
 ## Options
 
-| Name | Type | Required | Default | Description |
-| ---- | ---- | ---- | ---- |
-| sentinel_api_key |key| true | n/a | Sentinel Dynamic API key |
+| Name | Type | Required | Default | Description|
+| ---- | ---- | ---- | ---- | ---- | 
+| sentinel_api_key |key| true | n/a | Sentinel Dynamic API key|
 | sentinel_page_size | integer | false | 1000 | number of records to pull in foreach page from Sentinel Dynamic |
 | minimum_severity_level | integer | false | 1 | The minimum severity level of vulns to retrieve from Sentinel Dynamic |
 | sentinel_scoring_type | string | false | legacy | The scoring system to use from Sentinel Dynamic. Choices are legacy and advanced. |
-| kenna_batch_size | integer | false | Kenna post batch size |
-| kenna_api_key | api_key | false | Kenna API Key |
-| kenna_api_host | hostname | false | Kenna API Hostname |
-| kenna_connector_id | integer | false | If set, we'll try to upload to this connector |
-| output_directory | filename | false | Will alter default filename for output. Path is relative to #{$basedir} |
+| kenna_batch_size | integer | false | ---- | Kenna post batch size |
+| kenna_api_key | api_key | false | ----| Kenna API Key |
+| kenna_api_host | hostname | false | ---- | Kenna API Hostname |
+| kenna_connector_id | integer | false | ----| If set, we'll try to upload to this connector |
+| output_directory | filename | false | ---- | Will alter default filename for output. Path is relative to #{$basedir} |
 
 
 ## Example Command Line:
