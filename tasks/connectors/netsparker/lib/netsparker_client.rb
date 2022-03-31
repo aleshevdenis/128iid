@@ -23,23 +23,22 @@ module Kenna
           JSON.parse(response)
         end
 
-        def get_all_schedule_ids
+        def receive_all_schedule_ids
           page = 1
           schedule_ids = []
           loop do
             response = http_get(list_scheduled_url(page), @headers)
             scheduled_scan_result = JSON.parse(response)
-            schedule_ids.push(*scheduled_scan_result.fetch("List").map {|scan| scan.fetch('Id')}.uniq)
+            schedule_ids.push(*scheduled_scan_result.fetch("List").map { |scan| scan.fetch("Id") }.uniq)
             break if scheduled_scan_result["IsLastPage"]
 
             page += 1
           end
           schedule_ids.uniq
         rescue KeyError
-          print_error 'There are no scheduled scans'
+          print_error "There are no scheduled scans"
           exit 1
         end
-
 
         private
 

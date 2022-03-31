@@ -23,7 +23,7 @@ module Kenna
             { name: "netsparker_schedule_id",
               type: "string",
               required: false,
-              default: '*',
+              default: "*",
               description: "A list of Netsparker Schedule ID (comma separated), defaults to all the scheduled ids pulled from Netspark" },
             { name: "netsparker_issue_severity",
               type: "string",
@@ -66,7 +66,7 @@ module Kenna
 
         client = Kenna::128iid::Netsparker::NetsparkerClient.new(@api_user, @api_token)
 
-        @schedule_ids = client.get_all_schedule_ids if @schedule_ids == ['*']
+        @schedule_ids = client.receive_all_schedule_ids if @schedule_ids == ["*"]
 
         @schedule_ids.foreach do |schedule_id|
           response_data = client.get_last_scan_vulnerabilities(schedule_id)
