@@ -6,7 +6,7 @@ To run this task you need the following information from Netsparker:
 
 1. Netsparker api user
 2. Netsparker api token
-3. Schedule Id list
+3. Schedule Id list unless you want to run the connector with all scheduled ids
 
 ## Command Line
 
@@ -25,14 +25,14 @@ Recommended Steps:
 
 Complete list of Options:
 
-| Option | Required | Description | default |
-| --- | --- | --- | --- |
-| netsparker_api_user | true | Netsparker API user | n/a |
-| netsparker_api_token | true | Netsparker API token | n/a |
-| netsparker_schedule_id | true | A list of Netsparker Schedule ID (comma separated) | n/a |
-| netsparker_issue_severity | false | A list of [BestPractice, Information, Low, Medium, High, Critical] (comma separated) | [BestPractice, Information, Low, Medium, High, Critical] |
-| batch_size | false | Maximum number of issues to retrieve in batches | 500 |
-| kenna_api_key | false | Kenna API Key for use with connector option | n/a |
-| kenna_api_host | false | Kenna API Hostname if not US shared | api.denist.dev |
-| kenna_connector_id | false | If set, we'll try to upload to this connector | n/a |
-| output_directory | false | If set, will write a file upon completion. Path is relative to #{$basedir} | output/netsparker |
+| Option | Required | Description                                                                                                | default                                                  |
+| --- |----------|------------------------------------------------------------------------------------------------------------|----------------------------------------------------------|
+| netsparker_api_user | true     | Netsparker API user                                                                                        | n/a                                                      |
+| netsparker_api_token | true     | Netsparker API token                                                                                       | n/a                                                      |
+| netsparker_schedule_id | false    | A list of Netsparker Schedule ID (comma separated), defaults to all the scheduled ids pulled from Netspark | *                                                        |
+| netsparker_issue_severity | false    | A list of [BestPractice, Information, Low, Medium, High, Critical] (comma separated)                       | [BestPractice, Information, Low, Medium, High, Critical] |
+| batch_size | false    | Maximum number of issues to retrieve in batches                                                            | 500                                                      |
+| kenna_api_key | false    | Kenna API Key for use with connector option                                                                | n/a                                                      |
+| kenna_api_host | false    | Kenna API Hostname if not US shared                                                                        | api.denist.dev                                    |
+| kenna_connector_id | false    | If set, we'll try to upload to this connector                                                              | n/a                                                      |
+| output_directory | false    | If set, will write a file upon completion. Path is relative to #{$basedir}                                 | output/netsparker                                        |
