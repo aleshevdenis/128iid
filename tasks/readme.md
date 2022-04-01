@@ -24,20 +24,20 @@
 | [Checkmarx Sast](https://github.com/denistreshchev/128iid/blob/main/tasks/connectors/checkmarx_sast/README.md) | Pre-Release/Beta | Kenna |
 | [Checkmarx SCA](https://github.com/denistreshchev/128iid/blob/main/tasks/connectors/checkmarx_sca/readme.md) | Pre-Release/Beta | Kenna |
 | [Cobaltio](https://github.com/denistreshchev/128iid/blob/main/tasks/connectors/cobaltio/readme.md) | Pre-Release/Beta | Cobalt.io |
-| [Contrast](https://github.com/denistreshchev/128iid/blob/main/tasks/connectors/contrast/readme.md) | Pre-Release/Beta | Contrast Security |
+| [Contrast](https://github.com/denistreshchev/128iid/blob/main/tasks/connectors/contrast/readme.md) | Released | Contrast Security |
 | [DigitalDefense](https://github.com/denistreshchev/128iid/blob/main/tasks/connectors/digital_defense/readme.md) | Pre-Release/Beta | Kenna |
-| [Edgescan](https://github.com/denistreshchev/128iid/blob/main/tasks/connectors/edgescan/README.md) | Pre-Release/Beta | Edgescan |
+| [Edgescan](https://github.com/denistreshchev/128iid/blob/main/tasks/connectors/edgescan/README.md) | Released | Edgescan |
 | Expanse | Pre-Released/Beta | Kenna |
 | [Expanse_issues](https://github.com/denistreshchev/128iid/blob/main/tasks/connectors/digital_footprint/extend_issues/README.md) | Released | Kenna | 
 | [GitHub Code Scanning](https://github.com/denistreshchev/128iid/blob/main/tasks/connectors/github_code_scanning/readme.md) | Pre-Release/Beta | Kenna |
 | [GitHub Dependabot](https://github.com/denistreshchev/128iid/blob/main/tasks/connectors/github_dependabot/readme.md) | Released | Kenna |
 | [HackerOne](https://github.com/denistreshchev/128iid/blob/main/tasks/connectors/hackerone/readme.md) | Pre-Release/Beta | Kenna |
 | [InsightAppSec](https://github.com/denistreshchev/128iid/blob/main/tasks/connectors/insight_appsec/readme.md) | Pre-Release/Beta | Kenna |
-| [JFrog Xray](https://github.com/denistreshchev/128iid/blob/main/tasks/connectors/jfrog/readme.md) | Pre-Release/Beta | Kenna |
+| [JFrog Xray](https://github.com/denistreshchev/128iid/blob/main/tasks/connectors/jfrog/readme.md) | Released | Kenna |
 | [Lacework](https://github.com/denistreshchev/128iid/blob/main/tasks/connectors/lacework/readme.md) | Pre-Release/Beta | Kenna |
 | [MS_defender_atp](https://github.com/denistreshchev/128iid/blob/main/tasks/connectors/ms_defender_atp/readme.md) | Released | Kenna and [MS Defender ATP](https://securitycenter.windows.com/) |
-| [MS_defender_tvm](https://github.com/denistreshchev/128iid/blob/main/tasks/connectors/ms_defender_tvm/readme.md) | Pre-Released/Beta | Kenna and [MS Defender TVM](https://securitycenter.windows.com/) |
-| [Netsparker](https://github.com/denistreshchev/128iid/blob/main/tasks/connectors/netsparker/readme.md) | Pre-Release/Beta | Kenna |
+| [MS_defender_tvm](https://github.com/denistreshchev/128iid/blob/main/tasks/connectors/ms_defender_tvm/readme.md) | Released | Kenna and [MS Defender TVM](https://securitycenter.windows.com/) |
+| [Netsparker](https://github.com/denistreshchev/128iid/blob/main/tasks/connectors/netsparker/readme.md) | Released | Kenna |
 | [Nozomi](https://github.com/denistreshchev/128iid/blob/main/tasks/connectors/nozomi/ReadME.md) | Released | Kenna and [Nozomi](https://www.nozominetworks.com/) |
 | [NTT (WhiteHat) Sentinel Dynamic](https://github.com/denistreshchev/128iid/blob/main/tasks/connectors/ntt_sentinel_dynamic/README.md) | Pre-Release/Beta | Kenna |
 | [Ordr](https://github.com/denistreshchev/128iid/blob/main/tasks/connectors/ordr/readme.md) | Pre-Release/Beta | Kenna |
@@ -48,5 +48,5 @@
 | [SysDig](https://github.com/denistreshchev/128iid/blob/main/tasks/connectors/sysdig/readme.md) | Pre-Release/Beta | Kenna |
 | [Veracode_asset_vulns](https://github.com/denistreshchev/128iid/blob/main/tasks/connectors/veracode_asset_vulns/readme.md) | Released | Kenna |
 | [Veracode_findings](https://github.com/denistreshchev/128iid/blob/main/tasks/connectors/veracode_findings/readme.md) | Released | Kenna |
-| [WhiteSource](https://github.com/denistreshchev/128iid/blob/main/tasks/connectors/whitesource/readme.md) | Pre-Release/Beta | Kenna |
+| [WhiteSource](https://github.com/denistreshchev/128iid/blob/main/tasks/connectors/whitesource/readme.md) | Released | Kenna |
 | [Wiz](https://github.com/denistreshchev/128iid/tree/main/tasks/connectors/wiz) | Released | Kenna |
