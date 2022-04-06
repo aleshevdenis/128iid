@@ -150,6 +150,13 @@ To see the current tasks available please visit the Tasks Library [here](https:/
 Proxy:
 If you need to use a proxy with this container the suggested implementation is to use the built-in [Docker](https://docs.docker.com/network/proxy/) or [Podman](https://access.redhat.com/solutions/3939131) proxy support.
 
+## Help us become better
+
+---
+
+When you find an error, please create a GitHub issue with a detailed description of the error. Our team will solve it as
+soon as possible. [Instructions for creating an issue.](https://docs.github.com/en/issues/tracking-your-work-with-issues/creating-an-issue)
+
 ## Development
 
 ---
