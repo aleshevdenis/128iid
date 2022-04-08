@@ -157,6 +157,8 @@ If you need to use a proxy with this container the suggested implementation is t
 When you find an error, please create a GitHub issue with a detailed description of the error. Our team will solve it as
 soon as possible. [Instructions for creating an issue.](https://docs.github.com/en/issues/tracking-your-work-with-issues/creating-an-issue)
 
+Please send all 128iid feature requests to denistreshchev@gmail.com
+
 ## Development
 
 ---
