@@ -62,18 +62,21 @@ module Kenna
           device_vulnerabilities = {}
           from = 0
 
+          device_ids = devices.map { |device| device["id"] }.compact
+          return device_vulnerabilities if device_ids.empty?
+
           loop do
             response_dict = make_http_get_request do
               headers = {
                 "Authorization": get_access_token,
                 "params": {
-                  "device_ids": devices.map { |device| device["id"] }.join(","),
+                  "device_ids": device_ids.join(","),
                   "from": from,
                   "length": VULN_BATCH_SIZE
                 }
               }
 
-              RestClient::Request.execute(method: :get,url: endpoint,headers: headers)
+              RestClient::Request.execute(method: :get, url: endpoint, headers: headers)
             end
 
             break if response_dict.nil?
@@ -123,6 +126,7 @@ module Kenna
         rescue RestClient::UnprocessableEntity, RestClient::BadRequest, RestClient::NotFound, RestClient::ServerBrokeConnection => e
           log_exception(e)
         rescue RestClient::InternalServerError, RestClient::ExceptionWithResponse, RestClient::Exception, Errno::ECONNREFUSED => e
+          log_exception(e)
           retries ||= 0
           if retries < max_retries
             retries += 1
@@ -130,7 +134,6 @@ module Kenna
             print "Retrying!"
             retry
           end
-          log_exception(e)
         rescue JSON::ParserError => e
           log_exception(e)
         end
