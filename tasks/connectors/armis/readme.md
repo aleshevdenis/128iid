@@ -27,7 +27,7 @@ Complete list of Options:
 | armis_instance | true | Armis instance hostname, e.g. "integration-xyz"  | n/a |
 | armis_api_secret_token | true | Armis Secret Key | n/a |
 | batch_size | false | Maximum number of devices to retrieve in single batch | 500 |
-| armis_aql_query | true | Armis Query Language. `timeFrame` option is not supported. Must escape query string in command line script, e.g. \\"in:devices\\". | "in:devices" |
+| armis_aql_query | true | Armis Query Language. `timeFrame` option is not supported in provided aql string. Must escape query string in command line script, e.g. \\"in:devices\\". | "in:devices" |
 | armis_backfill_duration | false | Armis Backfill Duration (In Days): Number of days to look back. In case `enable_checkpoint` is `true` and checkpoint file exists, this option will have no effect. | 15 |
 | enable_checkpoint | false | Enable Checkpoint Feature for Scheduling | true |
 | checkpoint_directory | false | If set, will write a file upon completion. Path is relative to #{$basedir} | output/armis/checkpoint |
