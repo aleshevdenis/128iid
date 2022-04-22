@@ -10,11 +10,11 @@ module Kenna
         SEARCH_ENDPOINT = "/api/v1/search/"
         ACCESS_TOKEN_ENDPOINT = "/api/v1/access_token/"
 
-        FIELDS = "id,ipAddress,macAddress,type,tags,operatingSystem,operatingSystemVersion,riskLevel,manufacturer,name,category,model"
+        FIELDS = "id,ipAddress,macAddress,type,tags,operatingSystem,operatingSystemVersion,riskLevel,manufacturer,name,category,model,lastSeen"
 
         VULN_BATCH_SIZE = 1000
         DEVICES_SLICE_SIZE = 200
-        SECONDS_IN_A_DAY = 84600
+        SECONDS_IN_A_DAY = 84_600
 
         def initialize(armis_instance, secret_token)
           @base_path = "https://#{armis_instance}.armis.com"
@@ -38,7 +38,8 @@ module Kenna
                 "aql": aql + " timeFrame:\"#{time_diff_in_seconds} seconds\"",
                 "from": from,
                 "length": length,
-                "fields": FIELDS
+                "fields": FIELDS,
+                "orderBy": "lastSeen"
               }
             }
 

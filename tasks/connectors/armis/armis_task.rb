@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative "lib/armis_client"
+require "pry"
 
 module Kenna
   module 128iid
@@ -11,6 +12,7 @@ module Kenna
       SCANNER_SCORE_HASH = {
         "Confirmed" => 10,
         "High" => 8,
+        "Medium" => 5,
         "Low" => 3
       }.freeze
 
@@ -81,50 +83,41 @@ module Kenna
         client = Kenna::128iid::Armis::Client.new(@armis_api_host, @armis_api_secret_token)
 
         from = 0
-        from_date = File.exist?(@checkpoint_file_path) && @enable_checkpoint ? read_checkpoint : (Time.current - @armis_backfill_duration.to_i.days).utc
+        from_date = read_checkpoint || @armis_backfill_duration.to_i.days.ago.utc
         to_date = Time.now.utc
+        last_seen_at = from_date
 
-        print_good "Fetching devices since #{from_date}"
+        print_good "Fetching devices since #{from_date} till #{to_date}"
+
         loop do
           devices = client.get_devices(
-            aql: @armis_aql_query, from: from, length: @batch_size, from_date: from_date, to_date: to_date)
+            aql: @armis_aql_query, from: from, length: @batch_size, from_date: from_date, to_date: to_date
+          )
           break if devices.empty?
 
           batch_vulnerabilities = client.get_batch_vulns(devices)
-
-          print_good "Processing (#{devices.length}) Devices"
-          devices.foreach do |device|
-            asset = extract_asset(device)
-            find_or_create_kdi_asset(asset)
-
-            vulnerabilities = batch_vulnerabilities[device["id"]] || []
-            vulnerabilities.foreach do |vuln|
-              asset_vuln = extract_vuln(vuln)
-              vuln_def = extract_vuln_def(vuln)
-              create_kdi_asset_vuln(asset, asset_vuln)
-              create_kdi_vuln_def(vuln_def)
-            end
-          end
-
+          process_devices_and_vulns(devices, batch_vulnerabilities)
           kdi_upload(
             "#{$basedir}/#{@options[:output_directory]}", "devices_#{from + 1}_#{from + @batch_size}.json",
             @kenna_connector_id, @kenna_api_host, @kenna_api_key, @skip_autoclose, @retries, @kdi_version
           )
+          last_seen_at = Time.parse(devices.first.fetch("lastSeen")).utc
 
           from += @batch_size
+        rescue StandardError => e
+          print_error e.message
+          break
         end
-        print_good "KDI Upload Started..."
-        kdi_connector_kickoff(@kenna_connector_id, @kenna_api_host, @kenna_api_key)
 
-        print_good "KDI Upload Complete!"
-        write_checkpoint(to_date) if @enable_checkpoint
-      rescue StandardError => e
-        print_error e.message
+        kdi_connector_kickoff(@kenna_connector_id, @kenna_api_host, @kenna_api_key)
+        write_checkpoint(last_seen_at) if @enable_checkpoint
       end
 
       private
 
       def read_checkpoint
+        return if !@enable_checkpoint || !File.exist?(@checkpoint_file_path)
+
         FileUtils.mkdir_p(@checkpoint_directory)
         Time.parse(File.read(@checkpoint_file_path))
       rescue ArgumentError, TypeError => e
@@ -140,18 +133,20 @@ module Kenna
       end
 
       def extract_asset(device)
-        tags = {
-          "manufacturer": device.fetch("manufacturer"),
-          "model": device.fetch("model"),
-          "name": device.fetch("name"),
-          "category": device.fetch("category"),
-          "type": device.fetch("type")
-        }.compact.map { |k, v| "#{k}:#{v}" }
+        tag_fields = {
+          "manufacturer": device["manufacturer"],
+          "model": device["model"],
+          "name": device["name"],
+          "category": device["category"],
+          "type": device["type"]
+        }.compact
+        tags = (device["tags"] || []) + tag_fields.map { |field, value| "#{field}:#{value}" }
+
         {
           "external_id" => device.fetch("id").to_s,
           "ip_address" => device.fetch("ipAddress"),
           "mac_address" => device.fetch("macAddress"),
-          "tags" => device.fetch("tags", []) + tags,
+          "tags" => tags,
           "os" => device.fetch("operatingSystem"),
           "os_version" => device.fetch("operatingSystemVersion"),
           "priority" => device.fetch("riskLevel")
@@ -176,6 +171,25 @@ module Kenna
           "name" => "#{SCANNER_TYPE} #{vuln.fetch('cveUid')}",
           "cve_identifiers" => vuln.fetch("cveUid")
         }.compact
+      end
+
+      def process_devices_and_vulns(devices, batch_vulnerabilities)
+        print_good "Processing (#{devices.length}) Devices"
+        devices.foreach do |device|
+          asset = extract_asset(device)
+          vulnerabilities = batch_vulnerabilities[device["id"]] || []
+
+          if vulnerabilities.present?
+            vulnerabilities.foreach do |vuln|
+              asset_vuln = extract_vuln(vuln)
+              vuln_def = extract_vuln_def(vuln)
+              create_kdi_asset_vuln(asset, asset_vuln)
+              create_kdi_vuln_def(vuln_def)
+            end
+          else
+            find_or_create_kdi_asset(asset)
+          end
+        end
       end
 
       def initialize_options
