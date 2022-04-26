@@ -25,7 +25,7 @@ module Kenna
             { name: "batch_size",
               type: "integer",
               required: false,
-              default: 500,
+              default: 1000,
               description: "Maximum number of devices to retrieve in single batch." },
             { name: "kenna_api_key",
               type: "api_key",
@@ -90,10 +90,11 @@ module Kenna
         print_good "Fetching devices since #{from_date} till #{to_date}"
 
         loop do
-          devices = client.get_devices(
+          devices_response = client.get_devices(
             aql: @armis_aql_query, from: from, length: @batch_size, from_date: from_date, to_date: to_date
           )
-          break if devices.empty?
+          devices = devices_response["results"]
+          break if devices.blank?
 
           batch_vulnerabilities = client.get_batch_vulns(devices)
           process_devices_and_vulns(devices, batch_vulnerabilities)
@@ -102,10 +103,10 @@ module Kenna
             @kenna_connector_id, @kenna_api_host, @kenna_api_key, @skip_autoclose, @retries, @kdi_version
           )
           last_seen_at = Time.parse(devices.first.fetch("lastSeen")).utc
-
-          from += @batch_size
+          from = devices_response["next"]
+          break if from.blank?
         rescue StandardError => e
-          print_error e.message
+          print_error "Something went wrong during task execution: #{e.message}"
           break
         end
 

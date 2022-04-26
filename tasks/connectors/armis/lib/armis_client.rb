@@ -19,6 +19,8 @@ module Kenna
         def initialize(armis_instance, secret_token)
           @base_path = "https://#{armis_instance}.armis.com"
           @secret_token = secret_token
+          @access_token = nil
+          @expiration_time = nil
         end
 
         def get_devices(aql:, from:, length:, from_date:, to_date: Time.now.utc)
@@ -35,7 +37,7 @@ module Kenna
             headers = {
               "Authorization": get_access_token,
               "params": {
-                "aql": aql + " timeFrame:\"#{time_diff_in_seconds} seconds\"",
+                "aql": "timeFrame:\"#{time_diff_in_seconds} seconds\" #{aql}",
                 "from": from,
                 "length": length,
                 "fields": FIELDS,
@@ -46,7 +48,7 @@ module Kenna
             RestClient::Request.execute(method: :get, url: endpoint, headers: headers)
           end
 
-          response_dict.nil? ? [] : response_dict.dig("data", "results")
+          response_dict ? response_dict["data"] : {}
         end
 
         def get_batch_vulns(devices)
@@ -100,16 +102,21 @@ module Kenna
           device_vulnerabilities
         end
 
-        def get_access_token
+        def get_access_token(force: false)
           endpoint = "#{@base_path}#{ACCESS_TOKEN_ENDPOINT}"
           headers = { "params": { "secret_key": @secret_token } }
-          response = http_post(endpoint, headers, {})
-          begin
-            JSON.parse(response).dig("data", "access_token")
-          rescue JSON::ParserError => e
-            print_error("Unable to parse response: #{e.message}")
-            ""
+          if force || @access_token.nil? || @expiration_time <= Time.now.utc
+            response = http_post(endpoint, headers, {})
+            begin
+              json_response = JSON.parse(response)
+
+              @access_token = json_response.dig("data", "access_token")
+              @expiration_time = json_response.dig("data", "expiration_utc")
+            rescue JSON::ParserError => e
+              print_error("Unable to parse response: #{e.message}")
+            end
           end
+          @access_token
         end
 
         def make_http_get_request(max_retries = 5)
@@ -124,6 +131,7 @@ module Kenna
             sleep_time = curr + Random.rand(prev..curr)
             sleep(sleep_time)
             print "Retrying!"
+            get_access_token(force: true)
             retries += 1
             retry
           end
