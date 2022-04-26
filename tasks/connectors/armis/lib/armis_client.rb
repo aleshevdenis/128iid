@@ -15,6 +15,7 @@ module Kenna
         VULN_BATCH_SIZE = 1000
         DEVICES_SLICE_SIZE = 200
         SECONDS_IN_A_DAY = 84_600
+        MAX_DURATION_IN_DAYS = 90
 
         def initialize(armis_instance, secret_token)
           @base_path = "https://#{armis_instance}.armis.com"
@@ -25,9 +26,9 @@ module Kenna
 
         def get_devices(aql:, from:, length:, from_date:, to_date: Time.now.utc)
           raise ApiError, "from/to date is missing." if from_date.nil? || to_date.nil?
-          raise ApiError, "Can't fetch data for more than 90 days" if check_date?(from_date, to_date)
-          raise ApiError, "aql is missing or has invalid format." if aql.nil?
-          raise ApiError, "Invalid format: #{aql}" unless aql.start_with?("in:devices")
+          raise ApiError, "Can't fetch data for more than 90 days" if duration_exceeds_max_limit?(from_date, to_date)
+          raise ApiError, "AQL is missing." if aql.blank?
+          raise ApiError, "Invalid AQL format: #{aql}" unless aql.start_with?("in:devices")
 
           endpoint = "#{@base_path}#{SEARCH_ENDPOINT}"
 
@@ -150,8 +151,8 @@ module Kenna
           log_exception(e)
         end
 
-        def check_date?(from_date, to_date)
-          (to_date - from_date).to_i / SECONDS_IN_A_DAY >= 90
+        def duration_exceeds_max_limit?(from_date, to_date)
+          (to_date - from_date).to_i / SECONDS_IN_A_DAY >= MAX_DURATION_IN_DAYS
         end
       end
     end
