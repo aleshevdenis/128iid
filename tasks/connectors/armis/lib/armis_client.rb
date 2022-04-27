@@ -24,7 +24,7 @@ module Kenna
           @expiration_time = nil
         end
 
-        def get_devices(aql:, from:, length:, from_date:, to_date: Time.now.utc)
+        def get_devices(aql:, offset:, length:, from_date:, to_date: Time.now.utc)
           raise ApiError, "from/to date is missing." if from_date.nil? || to_date.nil?
           raise ApiError, "Can't fetch data for more than 90 days" if duration_exceeds_max_limit?(from_date, to_date)
           raise ApiError, "AQL is missing." if aql.blank?
@@ -34,19 +34,18 @@ module Kenna
 
           response_dict = make_http_get_request do
             time_diff_in_seconds = (to_date - from_date).to_i
-
             headers = {
-              "Authorization": get_access_token,
-              "params": {
+              "Authorization" => get_access_token,
+              "params" => {
                 "aql": "timeFrame:\"#{time_diff_in_seconds} seconds\" #{aql}",
-                "from": from,
+                "from": offset,
                 "length": length,
                 "fields": FIELDS,
                 "orderBy": "lastSeen"
               }
             }
 
-            RestClient::Request.execute(method: :get, url: endpoint, headers: headers)
+            RestClient::Request.execute(method: :get, url: endpoint, headers: headers) if headers["Authorization"]
           end
 
           response_dict ? response_dict["data"] : {}
@@ -75,17 +74,16 @@ module Kenna
           loop do
             response_dict = make_http_get_request do
               headers = {
-                "Authorization": get_access_token,
-                "params": {
+                "Authorization" => get_access_token,
+                "params" => {
                   "device_ids": device_ids.join(","),
                   "from": from,
                   "length": VULN_BATCH_SIZE
                 }
               }
 
-              RestClient::Request.execute(method: :get, url: endpoint, headers: headers)
+              RestClient::Request.execute(method: :get, url: endpoint, headers: headers) if headers["Authorization"]
             end
-
             break if response_dict.nil?
 
             vulns_response = response_dict.dig("data", "sample") || []
@@ -108,9 +106,10 @@ module Kenna
           headers = { "params": { "secret_key": @secret_token } }
           if force || @access_token.nil? || @expiration_time <= Time.now.utc
             response = http_post(endpoint, headers, {})
+            return unless response
+
             begin
               json_response = JSON.parse(response)
-
               @access_token = json_response.dig("data", "access_token")
               @expiration_time = json_response.dig("data", "expiration_utc")
             rescue JSON::ParserError => e
@@ -122,7 +121,7 @@ module Kenna
 
         def make_http_get_request(max_retries = 5)
           response = yield()
-          JSON.parse(response)
+          JSON.parse(response) if response
         rescue RestClient::TooManyRequests, RestClient::Unauthorized => e
           log_exception(e)
           retries ||= 0
@@ -148,11 +147,11 @@ module Kenna
             retry
           end
         rescue JSON::ParserError => e
-          log_exception(e)
+          print_error "Unable to parse response #{e.message}"
         end
 
         def duration_exceeds_max_limit?(from_date, to_date)
-          (to_date - from_date).to_i / SECONDS_IN_A_DAY >= MAX_DURATION_IN_DAYS
+          ((to_date - from_date).to_i / SECONDS_IN_A_DAY) - 1 > MAX_DURATION_IN_DAYS
         end
       end
     end

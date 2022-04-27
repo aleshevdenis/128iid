@@ -1,13 +1,10 @@
 # frozen_string_literal: true
 
 require_relative "lib/armis_client"
-require "pry"
 
 module Kenna
   module 128iid
     class ArmisTask < Kenna::128iid::BaseTask
-      include Kenna::128iid::Armis
-
       SCANNER_TYPE = "Armis"
       SCANNER_SCORE_HASH = {
         "Confirmed" => 10,
@@ -82,7 +79,7 @@ module Kenna
         initialize_options
         client = Kenna::128iid::Armis::Client.new(@armis_api_host, @armis_api_secret_token)
 
-        from = 0
+        offset = 0
         from_date = read_checkpoint || @armis_backfill_duration.to_i.days.ago.utc
         to_date = Time.now.utc
         last_seen_at = from_date
@@ -91,7 +88,7 @@ module Kenna
 
         loop do
           devices_response = client.get_devices(
-            aql: @armis_aql_query, from: from, length: @batch_size, from_date: from_date, to_date: to_date
+            aql: @armis_aql_query, offset: offset, length: @batch_size, from_date: from_date, to_date: to_date
           )
           devices = devices_response["results"]
           break if devices.blank?
@@ -99,12 +96,14 @@ module Kenna
           batch_vulnerabilities = client.get_batch_vulns(devices)
           process_devices_and_vulns(devices, batch_vulnerabilities)
           kdi_upload(
-            "#{$basedir}/#{@options[:output_directory]}", "devices_#{from + 1}_#{from + @batch_size}.json",
+            "#{$basedir}/#{@options[:output_directory]}", "devices_#{offset + 1}_#{offset + @batch_size}.json",
             @kenna_connector_id, @kenna_api_host, @kenna_api_key, @skip_autoclose, @retries, @kdi_version
           )
-          last_seen_at = Time.parse(devices.first.fetch("lastSeen")).utc
-          from = devices_response["next"]
-          break if from.blank?
+          last_seen_at = Time.parse(devices.last.fetch("lastSeen")).utc
+          offset = devices_response["next"]
+          break if offset.blank?
+        rescue Kenna::128iid::Armis::Client::ApiError => e
+          fail_task "Invalid options provided: #{e.message}"
         rescue StandardError => e
           print_error "Something went wrong during task execution: #{e.message}"
           break
