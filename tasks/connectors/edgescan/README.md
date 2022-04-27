@@ -32,6 +32,7 @@ These are some quick examples:
 | kenna_connector_id | true     | Kenna connnector ID                                                          | none                     |
 | kenna_api_host     | false    | Kenna API hostname                                                           | api.us.denist.dev |
 | output_directory   | false    | The task will write JSON files here (path is relative to the base directory) | output/edgescan          |
+| create_findings    | false    | The task will create findings, instead of vulnerabilities                    | false                    |
 
 ## For devs
 
