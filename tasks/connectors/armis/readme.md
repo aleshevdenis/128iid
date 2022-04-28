@@ -4,7 +4,7 @@ This 128iid brings in data from Armis
 
 To run this task you need the following information from Armis: 
 
-1. armis_instance (Armis Hostname)
+1. armis_api_host (Armis Hostname)
 2. armis_api_secret_token (Armis Secret Key)
 
 ## Command Line
@@ -24,7 +24,7 @@ Complete list of Options:
 
 | Option | Required | Description | default |
 | --- | --- | --- | --- |
-| armis_instance | true | Armis instance hostname, e.g. "integration-xyz"  | n/a |
+| armis_api_host | true | Armis instance hostname, e.g. "integration-xyz"  | n/a |
 | armis_api_secret_token | true | Armis Secret Key | n/a |
 | batch_size | false | Maximum number of devices to retrieve in single batch | 500 |
 | armis_aql_query | true | Armis Query Language. `timeFrame` option is not supported in provided aql string. Must escape query string in command line script, e.g. \\"in:devices\\". | "in:devices" |

@@ -39,6 +39,11 @@ module Kenna
               required: false,
               default: nil,
               description: "If set, we'll try to upload to this connector" },
+            { name: "armis_api_host",
+              type: "hostname",
+              required: true,
+              default: nil,
+              description: "Armis instance hostname, e.g. \"integration-xyz\"" },
             { name: "armis_backfill_duration",
               type: "integer",
               required: false,
@@ -91,7 +96,10 @@ module Kenna
             aql: @armis_aql_query, offset: offset, length: @batch_size, from_date: from_date, to_date: to_date
           )
           devices = devices_response["results"]
-          break if devices.blank?
+          if devices.blank?
+            print_error("No Devices found")
+            break
+          end
 
           batch_vulnerabilities = client.get_batch_vulns(devices)
           process_devices_and_vulns(devices, batch_vulnerabilities)
