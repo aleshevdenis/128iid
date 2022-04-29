@@ -129,7 +129,7 @@ module Kenna
         FileUtils.mkdir_p(@checkpoint_directory)
         Time.parse(File.read(@checkpoint_file_path))
       rescue ArgumentError, TypeError => e
-        print_error("Error while reading checkpoint: #{e.message}")
+        print_error("Error while reading checkpoint file (#{@checkpoint_file_path}) due to: #{e.message}")
       end
 
       def write_checkpoint(checkpoint)
@@ -137,7 +137,7 @@ module Kenna
         File.write(@checkpoint_file_path, checkpoint.to_s)
         print_good("Checkpoint Updated")
       rescue StandardError => e
-        print_error("Error while writing checkpoint file: #{e.message}")
+        print_error("Error while writing checkpoint file (#{@checkpoint_file_path}) due to: #{e.message}")
       end
 
       def extract_asset(device)

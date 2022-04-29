@@ -102,19 +102,27 @@ module Kenna
         end
 
         def get_access_token(force: false)
-          endpoint = "#{@base_path}#{ACCESS_TOKEN_ENDPOINT}"
-          headers = { "params": { "secret_key": @secret_token } }
-          if force || @access_token.nil? || @expiration_time <= Time.now.utc
-            response = http_post(endpoint, headers, {})
-            return unless response
+          return @access_token if !force && !need_to_refresh_token?
 
-            begin
-              json_response = JSON.parse(response)
-              @access_token = json_response.dig("data", "access_token")
-              @expiration_time = json_response.dig("data", "expiration_utc")
-            rescue JSON::ParserError => e
-              print_error("Unable to parse response: #{e.message}")
-            end
+          url = "#{@base_path}#{ACCESS_TOKEN_ENDPOINT}"
+          headers = { "params": { "secret_key": @secret_token } }
+          begin
+            response = RestClient::Request.execute(method: :post, url: url, headers: headers)
+            json_response = JSON.parse(response)
+
+            @access_token = json_response.dig("data", "access_token")
+            @expiration_time = json_response.dig("data", "expiration_utc")
+            print_debug("Generated Secret Token!")
+          rescue RestClient::BadRequest,
+                 RestClient::InternalServerError,
+                 RestClient::ExceptionWithResponse,
+                 RestClient::Exception,
+                 Errno::ECONNREFUSED => e
+            print_error(
+              "Unable to generate access token, Please check task options armis_api_host and armis_api_secret_token!")
+            log_exception(e)
+          rescue TypeError, JSON::ParserError => e
+            print_error("Unable to parse response: #{e.message}")
           end
           @access_token
         end
@@ -152,6 +160,10 @@ module Kenna
 
         def duration_exceeds_max_limit?(from_date, to_date)
           ((to_date - from_date).to_i / SECONDS_IN_A_DAY) - 1 > MAX_DURATION_IN_DAYS
+        end
+
+        def need_to_refresh_token?
+          @access_token.blank? || @expiration_time <= Time.now.utc
         end
       end
     end
