@@ -118,7 +118,7 @@ module Kenna
         end
 
         kdi_connector_kickoff(@kenna_connector_id, @kenna_api_host, @kenna_api_key)
-        write_checkpoint(last_seen_at) if @enable_checkpoint
+        write_checkpoint(last_seen_at) if @enable_checkpoint && from_date != last_seen_at
       end
 
       private

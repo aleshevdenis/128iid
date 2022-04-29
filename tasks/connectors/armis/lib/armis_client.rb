@@ -12,8 +12,8 @@ module Kenna
 
         FIELDS = "id,ipAddress,macAddress,type,tags,operatingSystem,operatingSystemVersion,riskLevel,manufacturer,name,category,model,lastSeen"
 
-        VULN_BATCH_SIZE = 1000
-        DEVICES_SLICE_SIZE = 200
+        VULN_BATCH_SIZE = 2000
+        DEVICES_SLICE_SIZE = 100
         SECONDS_IN_A_DAY = 84_600
         MAX_DURATION_IN_DAYS = 90
 
