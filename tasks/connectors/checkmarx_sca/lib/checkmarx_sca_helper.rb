@@ -16,8 +16,8 @@ module Kenna
         payload = {
           grant_type: "password",
           scope: "sca_api",
-          username: username,
-          password: password,
+          username:,
+          password:,
           client_id: "sca_resource_owner",
           acr_values: "Tenant:#{tenant_id}"
         }

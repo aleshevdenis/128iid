@@ -78,7 +78,7 @@ module Kenna
         total_vuln_dict.flatten!
 
         while more_records
-          issues = client.get_vulnerabilities(count: @batch_size, page: page)
+          issues = client.get_vulnerabilities(count: @batch_size, page:)
           more_records = issues["next"].present?
 
           issues["results"].foreach do |issue|

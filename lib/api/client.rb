@@ -144,7 +144,7 @@ module Kenna
           query_response = RestClient::Request.execute(
             method: :post,
             url: connector_endpoint,
-            headers: headers,
+            headers:,
             payload: {
               multipart: true,
               file: File.new(filepath, "rb")
@@ -169,7 +169,7 @@ module Kenna
               connector_check_response = RestClient::Request.execute(
                 method: :get,
                 url: connector_check_endpoint,
-                headers: headers
+                headers:
               )
 
               connector_check_json = JSON.parse(connector_check_response)["connector"]
@@ -236,7 +236,7 @@ module Kenna
           query_response = RestClient::Request.execute(
             method: :post,
             url: connector_endpoint,
-            headers: headers,
+            headers:,
             payload: pload
           )
 
@@ -254,7 +254,7 @@ module Kenna
             connector_check_response = RestClient::Request.execute(
               method: :get,
               url: connector_check_endpoint,
-              headers: headers
+              headers:
             )
 
             connector_check_json = JSON.parse(connector_check_response)["connector"]
@@ -267,7 +267,7 @@ module Kenna
           connector_run_status_response = RestClient::Request.execute(
             method: :get,
             url: "#{connector_check_endpoint}/connector_runs/#{query_response_json['connector_run_id']}",
-            headers: headers
+            headers:
           )
           connector_run_status_json = JSON.parse(connector_run_status_response)
         rescue RestClient::Exceptions::OpenTimeout => e

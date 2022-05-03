@@ -73,10 +73,10 @@ module Kenna
           cat_rec_list
         end
 
-        def process_paged_findings(app_guid, scan_type, &block)
+        def process_paged_findings(app_guid, scan_type, &)
           app_request = "#{FINDING_PATH}/#{app_guid}/findings?size=#{@page_size}&scan_type=#{scan_type}"
           url = "https://#{HOST}#{app_request}"
-          get_paged_results(url, &block)
+          get_paged_results(url, &)
         end
 
         private

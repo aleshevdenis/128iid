@@ -173,7 +173,7 @@ module Kenna
         findings = []
         begin
           client = Aws::GuardDuty::Client.new({
-                                                region: region,
+                                                region:,
                                                 credentials: Aws::Credentials.new(access_key, secret_key)
                                               })
 

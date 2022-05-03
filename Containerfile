@@ -1,4 +1,4 @@
-FROM ruby:2.6
+FROM ruby:3.1
 USER root
 
 # Update the base image.

@@ -87,10 +87,10 @@ module Kenna
           payload = {
             grant_type: "password",
             scope: "sast_api",
-            username: username,
-            password: password,
+            username:,
+            password:,
             client_id: "resource_owner_sast_client",
-            client_secret: client_secret
+            client_secret:
           }
 
           response = http_post(endpoint, headers, payload)

@@ -24,7 +24,7 @@ module Kenna
           false
         end
 
-        def vulns(filters = {}, &block)
+        def vulns(filters = {}, &)
           query = {
             "display_description" => "custom",
             "display_default_description" => "1",
@@ -42,16 +42,16 @@ module Kenna
             "display_abbr" => "0"
           }.merge(filters)
 
-          paginated("/vuln", query, &block)
+          paginated("/vuln", query, &)
         end
 
-        def assets(&block)
+        def assets(&)
           query = {
             "display_asset" => 1,
             "display_all" => 1
           }
 
-          paginated("/asset", query, &block)
+          paginated("/asset", query, &)
         end
 
         private
@@ -78,7 +78,7 @@ module Kenna
 
           url = "#{BASE_PATH}#{path}"
           params = { key: @api_key, format: :json }.merge(options)
-          response = Kenna::128iid::Helpers::Http.http_get(url, { params: params }, retries)
+          response = Kenna::128iid::Helpers::Http.http_get(url, { params: }, retries)
 
           raise Error unless response
 

@@ -7,9 +7,9 @@ module Kenna
         def http_get(url, headers, max_retries = 5, verify_ssl = true)
           RestClient::Request.execute(
             method: :get,
-            url: url,
-            headers: headers,
-            verify_ssl: verify_ssl
+            url:,
+            headers:,
+            verify_ssl:
           )
         rescue RestClient::TooManyRequests => e
           log_exception(e)
@@ -69,10 +69,10 @@ module Kenna
         def http_post(url, headers, payload, max_retries = 5, verify_ssl = true)
           RestClient::Request.execute(
             method: :post,
-            url: url,
-            payload: payload,
-            headers: headers,
-            verify_ssl: verify_ssl
+            url:,
+            payload:,
+            headers:,
+            verify_ssl:
           )
         rescue RestClient::TooManyRequests => e
           log_exception(e)
