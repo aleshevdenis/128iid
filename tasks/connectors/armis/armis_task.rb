@@ -169,7 +169,7 @@ module Kenna
           "vuln_def_name" => "#{SCANNER_TYPE} #{vuln.fetch('cveUid')}",
           "created_at" => vuln.fetch("firstDetected"),
           "last_seen_at" => vuln.fetch("lastDetected"),
-          "status" => vuln.fetch("status")
+          "status" => vuln.fetch("status", "").casecmp("open") ? "open" : "closed"
         }.compact
       end
 
