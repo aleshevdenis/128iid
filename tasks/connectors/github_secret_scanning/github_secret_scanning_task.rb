@@ -160,6 +160,7 @@ module Kenna
           fail_task "Unable to extract repo info from #{url}." if org.blank? || repo.blank?
 
           asset = {
+            "url" => alert.fetch("html_url"),
             "file" => locations.first.fetch("details").fetch("path"),
             "application" => "#{org}/#{repo}"
           }
@@ -168,6 +169,7 @@ module Kenna
 
         def extract_finding(alert)
           {
+            "url" => alert.fetch("html_url"),
             "scanner_identifier" => alert.fetch("number"),
             "created_at" => alert.fetch("created_at"),
             "scanner_type" => SCANNER_TYPE,
@@ -191,6 +193,7 @@ module Kenna
 
         def extract_additional_fields(alert)
           fields = {}
+          fields["Url"] = alert["html_url"]
           if alert["resolution"]
             fields["Resolution"] = alert["resolution"]
             fields["Resolved by"] = alert["resolved_by"]["login"]

@@ -49,7 +49,7 @@ module Kenna
 
             raise ApiError, "GitHub GraphQL API unrecognized response format." unless response_hash.dig("data", "repository", "vulnerabilityAlerts", "nodes")
 
-            response_hash["data"]["repository"]["vulnerabilityAlerts"]["nodes"].map { |alert| alert["securityAdvisory"].merge("id" => alert["id"], "securityVulnerability" => alert["securityVulnerability"], "createdAt" => alert["createdAt"]) }.foreach(&block)
+            response_hash["data"]["repository"]["vulnerabilityAlerts"]["nodes"].map { |alert| alert["securityAdvisory"].merge("id" => alert["id"], "number" => alert["number"], "securityVulnerability" => alert["securityVulnerability"], "createdAt" => alert["createdAt"]) }.foreach(&block)
             break unless response_hash["data"]["repository"]["vulnerabilityAlerts"]["pageInfo"]["hasNextPage"]
 
             end_cursor = response_hash["data"]["repository"]["vulnerabilityAlerts"]["pageInfo"]["endCursor"]
@@ -83,9 +83,11 @@ module Kenna
         def vulnerabilities_query
           "query($repo_name: String!, $repo_owner: String!, $end_cursor: String, $page_size: Int!) {
           repository(name: $repo_name, owner: $repo_owner) {
+                url
                 vulnerabilityAlerts(first: $page_size, after: $end_cursor) {
                   nodes {
                     id
+                    number
                     createdAt
                     securityAdvisory {
                       description
