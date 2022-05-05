@@ -17,16 +17,16 @@ module Kenna
           }
         end
 
-        def vulnerable_devices(device_types, &block)
+        def vulnerable_devices(device_types, &)
           endpoint = "#{@base_path}/devices/vulnerabilities/summary/_search"
           filters = { device_type: { value: device_types, operator: "IN" } } if device_types
-          paginated(endpoint, filters, &block)
+          paginated(endpoint, filters, &)
         end
 
-        def device_vulnerabilities(device_id, severities, &block)
+        def device_vulnerabilities(device_id, severities, &)
           endpoint = "#{@base_path}/devices/#{device_id}/vulnerabilities/_search"
           filters = { severity: { value: severities, operator: "IN" } } if severities
-          paginated(endpoint, filters, &block)
+          paginated(endpoint, filters, &)
         end
 
         private

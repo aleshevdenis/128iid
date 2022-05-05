@@ -64,9 +64,9 @@ module Kenna
         end
 
         tmpassets << { file: file.to_s } unless file.nil? || file.empty?
-        tmpassets << { ip_address: ip_address } unless ip_address.nil? || ip_address.empty?
-        tmpassets << { mac_address: mac_address } unless mac_address.nil? || mac_address.empty?
-        tmpassets << { hostname: hostname } unless hostname.nil? || hostname.empty?
+        tmpassets << { ip_address: } unless ip_address.nil? || ip_address.empty?
+        tmpassets << { mac_address: } unless mac_address.nil? || mac_address.empty?
+        tmpassets << { hostname: } unless hostname.nil? || hostname.empty?
         tmpassets << { ec2: ec2.to_s } unless ec2.nil? || ec2.empty?
         tmpassets << { netbios: netbios.to_s } unless netbios.nil? || netbios.empty?
         tmpassets << { url: url.to_s } unless url.nil? || url.empty?
@@ -74,11 +74,11 @@ module Kenna
         tmpassets << { external_id: external_id.to_s } unless external_id.nil? || external_id.empty?
         tmpassets << { database: database.to_s } unless database.nil? || database.empty?
         tmpassets << { application: application.to_s } unless application.nil? || application.empty?
-        tmpassets << { tags: tags } unless tags.nil? || tags.empty?
+        tmpassets << { tags: } unless tags.nil? || tags.empty?
         tmpassets << { owner: owner.to_s } unless owner.nil? || owner.empty?
         tmpassets << { os: os.to_s } unless os.nil? || os.empty?
         tmpassets << { os_version: os_version.to_s } unless os_version.nil? || os_version.to_s.empty?
-        tmpassets << { priority: priority } unless priority.nil? || priority.to_s.empty?
+        tmpassets << { priority: } unless priority.nil? || priority.to_s.empty?
         tmpassets << { vulns: [] }
         tmpassets << { findings: [] }
 
@@ -126,11 +126,11 @@ module Kenna
         assetvulns << { scanner_type: scanner_type.to_s, scanner_identifier: scanner_id.to_s }
         assetvulns << { details: details.to_s } unless details.nil?
         assetvulns << { created_at: created.to_s } unless created.nil?
-        assetvulns << { scanner_score: scanner_score } unless scanner_score.nil? || scanner_score.zero?
+        assetvulns << { scanner_score: } unless scanner_score.nil? || scanner_score.zero?
         assetvulns << { last_fixed_on: last_fixed.to_s } unless last_fixed.nil?
         assetvulns << { last_seen_at: last_seen.to_s } unless last_seen.nil?
         assetvulns << { closed_at: closed.to_s } unless closed.nil?
-        assetvulns << { port: port } unless port.nil?
+        assetvulns << { port: } unless port.nil?
         assetvulns << { status: status.to_s }
 
         asset[:vulns] << assetvulns.reduce(&:merge)
@@ -157,11 +157,11 @@ module Kenna
         # associate the asset
         assetfindings = []
         assetfindings << { scanner_type: scanner_type.to_s, scanner_identifier: scanner_id.to_s }
-        assetfindings << { additional_fields: additional_fields } unless additional_fields.nil?
+        assetfindings << { additional_fields: } unless additional_fields.nil?
         assetfindings << { created_at: created.to_s } unless created.nil?
         assetfindings << { severity: scanner_score } unless scanner_score.nil? || scanner_score.zero?
         assetfindings << { last_seen_at: last_seen.to_s } unless last_seen.nil?
-        assetfindings << { due_date: due_date } unless due_date.nil?
+        assetfindings << { due_date: } unless due_date.nil?
         assetfindings << { triage_state: status.to_s }
 
         asset[:findings] << assetfindings.reduce(&:merge)

@@ -244,8 +244,8 @@ module Kenna
 
       def extract_vuln_def(finding, name, scanner_type)
         remediation = finding["details"]["remediations"].first
-        { name: name,
-          scanner_type: scanner_type,
+        { name:,
+          scanner_type:,
           source: scanner_type,
           description: ("#{remediation['message']}\n#{remediation['help_text']}" if remediation),
           solution: (remediation["remediation_tip"] if remediation) }.compact.stringify_keys

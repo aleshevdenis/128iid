@@ -13,6 +13,7 @@ require "json-write-stream"
 require_relative "../initialize/object"
 require_relative "../initialize/hash"
 require_relative "../initialize/string"
+require_relative "../initialize/json"
 
 # local deps
 require_relative "helpers"

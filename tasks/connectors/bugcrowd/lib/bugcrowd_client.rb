@@ -18,7 +18,7 @@ module Kenna
         end
 
         def get_submissions(offset = 0, limit = 100, options = {})
-          url = submissions_url(options.merge(offset: offset, limit: limit))
+          url = submissions_url(options.merge(offset:, limit:))
           response = http_get(url, @headers, 2)
           raise ApiError, "Unable to retrieve submissions, please check credentials." unless response
 

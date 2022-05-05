@@ -10,7 +10,7 @@ module Kenna
   module 128iid
     module NTTSentinelDynamic
       class Task < Kenna::128iid::BaseTask
-        SEVERITY_RANGE = (1..5).freeze
+        SEVERITY_RANGE = (1..5)
 
         def self.metadata
           {
@@ -91,7 +91,7 @@ module Kenna
 
           mapper = Kenna::128iid::NTTSentinelDynamic::Mapper.new(scoring_system)
 
-          client = Kenna::128iid::NTTSentinelDynamic::ApiClient.new(api_key: key, page_size: page_size)
+          client = Kenna::128iid::NTTSentinelDynamic::ApiClient.new(api_key: key, page_size:)
           fail_task "The Whitehat API does not accept the provided API key." unless client.api_key_valid?
 
           filter = {}

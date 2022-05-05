@@ -51,11 +51,11 @@ module Kenna
         end
 
         def list_scheduled_url(page)
-          fill_params("#{@endpoint}/scans/list-scheduled?page=:page", page: page)
+          fill_params("#{@endpoint}/scans/list-scheduled?page=:page", page:)
         end
 
         def get_vulnerabilities_url(id)
-          fill_params("#{@endpoint}/scans/report?id=:id&format=Json&type=Vulnerabilities", id: id)
+          fill_params("#{@endpoint}/scans/report?id=:id&format=Json&type=Vulnerabilities", id:)
         end
 
         def fill_params(params_string, options)

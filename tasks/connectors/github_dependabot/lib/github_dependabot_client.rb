@@ -19,7 +19,7 @@ module Kenna
 
           end_cursor = nil
           loop do
-            response = http_post(@endpoint, @headers, query(repositories_query, organization_name: @organization_name, end_cursor: end_cursor, page_size: @page_size))
+            response = http_post(@endpoint, @headers, query(repositories_query, organization_name: @organization_name, end_cursor:, page_size: @page_size))
             raise ApiError, "Unable to retrieve data from GitHub GraphQL API, please check credentials" unless response
 
             response_hash = JSON.parse(response)
@@ -41,7 +41,7 @@ module Kenna
 
           end_cursor = nil
           loop do
-            response = http_post(@endpoint, @headers, query(vulnerabilities_query, repo_name: repo_name, repo_owner: @organization_name, end_cursor: end_cursor, page_size: @page_size))
+            response = http_post(@endpoint, @headers, query(vulnerabilities_query, repo_name:, repo_owner: @organization_name, end_cursor:, page_size: @page_size))
             raise ApiError, "Unable to retrieve data from GitHub GraphQL API, please check credentials" unless response
 
             response_hash = JSON.parse(response)
