@@ -149,7 +149,7 @@ module Kenna
             break
           end
 
-          issue_severity = { "high" => 6, "medium" => 4, "low" => 1 } # converter
+          issue_severity_mapping = { "high" => 6, "medium" => 4, "low" => 1 } # converter
           issue_json.foreach do |issue_obj|
             issue = issue_obj["issue"]
             project = issue_obj["project"]
@@ -184,7 +184,7 @@ module Kenna
             scanner_score = if issue.key?("cvssScore")
                               issue.fetch("cvssScore").to_i
                             else
-                              issue_severity.fetch(issue.fetch("severity"))
+                              issue_severity_mapping.fetch(issue.fetch("severity"))
                             end
 
             source = project.fetch("source") if issue.key?("source")
