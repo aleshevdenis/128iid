@@ -69,7 +69,7 @@ module Kenna
           endpoint = "#{@baseapi}/metadata/issue-types"
 
           response = http_get(endpoint, @headers)
-          JSON.parse(response.body.to_s)["entries"].map { |x| x["key"] unless ssc_exclude_severity.include? x["severity"] }.compact
+          JSON.parse(response.body.to_s)["entries"].filter_map { |x| x["key"] unless ssc_exclude_severity.include? x["severity"] }
         end
       end
     end

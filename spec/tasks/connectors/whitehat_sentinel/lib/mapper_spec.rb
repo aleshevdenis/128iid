@@ -8,7 +8,7 @@ RSpec.specialize Kenna::128iid::NTTSentinelDynamic::Mapper do
   subject(:mapper) { specialized_class.new(scoring_system) }
 
   specialize "#finding_hash" do
-    let(:node) { { id: node_id, found: found.iso8601, closed: closed&.iso8601, class: node_class, status: status, severity: severity.to_s, risk: risk, attack_vectors: attack_vectors } }
+    let(:node) { { id: node_id, found: found.iso8601, closed: closed&.iso8601, class: node_class, status:, severity: severity.to_s, risk:, attack_vectors: } }
     let(:node_id) { 10_085 }
     let(:found) { Time.new(2021, 10, 22, 12, 13, 14).utc }
     let(:closed) { nil }
@@ -89,7 +89,7 @@ RSpec.specialize Kenna::128iid::NTTSentinelDynamic::Mapper do
 
     context "when there is an attack vector" do
       let(:attack_vectors) { [vector] }
-      let(:vector) { { request: { method: method, url: vector_url, headers: request_headers }, response: { status: response_status, headers: response_headers } } }
+      let(:vector) { { request: { method:, url: vector_url, headers: request_headers }, response: { status: response_status, headers: response_headers } } }
       let(:method) { "GET" }
       let(:vector_url) { "http://vector.example.com" }
       let(:response_status) { 200 }
@@ -127,14 +127,14 @@ RSpec.specialize Kenna::128iid::NTTSentinelDynamic::Mapper do
   end
 
   specialize "#asset_hash" do
-    let(:node) { { site: site_id.to_s, site_name: site_name } }
+    let(:node) { { site: site_id.to_s, site_name: } }
     let(:site_id) { 12 }
     let(:site_name) { "Example dot com" }
     let(:url) { "http://foo.example.com/path" }
 
     subject(:asset_hash) { mapper.asset_hash(node, url) }
 
-    it { is_expected.to include(url: url) }
+    it { is_expected.to include(url:) }
     it { is_expected.to include(application: site_name) }
     it { is_expected.to include(tags: []) }
 

@@ -2,6 +2,7 @@
 
 source "https://rubygems.org"
 
+ruby "3.1.2"
 # git_source(:github) do |repo_name|
 #  repo_name = "#{repo_name}/#{repo_name}" unless repo_name.include?("/")
 #  "https://github.com/#{repo_name}.git"
@@ -26,8 +27,8 @@ group :development, :test do
   gem "pry"
   gem "pry-byebug"
   gem "rspec"
-  gem "rubocop", "~> 1.25", require: false
-  gem "rubocop-github", "~> 0.17"
+  gem "rubocop", require: false
+  gem "rubocop-github"
   gem "rubocop-performance", require: false
   gem "rubocop-rails", require: false
   gem "solargraph", require: false

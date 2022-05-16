@@ -94,7 +94,9 @@ module Kenna
       end
 
       def process_alert(repo_name, alert)
-        asset = { "application" => repo_name, "tags" => [SCANNER_TYPE] }
+        number = alert["number"]
+        dependabot_url = "https://github.com/#{@github_organization_name}/#{repo_name}/security/dependabot/#{number}"
+        asset = { "url" => dependabot_url, "application" => repo_name, "tags" => [SCANNER_TYPE] }
         cve_identifier = alert["identifiers"].detect { |identifier| identifier["type"] == "CVE" }
         vuln_name = cve_identifier&.fetch("value") || alert["identifiers"].last["value"]
         details = {
@@ -103,7 +105,7 @@ module Kenna
           "vulnerableVersionRange" => alert.dig("securityVulnerability", "vulnerableVersionRange")
         }.compact
         vuln = {
-          "scanner_identifier" => alert["id"],
+          "scanner_identifier" => alert["number"],
           "created_at" => alert["createdAt"],
           "scanner_type" => SCANNER_TYPE,
           "scanner_score" => alert["cvss"]["score"].to_i,

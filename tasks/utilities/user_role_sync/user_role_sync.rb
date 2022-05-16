@@ -328,7 +328,7 @@ module Kenna
           begin
             RestClient::Request.execute(
               method: :put,
-              url: url,
+              url:,
               payload: json_data,
               headers: @headers
             )
@@ -353,7 +353,7 @@ module Kenna
         begin
           RestClient::Request.execute(
             method: :delete,
-            url: url,
+            url:,
             headers: @headers
           )
         rescue RestClient::UnprocessableEntity => e

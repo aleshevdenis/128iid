@@ -1,6 +1,6 @@
 ## Running Microsoft Defender TVM task 
 
-This 128iid brings in data from MS Defender TVM (https://securitycenter.windows.com/dashboard)
+This 128iid brings in data from MS Defender TVM (https://security.microsoft.com/homepage renamed: Microsoft 365 Defender)
 
 To run this task you need the following information from Microsoft: 
 

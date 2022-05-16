@@ -18,9 +18,11 @@ jobs:
     - name: Set up Ruby
       uses: ruby/setup-ruby@v1
       with:
-        ruby-version: 2.6
+        ruby-version: 3.1
+    - name: Config environment
+      run: bundle config set --local without 'development test'
     - name: Install dependencies
-      run: bundle install --without development test
+      run: bundle install
     - name:  Run 128iid
       run : ruby 128iid.rb task=help
       

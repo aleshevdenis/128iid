@@ -162,6 +162,7 @@ module Kenna
 
         def extract_asset(alert, repo)
           asset = {
+            "url" => alert.fetch("html_url"),
             "file" => alert.fetch("most_recent_instance").fetch("location").fetch("path"),
             "application" => repo
           }
@@ -171,6 +172,7 @@ module Kenna
         def extract_finding(alert, repo)
           severity = alert.dig("rule", "security_severity_level")
           {
+            "url" => alert.fetch("url"),
             "scanner_identifier" => alert.fetch("number"),
             "created_at" => alert.fetch("created_at"),
             "last_seen_at" => alert.fetch("updated_at"),
@@ -193,6 +195,7 @@ module Kenna
 
         def extract_additional_fields(alert)
           fields = {
+            "Url" => alert["html_url"],
             "State" => alert["state"],
             "Fixed at" => alert["fixed_at"],
             "Dismissed at" => alert["dismissed_at"],
