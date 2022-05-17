@@ -17,7 +17,7 @@ More in depth details about running the task are available [here](https://github
 These are some quick examples:
 
 - To print a list of available options: `docker run -it --rm 128iid:latest task=edgescan help`
-- To sync all Edgescan data into Kenna: `docker run -it --rm 128iid:latest task=edgescan edgescan_token="abc" kenna_api_key="abc" kenna_connector_id=123`
+- To sync all Edgescan data into Kenna: `docker run -it --rm 128iid:latest task=edgescan edgescan_token='abc' kenna_api_key='abc' kenna_connector_id=123`
 
 ## List of available options
 
