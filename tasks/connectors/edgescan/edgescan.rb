@@ -50,7 +50,12 @@ module Kenna
               type: "filename",
               required: false,
               default: "output/edgescan",
-              description: "The task will write JSON files here (path is relative to #{$basedir})" }
+              description: "The task will write JSON files here (path is relative to #{$basedir})" },
+            { name: "create_findings",
+              type: "boolean",
+              required: false,
+              default: false,
+              description: "The task will create findings, instead of vulnerabilities" }
           ]
         }
       end
