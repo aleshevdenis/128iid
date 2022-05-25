@@ -30,7 +30,7 @@ Complete list of Options:
 | wiz_auth_endpoint | false | WIZ auth endpoint hostname used to get the authorization token. | auth.wiz.io |
 | wiz_api_host | true | WIZ API Endpoint URL. If schema is included, it should be between double quotes escaped. | n/a |
 | wiz_page_size | false | Maximum number of issues to retrieve in foreach page. | 500 |
-| days_back | false | Integer days number to get the vulnerabilities/issues detected x days back TODAY. | n/a |
+| days_back | false | Integer days number to get the vulnerabilities/issues created x days back ago from TODAY. | n/a |
 | vuln_object_types | false | Array of object types for VULNS import. Allowed values: VIRTUAL_MACHINE,CONTAINER_IMAGE,SERVERLESS. Import all if not present. | n/a |
 | severity | false | Array of severity types for VULNS and ISSUES (ALL) import. Allowed values: CRITICAL,HIGH,MEDIUM,LOW,INFO. Import all if not present. | n/a |
 | issue_status | false | Array of issue status for ISSUES import. Allowed values: OPEN,IN_PROGRESS,RESOLVED,REJECTED. Import all if not present. | n/a |
