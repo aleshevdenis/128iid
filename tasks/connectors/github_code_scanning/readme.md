@@ -9,7 +9,8 @@ To run this task you need the following information from GitHub:
 3. One or more repository names
 
 **IMPORTANT: you must be an administrator for the repository or organization, and you must use an access token with the repo scope or security_events scope.
-If GitHub 2FA is enabled, the access token MUST be configured for SSO.**
+If GitHub 2FA is enabled, the access token MUST be configured for SSO. 
+If the user is not an admin at the time of Key generation, you will need to promote the user to admin, and regenerate the key. **
 
 ## Command Line
 
@@ -48,4 +49,4 @@ Complete list of Options:
 
 For extracting Image vulnerability data:
 
-    task=github_code_scanning github_token=ghp_xxx kenna_connector_id=15xxxx github_username=myuser kenna_api_host=api.denist.dev kenna_api_key=xxx github_repositories=myuser/WebGoat,myuser/juice-shop
+    task=github_code_scanning github_token=ghp_xxx github_username=myuser kenna_api_host=api.denist.dev kenna_api_key=xxx kenna_connector_id=15xxxx github_repositories=myuser/WebGoat,myuser/juice-shop
