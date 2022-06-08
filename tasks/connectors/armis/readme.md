@@ -23,7 +23,7 @@ docker run -it --rm 128iid:latest
         enable_checkpoint=false
 ```
 
-In case you want to run the task with checkpoints
+In case you want to run the task with checkpoint feature enabled
 
 ```
 docker run -it --rm \
@@ -37,7 +37,9 @@ docker run -it --rm \
         enable_checkpoint=true
 ```
 
-Note: `enable_checkpoint` option allows you to sync only devices which have been detected by armis platform since last run. When `enable_checkpoint` is `true`, the task will look for existence of checkpoint file which contains last run information. If the checkpoint file found, then it will pull devices since the datetime mentioned in the checkpoint file.
+`enable_checkpoint` option allows you to sync only devices which have been detected by armis platform since last run. When `enable_checkpoint` is `true`, the task will look for existence of checkpoint file which contains last run information. If the checkpoint file found, then it will pull devices since the datetime mentioned in the checkpoint file. Checkpointing feature depends on device's `lastSeen` date. Task will sync only devices whose `lastSeen` has been updated since last run.
+
+Note: If you're seeing any discrepancy in CVEs data, it might be because CVE status might have been updated but related device's `lastSeen` might not have updated. Due to which such devices and associated CVEs might not get pulled. In such scenarios you can run the task with `enable_checkpoint=false`.
 
 Detailed setup and task execution instructions can be found from [here](https://github.com/denistreshchev/128iid/blob/main/README.md). 
 
@@ -69,6 +71,10 @@ Complete list of Options:
 | kenna_api_host | false | Kenna API Hostname if not US shared | api.denist.dev |
 | kenna_connector_id | false | If set, we'll try to upload to this connector | n/a |
 | output_directory | false | If set, will write a file upon completion. Path is relative to #{$basedir} | output/armis |
+
+## Armis - Kenna Mapping Information
+
+https://docs.google.com/spreadsheets/d/1VgY_U2KA7sjc2xs5RmFnvP_s80QsO-t4AIGBxdvYrjg
 
 ## Support 
 
