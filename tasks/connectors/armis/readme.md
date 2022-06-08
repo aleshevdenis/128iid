@@ -1,11 +1,45 @@
-## Running the Armis task 
+## Prerequisites
 
-This 128iid brings in data from Armis
-
-To run this task you need the following information from Armis: 
+This task with communicate with Armis and Kenna APIs. To run the task you will need
 
 1. armis_api_host (Armis Hostname)
 2. armis_api_secret_token (Armis Secret Key)
+3. kenna_api_key (Kenna API Key)
+4. kenna_api_host (Kenna API Host)
+5. kenna_connector_id (Kenna Connector ID)
+
+## Running the Task
+
+Run Task with required options
+
+```
+docker run -it --rm 128iid:latest
+        task=armis \
+        armis_api_host="integration-companyname" \
+        armis_api_secret_token=your-api-token \
+        kenna_api_key=your-api-key  \
+        kenna_api_host=your-api-host \
+        kenna_connector_id=connector-id \
+        enable_checkpoint=false
+```
+
+In case you want to run the task with checkpoints
+
+```
+docker run -it --rm \
+        -v <repository-path>/output:/opt/app/128iid/output \
+        -t 128iid:latest task=armis \
+        armis_api_host="integration-crestdata" \
+        armis_api_secret_token=$ARMIS_SECRET_KEY \
+        kenna_api_key=$KENNA_API_KEY  \
+        kenna_api_host=$KENNA_API_HOST \
+        kenna_connector_id=$KENNA_CONNECTOR_ID \
+        enable_checkpoint=true
+```
+
+Note: `enable_checkpoint` option allows you to sync only devices which have been detected by armis platform since last run. When `enable_checkpoint` is `true`, the task will look for existence of checkpoint file which contains last run information. If the checkpoint file found, then it will pull devices since the datetime mentioned in the checkpoint file.
+
+Detailed setup and task execution instructions can be found from [here](https://github.com/denistreshchev/128iid/blob/main/README.md). 
 
 ## Command Line
 
@@ -29,9 +63,13 @@ Complete list of Options:
 | batch_size | false | Maximum number of devices to retrieve in single batch | 500 |
 | armis_aql_query | true | Armis Query Language. `timeFrame` option is not supported in provided aql string. Must escape query string in command line script, e.g. \\"in:devices\\". | "in:devices" |
 | armis_backfill_duration | false | Armis Backfill Duration (In Days): Number of days to look back. In case `enable_checkpoint` is `true` and checkpoint file exists, this option will have no effect. | 15 |
-| enable_checkpoint | false | Enable Checkpoint Feature for Scheduling | true |
-| checkpoint_directory | false | If set, will write a file upon completion. Path is relative to #{$basedir} | output/armis/checkpoint |
+| enable_checkpoint | false | If set to true, enables checkpoint mechanism. This feature instructs task to track last run information at directory specified in `checkpoint_directory` option. Used to fetch only devices which have been detected since last run. | true |
+| checkpoint_directory | false | If set, will write a file upon completion. Checkpoint file will contain `lastSeen` date of last pulled device. Path is relative to #{$basedir} | output/armis/checkpoint |
 | kenna_api_key | false | Kenna API Key for use with connector option | n/a |
 | kenna_api_host | false | Kenna API Hostname if not US shared | api.denist.dev |
 | kenna_connector_id | false | If set, we'll try to upload to this connector | n/a |
 | output_directory | false | If set, will write a file upon completion. Path is relative to #{$basedir} | output/armis |
+
+## Support 
+
+In case of any queries, please rforeach out to support@armis.com.
