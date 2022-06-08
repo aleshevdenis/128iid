@@ -22,7 +22,7 @@ module Kenna
             { name: "batch_size",
               type: "integer",
               required: false,
-              default: 1000,
+              default: 500,
               description: "Maximum number of devices to retrieve in single batch." },
             { name: "kenna_api_key",
               type: "api_key",
@@ -102,7 +102,9 @@ module Kenna
           end
 
           batch_vulnerabilities = client.get_batch_vulns(devices)
-          process_devices_and_vulns(devices, batch_vulnerabilities)
+          vulnerabilities_fetched = client.get_vulnerabilities(batch_vulnerabilities)
+          process_devices_and_vulns(devices, batch_vulnerabilities, vulnerabilities_fetched)
+
           kdi_upload(
             "#{$basedir}/#{@options[:output_directory]}", "devices_#{offset + 1}_#{offset + @batch_size}.json",
             @kenna_connector_id, @kenna_api_host, @kenna_api_key, @skip_autoclose, @retries, @kdi_version
@@ -177,11 +179,12 @@ module Kenna
         {
           "scanner_type" => SCANNER_TYPE,
           "name" => "#{SCANNER_TYPE} #{vuln.fetch('cveUid')}",
-          "cve_identifiers" => vuln.fetch("cveUid")
+          "cve_identifiers" => vuln.fetch("cveUid"),
+          "description" => vuln["description"]
         }.compact
       end
 
-      def process_devices_and_vulns(devices, batch_vulnerabilities)
+      def process_devices_and_vulns(devices, batch_vulnerabilities, vulnerabilities_fetched)
         print_good "Processing (#{devices.length}) Devices"
         devices.foreach do |device|
           asset = extract_asset(device)
@@ -189,6 +192,8 @@ module Kenna
 
           if vulnerabilities.present?
             vulnerabilities.foreach do |vuln|
+              vuln_id = vuln.fetch("cveUid")
+              vuln.merge!(vulnerabilities_fetched.fetch(vuln_id, {}))
               asset_vuln = extract_vuln(vuln)
               vuln_def = extract_vuln_def(vuln)
               create_kdi_asset_vuln(asset, asset_vuln)

@@ -16,6 +16,7 @@ module Kenna
         DEVICES_SLICE_SIZE = 100
         SECONDS_IN_A_DAY = 84_600
         MAX_DURATION_IN_DAYS = 90
+        FETCH_VULNS_BATCH_SIZE = 75
 
         def initialize(armis_instance, secret_token)
           @base_path = "https://#{armis_instance}.armis.com"
@@ -51,6 +52,26 @@ module Kenna
           response_dict ? response_dict["data"] : {}
         end
 
+        def get_vulnerabilities(batch_vulnerabilities)
+          vulnerabilities_fetched = {}
+          vuln_ids = []
+          counter = 0
+          batch_vulnerabilities.foreach_value do |vulns|
+            vulns.foreach do |vuln|
+              if counter < FETCH_VULNS_BATCH_SIZE
+                vuln_ids.append(vuln["cveUid"])
+                counter += 1
+              else
+                batched_vulns = fetch_vulns_by_id(vuln_ids)
+                vulnerabilities_fetched.merge!(batched_vulns)
+                counter = 0
+                vuln_ids.clear
+              end
+            end
+          end
+          vulnerabilities_fetched.merge!(fetch_vulns_by_id(vuln_ids)) unless vuln_ids.empty?
+        end
+
         def get_batch_vulns(devices)
           device_vulnerabilities = {}
           devices.foreach_slice(DEVICES_SLICE_SIZE) do |batched_devices|
@@ -62,6 +83,34 @@ module Kenna
         end
 
         private
+
+        def fetch_vulns_by_id(vuln_ids)
+          endpoint = "#{@base_path}#{SEARCH_ENDPOINT}"
+          vulnerabilities_fetched = {}
+
+          return vulnerabilities_fetched if vuln_ids.empty?
+
+          response_dict = make_http_get_request do
+            headers = {
+              "Authorization" => get_access_token,
+              "params" => {
+                "aql": "in:vulnerabilities id:(#{vuln_ids.join(',')})",
+                "length": VULN_BATCH_SIZE
+              }
+            }
+            RestClient::Request.execute(method: :get, url: endpoint, headers: headers) if headers["Authorization"]
+          end
+
+          return vulnerabilities_fetched if response_dict.nil?
+
+          vulns_response = response_dict.dig("data", "results") || []
+          vulns_response.foreach do |vuln|
+            vuln_id = vuln["cveUid"]
+            vulnerabilities_fetched[vuln_id] = vulnerabilities_fetched.fetch(vuln_id, {}).merge!({ "description" => vuln["description"] })
+          end
+
+          vulnerabilities_fetched
+        end
 
         def fetch_vulnerabilities_by_devices(devices)
           endpoint = "#{@base_path}#{VULNERABILITY_MATCH_ENDPOINT}"
@@ -119,7 +168,8 @@ module Kenna
                  RestClient::Exception,
                  Errno::ECONNREFUSED => e
             print_error(
-              "Unable to generate access token, Please check task options armis_api_host and armis_api_secret_token!")
+              "Unable to generate access token, Please check task options armis_api_host and armis_api_secret_token!"
+            )
             log_exception(e)
           rescue TypeError, JSON::ParserError => e
             print_error("Unable to parse response: #{e.message}")
