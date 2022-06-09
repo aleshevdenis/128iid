@@ -10,6 +10,8 @@ module Kenna
           @edgescan_token = options[:edgescan_token]
           @page_size = options[:edgescan_page_size].to_i
           @api_host = options[:edgescan_api_host]
+          @include_application_vulnerabilities = options[:include_application_vulnerabilities]
+          @include_network_vulnerabilities = options[:include_network_vulnerabilities]
         end
 
         # Fetches Edgescan assets and vulnerabilities in batches. Yields foreach batch.
@@ -49,7 +51,7 @@ module Kenna
         end
 
         def fetch_vulnerabilities(asset_ids)
-          query("vulnerabilities", { detail_level: "high", c: { asset_id_in: asset_ids.join(","), status: "open" } })
+          query("vulnerabilities", { detail_level: "high", c: { asset_id_in: asset_ids.join(","), status: "open" }.merge(layer_query_parameters) })
             .sort_by { |vulnerability| vulnerability["asset_id"] }
         end
 
@@ -73,6 +75,18 @@ module Kenna
           return "http://localhost:3000" if ENV["EDGESCAN_ENVIRONMENT"] == "local"
 
           "https://#{@api_host}"
+        end
+
+        # Application vulnerabilities are on layer 7
+        # Network vulnerabilities are on every other layer
+        def layer_query_parameters
+          if @include_application_vulnerabilities && @include_network_vulnerabilities
+            {}
+          elsif @include_application_vulnerabilities
+            { layer_in: 7 }
+          else
+            { layer_not_in: 7 }
+          end
         end
       end
     end
