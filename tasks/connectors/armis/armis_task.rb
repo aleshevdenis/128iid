@@ -101,13 +101,13 @@ module Kenna
             break
           end
 
-          batch_vulnerabilities = client.get_batch_vulns(devices)
+          print_debug "Fetching Device Vulnerabilities"
+          device_vulnerabilities = client.get_batch_vulns(devices)
 
-          # fetching unique cveUids from batch_vulnerabilities
-          cve_ids = batch_vulnerabilities.flat_map { |_device_id, cves| cves.map { |cve| cve["cveUid"] } }.compact.uniq
-          vulnerabilities_fetched = client.get_vulnerabilities(cve_ids)
-
-          process_devices_and_vulns(devices, batch_vulnerabilities, vulnerabilities_fetched)
+          # fetch descriptions for pulled vulnerabilities
+          cve_ids = device_vulnerabilities.flat_map { |_device_id, cves| cves.map { |cve| cve["cveUid"] } }.compact.uniq
+          vulnerability_descriptions = client.get_vulnerability_descriptions(cve_ids)
+          process_devices_and_vulns(devices, device_vulnerabilities, vulnerability_descriptions)
 
           kdi_upload(
             "#{$basedir}/#{@options[:output_directory]}", "devices_#{offset + 1}_#{offset + @batch_size}.json",
@@ -175,7 +175,7 @@ module Kenna
           "vuln_def_name" => "#{SCANNER_TYPE} #{vuln.fetch('cveUid')}",
           "created_at" => vuln.fetch("firstDetected"),
           "last_seen_at" => vuln.fetch("lastDetected"),
-          "status" => vuln.fetch("status", "").casecmp("open") ? "open" : "closed"
+          "status" => vuln.fetch("status", "").casecmp?("open") ? "open" : "closed"
         }.compact
       end
 
@@ -188,16 +188,17 @@ module Kenna
         }.compact
       end
 
-      def process_devices_and_vulns(devices, batch_vulnerabilities, vulnerabilities_fetched)
+      def process_devices_and_vulns(devices, device_vulnerabilities, vulnerability_descriptions)
         print_good "Processing (#{devices.length}) Devices"
         devices.foreach do |device|
           asset = extract_asset(device)
-          vulnerabilities = batch_vulnerabilities[device["id"]] || []
+          vulnerabilities = device_vulnerabilities[device["id"]] || []
 
           if vulnerabilities.present?
             vulnerabilities.foreach do |vuln|
               vuln_id = vuln.fetch("cveUid")
-              vuln["description"] = vulnerabilities_fetched[vuln_id] if vulnerabilities_fetched[vuln_id]
+              vuln["description"] = vulnerability_descriptions[vuln_id] if vulnerability_descriptions[vuln_id]
+
               asset_vuln = extract_vuln(vuln)
               vuln_def = extract_vuln_def(vuln)
               create_kdi_asset_vuln(asset, asset_vuln)

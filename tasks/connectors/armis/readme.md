@@ -30,10 +30,10 @@ docker run -it --rm \
         -v <repository-path>/output:/opt/app/128iid/output \
         -t 128iid:latest task=armis \
         armis_api_host="integration-xyz" \
-        armis_api_secret_token=$ARMIS_SECRET_KEY \
-        kenna_api_key=$KENNA_API_KEY  \
-        kenna_api_host=$KENNA_API_HOST \
-        kenna_connector_id=$KENNA_CONNECTOR_ID \
+        armis_api_secret_token=your-api-token \
+        kenna_api_key=your-api-key  \
+        kenna_api_host=your-api-host \
+        kenna_connector_id=connector-id \
         enable_checkpoint=true
 ```
 

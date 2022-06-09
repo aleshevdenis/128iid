@@ -10,13 +10,14 @@ module Kenna
         SEARCH_ENDPOINT = "/api/v1/search/"
         ACCESS_TOKEN_ENDPOINT = "/api/v1/access_token/"
 
-        FIELDS = "id,ipAddress,macAddress,type,tags,operatingSystem,operatingSystemVersion,riskLevel,manufacturer,name,category,model,lastSeen"
+        DEVICE_FIELDS = "id,ipAddress,macAddress,type,tags,operatingSystem,operatingSystemVersion,riskLevel,manufacturer,name,category,model,lastSeen"
+        VULNS_FIELDS = "cveUid,description"
 
         VULN_BATCH_SIZE = 2000
         DEVICES_SLICE_SIZE = 100
+        FETCH_VULNS_BATCH_SIZE = 75
         SECONDS_IN_A_DAY = 84_600
         MAX_DURATION_IN_DAYS = 90
-        FETCH_VULNS_BATCH_SIZE = 75
 
         def initialize(armis_instance, secret_token)
           @base_path = "https://#{armis_instance}.armis.com"
@@ -41,7 +42,7 @@ module Kenna
                 "aql": "timeFrame:\"#{time_diff_in_seconds} seconds\" #{aql}",
                 "from": offset,
                 "length": length,
-                "fields": FIELDS,
+                "fields": DEVICE_FIELDS,
                 "orderBy": "lastSeen"
               }
             }
@@ -52,14 +53,14 @@ module Kenna
           response_dict ? response_dict["data"] : {}
         end
 
-        def get_vulnerabilities(cve_ids)
-          vulnerabilities_fetched = {}
+        def get_vulnerability_descriptions(cve_ids)
+          vulnerability_descriptions_map = {}
           cve_ids.foreach_slice(FETCH_VULNS_BATCH_SIZE) do |ids|
-            current_fetched_vulnerabilities = get_vuln_description_by_id(ids)
-            vulnerabilities_fetched.merge!(current_fetched_vulnerabilities)
+            current_vulnerability_descriptions_map = get_vuln_description_by_id(ids)
+            vulnerability_descriptions_map.merge!(current_vulnerability_descriptions_map)
           end
 
-          vulnerabilities_fetched
+          vulnerability_descriptions_map
         end
 
         def get_batch_vulns(devices)
@@ -76,30 +77,31 @@ module Kenna
 
         def get_vuln_description_by_id(vuln_ids)
           endpoint = "#{@base_path}#{SEARCH_ENDPOINT}"
-          vulnerabilities_fetched = {}
+          vulnerability_description_map = {}
 
-          return vulnerabilities_fetched if vuln_ids.empty?
+          return vulnerability_description_map if vuln_ids.empty?
 
           response_dict = make_http_get_request do
             headers = {
               "Authorization" => get_access_token,
               "params" => {
                 "aql": "in:vulnerabilities id:(#{vuln_ids.join(',')})",
-                "length": VULN_BATCH_SIZE
+                "length": VULN_BATCH_SIZE,
+                "fields": VULNS_FIELDS
               }
             }
             RestClient::Request.execute(method: :get, url: endpoint, headers: headers) if headers["Authorization"]
           end
 
-          return vulnerabilities_fetched if response_dict.nil?
+          return vulnerability_description_map if response_dict.nil?
 
           vulns_response = response_dict.dig("data", "results") || []
           vulns_response.foreach do |vuln|
             vuln_id = vuln["cveUid"]
-            vulnerabilities_fetched[vuln_id] = vuln["description"]
+            vulnerability_description_map[vuln_id] = vuln["description"]
           end
 
-          vulnerabilities_fetched
+          vulnerability_description_map
         end
 
         def fetch_vulnerabilities_by_devices(devices)
