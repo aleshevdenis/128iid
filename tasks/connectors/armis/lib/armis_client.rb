@@ -52,24 +52,14 @@ module Kenna
           response_dict ? response_dict["data"] : {}
         end
 
-        def get_vulnerabilities(batch_vulnerabilities)
+        def get_vulnerabilities(cve_ids)
           vulnerabilities_fetched = {}
-          vuln_ids = []
-          counter = 0
-          batch_vulnerabilities.foreach_value do |vulns|
-            vulns.foreach do |vuln|
-              if counter < FETCH_VULNS_BATCH_SIZE
-                vuln_ids.append(vuln["cveUid"])
-                counter += 1
-              else
-                batched_vulns = fetch_vulns_by_id(vuln_ids)
-                vulnerabilities_fetched.merge!(batched_vulns)
-                counter = 0
-                vuln_ids.clear
-              end
-            end
+          cve_ids.foreach_slice(FETCH_VULNS_BATCH_SIZE) do |ids|
+            current_fetched_vulnerabilities = get_vuln_description_by_id(ids)
+            vulnerabilities_fetched.merge!(current_fetched_vulnerabilities)
           end
-          vulnerabilities_fetched.merge!(fetch_vulns_by_id(vuln_ids)) unless vuln_ids.empty?
+
+          vulnerabilities_fetched
         end
 
         def get_batch_vulns(devices)
@@ -84,7 +74,7 @@ module Kenna
 
         private
 
-        def fetch_vulns_by_id(vuln_ids)
+        def get_vuln_description_by_id(vuln_ids)
           endpoint = "#{@base_path}#{SEARCH_ENDPOINT}"
           vulnerabilities_fetched = {}
 
@@ -106,7 +96,7 @@ module Kenna
           vulns_response = response_dict.dig("data", "results") || []
           vulns_response.foreach do |vuln|
             vuln_id = vuln["cveUid"]
-            vulnerabilities_fetched[vuln_id] = vulnerabilities_fetched.fetch(vuln_id, {}).merge!({ "description" => vuln["description"] })
+            vulnerabilities_fetched[vuln_id] = vuln["description"]
           end
 
           vulnerabilities_fetched

@@ -102,7 +102,11 @@ module Kenna
           end
 
           batch_vulnerabilities = client.get_batch_vulns(devices)
-          vulnerabilities_fetched = client.get_vulnerabilities(batch_vulnerabilities)
+
+          # fetching unique cveUids from batch_vulnerabilities
+          cve_ids = batch_vulnerabilities.flat_map { |_device_id, cves| cves.map { |cve| cve["cveUid"] } }.compact.uniq
+          vulnerabilities_fetched = client.get_vulnerabilities(cve_ids)
+
           process_devices_and_vulns(devices, batch_vulnerabilities, vulnerabilities_fetched)
 
           kdi_upload(
@@ -193,7 +197,7 @@ module Kenna
           if vulnerabilities.present?
             vulnerabilities.foreach do |vuln|
               vuln_id = vuln.fetch("cveUid")
-              vuln.merge!(vulnerabilities_fetched.fetch(vuln_id, {}))
+              vuln["description"] = vulnerabilities_fetched[vuln_id] if vulnerabilities_fetched[vuln_id]
               asset_vuln = extract_vuln(vuln)
               vuln_def = extract_vuln_def(vuln)
               create_kdi_asset_vuln(asset, asset_vuln)
