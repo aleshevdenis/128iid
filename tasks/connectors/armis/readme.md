@@ -76,7 +76,7 @@ Complete list of Options:
 
 ## Armis - Kenna Mapping Information
 
-https://docs.google.com/spreadsheets/d/1VgY_U2KA7sjc2xs5RmFnvP_s80QsO-t4AIGBxdvYrjg
+Please go through [data mapping document](kenna-armis-mapping.pdf) to understand which fields gets synced through this connector.
 
 ## Support 
 
