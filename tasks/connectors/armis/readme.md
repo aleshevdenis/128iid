@@ -37,7 +37,9 @@ docker run -it --rm \
         enable_checkpoint=true
 ```
 
-`enable_checkpoint` option allows you to sync only devices which have been detected by armis platform since last run. When `enable_checkpoint` is `true`, the task will look for existence of checkpoint file which contains last run information. If the checkpoint file found, then it will pull devices since the datetime mentioned in the checkpoint file. Checkpointing feature depends on device's `lastSeen` date. Task will sync only devices whose `lastSeen` has been updated since last run.
+The checkpoint feature allows you to sync only devices which have been detected since last time the task was executed.
+
+When `enable_checkpoint` is `true`, the task will look for existence of checkpoint file which contains last run information. If the checkpoint file found, then it will pull devices since the datetime mentioned in the checkpoint file. Checkpointing feature depends on device's `lastSeen` date. Task will sync only devices whose `lastSeen` has been updated since last run.
 
 Note: If you're seeing any discrepancy in CVEs data, it might be because CVE status might have been updated but related device's `lastSeen` might not have updated. Due to which such devices and associated CVEs might not get pulled. In such scenarios you can run the task with `enable_checkpoint=false`.
 
