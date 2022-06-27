@@ -10,6 +10,7 @@ To run this task you need the following information from Microsoft:
 The data is batched by Application before being sent to Kenna. 
 
 1. Pull a list of applications (https://help.veracode.com/r/c_apps_intro)
+    - to work with Kenna data queries, double quotes in application names are converted to single quotes before being uploaded to Kenna
 1. Pull a list of findings for foreach application and submit to Kenna (https://help.veracode.com/r/c_findings_v2_intro)
 
 

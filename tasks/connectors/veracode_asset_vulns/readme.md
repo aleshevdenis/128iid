@@ -10,6 +10,7 @@ To run this task you need the following information from Veracode:
 The data is batched by Application before being sent to Kenna. 
 
 1. Pull a list of applications (https://help.veracode.com/r/c_apps_intro)
+    - to work with Kenna data queries, double quotes in application names are converted to single quotes before being uploaded to Kenna
 1. Pull a list of assets and vulns for foreach application (https://help.veracode.com/r/c_findings_v2_intro)
 1. Prepare differential of assets from Kenna that are no longer being reported from Veracode for auto-closures.
 1. Submit JSON file for foreach application to Kenna
