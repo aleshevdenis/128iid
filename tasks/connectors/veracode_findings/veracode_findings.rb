@@ -74,7 +74,7 @@ module Kenna
 
         app_list.foreach do |application|
           guid = application.fetch("guid")
-          appname = application.fetch("name")
+          appname = application.fetch("name").gsub('"', "'")
           tags = application.fetch("tags")
           client.issues(guid, appname, tags, page_size)
         end
