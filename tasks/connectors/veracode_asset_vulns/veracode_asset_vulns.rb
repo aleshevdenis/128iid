@@ -99,7 +99,7 @@ module Kenna
 
         app_list.foreach do |application|
           guid = application.fetch("guid")
-          appname = application.fetch("name").gsub('"', "'")
+          appname = application.fetch("name").tr('"', "'")
           tags = application.fetch("tags")
           owner = application.fetch("owner")
           client.issues(guid, appname, tags, owner, page_size, veracode_scan_types)
