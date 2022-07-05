@@ -92,9 +92,7 @@ module Kenna
         print_good "Fetching devices since #{from_date} till #{to_date}"
 
         loop do
-          devices_response = client.get_devices(
-            aql: @armis_aql_query, offset: offset, length: @batch_size, from_date: from_date, to_date: to_date
-          )
+          devices_response = client.get_devices(aql: @armis_aql_query, offset:, length: @batch_size, from_date:, to_date:)
           devices = devices_response["results"]
           if devices.blank?
             print_error("No Devices found")

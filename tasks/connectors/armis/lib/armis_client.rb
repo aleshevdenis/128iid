@@ -47,7 +47,7 @@ module Kenna
               }
             }
 
-            RestClient::Request.execute(method: :get, url: endpoint, headers: headers) if headers["Authorization"]
+            RestClient::Request.execute(method: :get, url: endpoint, headers:) if headers["Authorization"]
           end
 
           response_dict ? response_dict["data"] : {}
@@ -90,7 +90,7 @@ module Kenna
                 "fields": VULNS_FIELDS
               }
             }
-            RestClient::Request.execute(method: :get, url: endpoint, headers: headers) if headers["Authorization"]
+            RestClient::Request.execute(method: :get, url: endpoint, headers:) if headers["Authorization"]
           end
 
           return vulnerability_description_map if response_dict.nil?
@@ -109,7 +109,7 @@ module Kenna
           device_vulnerabilities = {}
           from = 0
 
-          device_ids = devices.map { |device| device["id"] }.compact
+          device_ids = devices.filter_map { |device| device["id"] }
           return device_vulnerabilities if device_ids.empty?
 
           loop do
@@ -123,7 +123,7 @@ module Kenna
                 }
               }
 
-              RestClient::Request.execute(method: :get, url: endpoint, headers: headers) if headers["Authorization"]
+              RestClient::Request.execute(method: :get, url: endpoint, headers:) if headers["Authorization"]
             end
             break if response_dict.nil?
 
@@ -148,7 +148,7 @@ module Kenna
           url = "#{@base_path}#{ACCESS_TOKEN_ENDPOINT}"
           headers = { "params": { "secret_key": @secret_token } }
           begin
-            response = RestClient::Request.execute(method: :post, url: url, headers: headers)
+            response = RestClient::Request.execute(method: :post, url:, headers:)
             json_response = JSON.parse(response)
 
             @access_token = json_response.dig("data", "access_token")
