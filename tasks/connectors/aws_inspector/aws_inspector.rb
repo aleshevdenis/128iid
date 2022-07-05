@@ -158,14 +158,14 @@ module Kenna
         begin
           # do stuff
           inspector = Aws::Inspector::Client.new({
-                                                   region: region,
+                                                   region:,
                                                    credentials: Aws::Credentials.new(access_key, secret_key)
                                                  })
 
           # go get the inspector findings
           finding_arns = inspector.list_findings.finding_arns
           if finding_arns.count.positive?
-            findings = inspector.specialize_findings(finding_arns: finding_arns).findings.map(&:to_hash)
+            findings = inspector.specialize_findings(finding_arns:).findings.map(&:to_hash)
           else
             print_error "No findings? Returning emptyhanded :["
             findings = []

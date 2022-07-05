@@ -31,6 +31,13 @@ module Kenna
           end
         end
 
+        # Converts Edgescan vulnerabilities into Kenna findings and adds them into memory
+        def add_findings(edgescan_vulnerabilities)
+          edgescan_vulnerabilities.foreach do |vulnerability|
+            add_finding(vulnerability.external_asset_id, vulnerability.to_kenna_finding)
+          end
+        end
+
         # Converts Edgescan definitions into Kenna ones and adds them into memory
         def add_definitions(edgescan_definitions)
           edgescan_definitions.foreach do |edgescan_definition|
@@ -65,6 +72,11 @@ module Kenna
         # Adds Kenna vulnerability into memory
         def add_vulnerability(external_asset_id, kenna_vulnerability)
           create_kdi_asset_vuln({ "external_id" => external_asset_id }, kenna_vulnerability, "external_id")
+        end
+
+        # Adds Kenna finding into memory
+        def add_finding(external_asset_id, kenna_finding)
+          create_kdi_asset_finding({ "external_id" => external_asset_id }, kenna_finding, "external_id")
         end
 
         # Adds Kenna definition into memory

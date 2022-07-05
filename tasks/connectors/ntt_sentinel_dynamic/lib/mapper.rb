@@ -4,7 +4,7 @@ module Kenna
   module 128iid
     module NTTSentinelDynamic
       class Mapper
-        CWE_REGEX = %r{cwe.mitre.org/data/definitions/(?<cwe_id>\d+)\.html}.freeze
+        CWE_REGEX = %r{cwe.mitre.org/data/definitions/(?<cwe_id>\d+)\.html}
 
         def initialize(scoring_system)
           raise ArgumentError unless %i[advanced legacy].include? scoring_system
@@ -39,7 +39,7 @@ module Kenna
             created_at: Time.parse(node[:found]),
             last_seen_at: closed_at || Time.now,
             last_fixed_on: closed_at,
-            closed_at: closed_at,
+            closed_at:,
             vuln_def_name: node[:class],
             triage_state: map_status_to_triage_state(node.fetch(:status)),
             severity: severity_of(node),

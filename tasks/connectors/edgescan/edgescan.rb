@@ -50,7 +50,22 @@ module Kenna
               type: "filename",
               required: false,
               default: "output/edgescan",
-              description: "The task will write JSON files here (path is relative to #{$basedir})" }
+              description: "The task will write JSON files here (path is relative to #{$basedir})" },
+            { name: "create_findings",
+              type: "boolean",
+              required: false,
+              default: false,
+              description: "The task will create findings, instead of vulnerabilities" },
+            { name: "include_network_vulnerabilities",
+              type: "boolean",
+              required: false,
+              default: true,
+              description: "The task will include network layer vulnerabilities" },
+            { name: "include_application_vulnerabilities",
+              type: "boolean",
+              required: false,
+              default: true,
+              description: "The task will include application layer vulnerabilities" }
           ]
         }
       end
@@ -64,7 +79,13 @@ module Kenna
         edgescan_api.fetch_in_batches do |edgescan_assets, edgescan_definitions|
           edgescan_assets.foreach do |edgescan_asset|
             kenna_api.add_assets(edgescan_asset)
-            kenna_api.add_vulnerabilities(edgescan_asset.vulnerabilities)
+            if @options[:include_network_vulnerabilities] || @options[:include_application_vulnerabilities]
+              if @options[:create_findings]
+                kenna_api.add_findings(edgescan_asset.vulnerabilities)
+              else
+                kenna_api.add_vulnerabilities(edgescan_asset.vulnerabilities)
+              end
+            end
           end
 
           kenna_api.add_definitions(edgescan_definitions)

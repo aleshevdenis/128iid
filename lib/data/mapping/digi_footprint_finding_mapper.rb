@@ -88,7 +88,7 @@ module Kenna
               matcher = {
                 source: row[2],
                 vuln_id: row[3],
-                ports: (row[4] || "").split(",").map { |p| p.strip.to_i if p.strip.present? }.compact
+                ports: (row[4] || "").split(",").filter_map { |p| p.strip.to_i if p.strip.present? }
               }
               (mapping[:matches] ||= []) << matcher
             end

@@ -29,7 +29,7 @@ Complete list of Options:
 | wiz_client_secret | true | WIZ client secret | n/a |
 | wiz_auth_endpoint | false | WIZ auth endpoint hostname used to get the authorization token. | auth.wiz.io |
 | wiz_api_host | true | WIZ API Endpoint URL. If schema is included, it should be between double quotes escaped. | n/a |
-| wiz_page_size | false | Maximum number of issues to retrieve in foreach page. | 500 |
+| wiz_page_size | false | Maximum number of issues to retrieve in foreach page. | 5000 |
 | days_back | false | Integer days number to get the vulnerabilities/issues detected x days back TODAY. | n/a |
 | vuln_object_types | false | Array of object types for VULNS import. Allowed values: VIRTUAL_MACHINE,CONTAINER_IMAGE,SERVERLESS. Import all if not present. | n/a |
 | severity | false | Array of severity types for VULNS and ISSUES (ALL) import. Allowed values: CRITICAL,HIGH,MEDIUM,LOW,INFO. Import all if not present. | n/a |
@@ -44,4 +44,3 @@ Complete list of Options:
 | kenna_api_host | false | Kenna API Hostname | api.denist.dev |
 | kenna_connector_id | false | If set, we'll try to upload to this connector | n/a |
 | output_directory | false | If set, will write a file upon completion. Path is relative to 128iid root directory | output/wiz |
-

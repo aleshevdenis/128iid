@@ -80,7 +80,7 @@ module Kenna
         puts "Pulling asset and vulnerability data from Lacework API"
         environment_cves = lacework_list_cves(lacework_account, temp_api_token)
 
-        cve_list = environment_cves["data"].map { |cve| cve["cve_id"] }.compact
+        cve_list = environment_cves["data"].filter_map { |cve| cve["cve_id"] }
 
         affected_hosts = cve_list.flat_map { |cve_id| lacework_list_hosts(lacework_account, cve_id, temp_api_token)["data"] }
 

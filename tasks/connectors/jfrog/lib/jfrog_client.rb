@@ -62,7 +62,7 @@ module Kenna
               repositories: repositories.map { |repo| { "name": repo } }
             },
             filters: {
-              severities: severities,
+              severities:,
               scan_date: {
                 start: (Date.today - days_back).to_datetime.iso8601,
                 end: DateTime.now.iso8601

@@ -9,7 +9,7 @@
 
 
 
-| 3rd Party Product | Release Status | Maintained By |
+| 3rd Party Product | Release Status | Created By |
 | --- | --- | --- |
 | [Acunetix360](https://github.com/denistreshchev/128iid/tree/main/tasks/connectors/acunetix360/readme.md) | Pre-Release/Beta | Kenna |
 | [AppScan Cloud](https://github.com/denistreshchev/128iid/tree/main/tasks/connectors/appscan_cloud/readme.md) | Pre-Release/Beta | Kenna |
