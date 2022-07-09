@@ -276,12 +276,12 @@ module Kenna
           ip_address = row[map_ip_address.to_s] # (string) ip_address of internal facing asset
           unless ip_address.nil?
             ip_address.strip!
-            if IPAddress::valid?(ip_address) || ip_address.empty?
-              ##Its valid, Do nothing
+            if IPAddress.valid?(ip_address) || ip_address.empty?
+              ## Its valid, Do nothing
             else
               total_skipped += 1
               puts "#{ip_address} -- ** Invalid IP Address format, record skipped ** Total records skipped: #{total_skipped}"
-              next     ## go to next one in do loop
+              next ## go to next one in do loop
             end
           end
 
@@ -364,11 +364,11 @@ module Kenna
             unless cve_id.nil?
               cve_id.strip!
               if cve_id.match(/^[C,c][V,v][E,e]-\d{4}-\d{4,7}$/) || cve_id.empty?
-                ##Its valid, Do nothing
+                ## Its valid, Do nothing
               else
                 total_skipped += 1
                 puts "#{cve_id} -- ** Invalid CVE format, record skipped ** Total records skipped: #{total_skipped}"
-                next     ## go to next one in do loop
+                next ## go to next one in do loop
               end
             end
 
@@ -378,11 +378,11 @@ module Kenna
             unless cwe_id.nil?
               cwe_id.strip!
               if cwe_id.match(/^[C,c][W,w][E,e]-\d{1,5}$/) || cwe_id.empty?
-                ##Its valid, Do nothing
+                ## Its valid, Do nothing
               else
                 total_skipped += 1
                 puts "#{cwe_id} -- ** Invalid CWE format, record skipped ** Total records skipped: #{total_skipped}"
-                next     ## go to next one in do loop
+                next ## go to next one in do loop
               end
             end
 
@@ -455,7 +455,7 @@ module Kenna
           if kdi_entry_total > @batch_page_size
             filename = "kdiout#{@kenna_connector_id}_#{kdi_subfiles_out += 1}_#{Time.now.strftime('%Y%m%d%H%M%S')}.json"
             kdi_upload @output_dir, filename, @kenna_connector_id, @kenna_api_host, @kenna_api_key, false, @max_retries
-            total_processed = total_processed + kdi_entry_total
+            total_processed += kdi_entry_total
             kdi_entry_total = 0
             print_good "Now I am going to go process some more of your fat CSV input"
           end
@@ -463,7 +463,7 @@ module Kenna
         filename = "kdiout#{@kenna_connector_id}_#{kdi_subfiles_out += 1}_#{Time.now.strftime('%Y%m%d%H%M%S')}.json"
         kdi_upload @output_dir, filename, @kenna_connector_id, @kenna_api_host, @kenna_api_key, false, @max_retries
         run_files_on_kenna_connector @kenna_connector_id, @kenna_api_host, @kenna_api_key, @uploaded_files
-        total_processed = total_processed + kdi_entry_total
+        total_processed += kdi_entry_total
         puts "Total records processed accurately: #{total_processed}"
         puts "Total records failed: #{total_skipped}"
       end
