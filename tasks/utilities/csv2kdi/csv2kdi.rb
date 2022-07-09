@@ -272,7 +272,7 @@ module Kenna
           ##################
           ## kdi_entry_total += 1
           file = row[map_file.to_s] # (string) path to affected file
-          
+
           ip_address = row[map_ip_address.to_s] # (string) ip_address of internal facing asset
           unless ip_address.nil?
             ip_address.strip!
