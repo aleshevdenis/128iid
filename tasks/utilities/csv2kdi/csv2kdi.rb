@@ -89,7 +89,7 @@ module Kenna
               required: false,
               default: 5,
               description: "Use this parameter to change retries on connector actions" },
-              { name: "precheck",
+            { name: "precheck",
               type: "boolean",
               required: false,
               default: false,
@@ -132,50 +132,50 @@ module Kenna
           $mapping_array.compact
         end
         # headers =
-        $date_format_in = ($mapping_array.assoc("date_format").last.to_s).strip
-        $map_locator = ($mapping_array.assoc("locator").last.to_s).strip
-        map_file = ($mapping_array.assoc("file").last.to_s).strip
-        map_ip_address = ($mapping_array.assoc("ip_address").last.to_s).strip
-        map_mac_address = ($mapping_array.assoc("mac_address").last.to_s).strip
-        map_hostname = ($mapping_array.assoc("hostname").last.to_s).strip
-        map_ec2 = ($mapping_array.assoc("ec2").last.to_s).strip
-        map_netbios = ($mapping_array.assoc("netbios").last.to_s).strip
-        map_url = ($mapping_array.assoc("url").last.to_s).strip
-        map_fqdn = ($mapping_array.assoc("fqdn").last.to_s).strip
-        map_external_id = ($mapping_array.assoc("external_id").last.to_s).strip
-        map_database = ($mapping_array.assoc("database").last.to_s).strip
-        map_application = ($mapping_array.assoc("application").last.to_s).strip
-        map_tags = ($mapping_array.assoc("tags").last.to_s).strip
-        map_tag_prefix = ($mapping_array.assoc("tag_prefix").last.to_s).strip
-        map_owner = ($mapping_array.assoc("owner").last.to_s).strip
-        map_os = ($mapping_array.assoc("os").last.to_s).strip
-        map_os_version = ($mapping_array.assoc("os_version").last.to_s).strip
-        map_priority = ($mapping_array.assoc("priority").last.to_s).strip
+        $date_format_in = $mapping_array.assoc("date_format").last.to_s.strip
+        $map_locator = $mapping_array.assoc("locator").last.to_s.strip
+        map_file = $mapping_array.assoc("file").last.to_s.strip
+        map_ip_address = $mapping_array.assoc("ip_address").last.to_s.strip
+        map_mac_address = $mapping_array.assoc("mac_address").last.to_s.strip
+        map_hostname = $mapping_array.assoc("hostname").last.to_s.strip
+        map_ec2 = $mapping_array.assoc("ec2").last.to_s.strip
+        map_netbios = $mapping_array.assoc("netbios").last.to_s.strip
+        map_url = $mapping_array.assoc("url").last.to_s.strip
+        map_fqdn = $mapping_array.assoc("fqdn").last.to_s.strip
+        map_external_id = $mapping_array.assoc("external_id").last.to_s.strip
+        map_database = $mapping_array.assoc("database").last.to_s.strip
+        map_application = $mapping_array.assoc("application").last.to_s.strip
+        map_tags = $mapping_array.assoc("tags").last.to_s.strip
+        map_tag_prefix = $mapping_array.assoc("tag_prefix").last.to_s.strip
+        map_owner = $mapping_array.assoc("owner").last.to_s.strip
+        map_os = $mapping_array.assoc("os").last.to_s.strip
+        map_os_version = $mapping_array.assoc("os_version").last.to_s.strip
+        map_priority = $mapping_array.assoc("priority").last.to_s.strip
 
         if @assets_only == "false" # Added for ASSET ONLY Run
-          map_scanner_source = ($mapping_array.assoc("scanner_source").last.to_s).strip
-          map_scanner_type = ($mapping_array.assoc("scanner_type").last.to_s).strip
-          map_scanner_id = ($mapping_array.assoc("scanner_id").last.to_s).strip
+          map_scanner_source = $mapping_array.assoc("scanner_source").last.to_s.strip
+          map_scanner_type = $mapping_array.assoc("scanner_type").last.to_s.strip
+          map_scanner_id = $mapping_array.assoc("scanner_id").last.to_s.strip
           map_scanner_id.encode!("utf-8")
 
-          map_additional_fields = ($mapping_array.assoc("additional_fields").last.to_s).strip
-          map_details = ($mapping_array.assoc("details").last.to_s).strip
+          map_additional_fields = $mapping_array.assoc("additional_fields").last.to_s.strip
+          map_details = $mapping_array.assoc("details").last.to_s.strip
 
-          map_created = ($mapping_array.assoc("created").last.to_s).strip
-          map_scanner_score = ($mapping_array.assoc("scanner_score").last.to_s).strip
-          map_last_fixed = ($mapping_array.assoc("last_fixed").last.to_s).strip
-          map_last_seen = ($mapping_array.assoc("last_seen").last.to_s).strip
-          map_status = ($mapping_array.assoc("status").last.to_s).strip
-          map_closed = ($mapping_array.assoc("closed").last.to_s).strip
-          map_port = ($mapping_array.assoc("port").last.to_s).strip
-          map_cve_id = ($mapping_array.assoc("cve_id").last.to_s).strip
-          map_wasc_id = ($mapping_array.assoc("wasc_id").last.to_s).strip
-          map_cwe_id = ($mapping_array.assoc("cwe_id").last.to_s).strip
-          map_name = ($mapping_array.assoc("name").last.to_s).strip
-          map_description = ($mapping_array.assoc("description").last.to_s).strip
-          map_solution = ($mapping_array.assoc("solution").last.to_s).strip
-          score_map_string = ($mapping_array.assoc("score_map").last.to_s).strip
-          status_map_string = ($mapping_array.assoc("status_map").last.to_s).strip
+          map_created = $mapping_array.assoc("created").last.to_s.strip
+          map_scanner_score = $mapping_array.assoc("scanner_score").last.to_s.strip
+          map_last_fixed = $mapping_array.assoc("last_fixed").last.to_s.strip
+          map_last_seen = $mapping_array.assoc("last_seen").last.to_s.strip
+          map_status = $mapping_array.assoc("status").last.to_s.strip
+          map_closed = $mapping_array.assoc("closed").last.to_s.strip
+          map_port = $mapping_array.assoc("port").last.to_s.strip
+          map_cve_id = $mapping_array.assoc("cve_id").last.to_s.strip
+          map_wasc_id = $mapping_array.assoc("wasc_id").last.to_s.strip
+          map_cwe_id = $mapping_array.assoc("cwe_id").last.to_s.strip
+          map_name = $mapping_array.assoc("name").last.to_s.strip
+          map_description = $mapping_array.assoc("description").last.to_s.strip
+          map_solution = $mapping_array.assoc("solution").last.to_s.strip
+          score_map_string = $mapping_array.assoc("score_map").last.to_s.strip
+          status_map_string = $mapping_array.assoc("status_map").last.to_s.strip
           score_map = JSON.parse(score_map_string) unless score_map_string.nil? || score_map_string.empty?
           status_map = JSON.parse(status_map_string) unless status_map_string.nil? || status_map_string.empty?
         end
@@ -192,42 +192,74 @@ module Kenna
         @uploaded_files = []
 
         if @precheck
-          csvheaders = CSV.open("#{$basedir}/#{@input_directory}/#{@csv_in}",&:readline)
+          csvheaders = CSV.open("#{$basedir}/#{@input_directory}/#{@csv_in}", &:readline)
           puts ""
           puts "Date format: #{$date_format_in} "
           puts "Locator: #{$map_locator}"
-          colhdr = "file column: '#{map_file}'"; if csvheaders.include?(map_file) then puts "#{colhdr} **Confirmed**" else puts "#{colhdr} **NOT FOUND**" end
-          colhdr = "ip_address column: '#{map_ip_address}'"; if csvheaders.include?(map_ip_address) then puts "#{colhdr} **Confirmed**" else puts "#{colhdr} **NOT FOUND**" end 
-          colhdr = "mac_address column: '#{map_mac_address}'"; if csvheaders.include?(map_mac_address) then puts "#{colhdr} **Confirmed**" else puts "#{colhdr} **NOT FOUND**" end 
-          colhdr = "hostname column: '#{map_hostname}'"; if csvheaders.include?(map_hostname) then puts "#{colhdr} **Confirmed**" else puts "#{colhdr} **NOT FOUND**" end 
-          colhdr = "ec2 column: '#{map_ec2}'"; if csvheaders.include?(map_ec2) then puts "#{colhdr} **Confirmed**" else puts "#{colhdr} **NOT FOUND**" end 
-          colhdr = "netbios column: '#{map_netbios}'"; if csvheaders.include?(map_netbios) then puts "#{colhdr} **Confirmed**" else puts "#{colhdr} **NOT FOUND**" end 
-          colhdr = "url column: '#{map_url}'"; if csvheaders.include?(map_url) then puts "#{colhdr} **Confirmed**" else puts "#{colhdr} **NOT FOUND**" end 
-          colhdr = "fqdn column: '#{map_fqdn}'"; if csvheaders.include?(map_fqdn) then puts "#{colhdr} **Confirmed**" else puts "#{colhdr} **NOT FOUND**" end 
-          colhdr = "external_id column: '#{map_external_id}'"; if csvheaders.include?(map_external_id) then puts "#{colhdr} **Confirmed**" else puts "#{colhdr} **NOT FOUND**" end 
-          colhdr = "database column: '#{map_database}'"; if csvheaders.include?(map_database) then puts "#{colhdr} **Confirmed**" else puts "#{colhdr} **NOT FOUND**" end 
-          colhdr = "application column: '#{map_application}'"; if csvheaders.include?(map_application) then puts "#{colhdr} **Confirmed**" else puts "#{colhdr} **NOT FOUND**" end 
-          colhdr = "tags column: '#{map_tags}'"; if csvheaders.include?(map_tags) then puts "#{colhdr} **Confirmed**" else puts "#{colhdr} **NOT FOUND**" end 
-          colhdr = "owner column: '#{map_owner}'"; if csvheaders.include?(map_owner) then puts "#{colhdr} **Confirmed**" else puts "#{colhdr} **NOT FOUND**" end 
-          colhdr = "os column: '#{map_os}'"; if csvheaders.include?(map_os) then puts "#{colhdr} **Confirmed**" else puts "#{colhdr} **NOT FOUND**" end 
-          colhdr = "os_version column: '#{map_os_version}'"; if csvheaders.include?(map_os_version) then puts "#{colhdr} **Confirmed**" else puts "#{colhdr} **NOT FOUND**" end 
-          colhdr = "priority column: '#{map_priority}'"; if csvheaders.include?(map_priority) then puts "#{colhdr} **Confirmed**" else puts "#{colhdr} **NOT FOUND**" end 
-          colhdr = "scanner_id column: '#{map_scanner_id}'"; if csvheaders.include?(map_scanner_id) then puts "#{colhdr} **Confirmed**" else puts "#{colhdr} **NOT FOUND**" end 
-          colhdr = "additional_fields column: '#{map_additional_fields}'"; if csvheaders.include?(map_additional_fields) then puts "#{colhdr} **Confirmed**" else puts "#{colhdr} **NOT FOUND**" end 
-          colhdr = "details column: '#{map_details}'"; if csvheaders.include?(map_details) then puts "#{colhdr} **Confirmed**" else puts "#{colhdr} **NOT FOUND**" end 
-          colhdr = "created column: '#{map_created}'"; if csvheaders.include?(map_created) then puts "#{colhdr} **Confirmed**" else puts "#{colhdr} **NOT FOUND**" end 
-          colhdr = "scanner_score column: '#{map_scanner_score}'"; if csvheaders.include?(map_scanner_score) then puts "#{colhdr} **Confirmed**" else puts "#{colhdr} **NOT FOUND**" end 
-          colhdr = "last_fixed column: '#{map_last_fixed}'"; if csvheaders.include?(map_last_fixed) then puts "#{colhdr} **Confirmed**" else puts "#{colhdr} **NOT FOUND**" end 
-          colhdr = "last_seen column: '#{map_last_seen}'"; if csvheaders.include?(map_last_seen) then puts "#{colhdr} **Confirmed**" else puts "#{colhdr} **NOT FOUND**" end 
-          colhdr = "status column: '#{map_status}'"; if csvheaders.include?(map_status) then puts "#{colhdr} **Confirmed**" else puts "#{colhdr} **NOT FOUND**" end 
-          colhdr = "closed column: '#{map_closed}'"; if csvheaders.include?(map_closed) then puts "#{colhdr} **Confirmed**" else puts "#{colhdr} **NOT FOUND**" end 
-          colhdr = "port column: '#{map_port}'"; if csvheaders.include?(map_port) then puts "#{colhdr} **Confirmed**" else puts "#{colhdr} **NOT FOUND**" end 
-          colhdr = "cve_id column: '#{map_cve_id}'"; if csvheaders.include?(map_cve_id) then puts "#{colhdr} **Confirmed**" else puts "#{colhdr} **NOT FOUND**" end 
-          colhdr = "wasc_id column: '#{map_wasc_id}'"; if csvheaders.include?(map_wasc_id) then puts "#{colhdr} **Confirmed**" else puts "#{colhdr} **NOT FOUND**" end 
-          colhdr = "cwe_id column: '#{map_cwe_id}'"; if csvheaders.include?(map_cwe_id) then puts "#{colhdr} **Confirmed**" else puts "#{colhdr} **NOT FOUND**" end 
-          colhdr = "name column: '#{map_name}'"; if csvheaders.include?(map_name) then puts "#{colhdr} **Confirmed**" else puts "#{colhdr} **NOT FOUND**" end 
-          colhdr = "description column: '#{map_description}'"; if csvheaders.include?(map_description) then puts "#{colhdr} **Confirmed**" else puts "#{colhdr} **NOT FOUND**" end 
-          colhdr = "solution column: '#{map_solution}'"; if csvheaders.include?(map_solution) then puts "#{colhdr} **Confirmed**" else puts "#{colhdr} **NOT FOUND**" end 
+          colhdr = "file column: '#{map_file}'"
+          csvheaders.include?(map_file) ? (puts "#{colhdr} **Confirmed**") : (puts "#{colhdr} **NOT FOUND**")
+          colhdr = "ip_address column: '#{map_ip_address}'"
+          csvheaders.include?(map_ip_address) ? (puts "#{colhdr} **Confirmed**") : (puts "#{colhdr} **NOT FOUND**")
+          colhdr = "mac_address column: '#{map_mac_address}'"
+          csvheaders.include?(map_mac_address) ? (puts "#{colhdr} **Confirmed**") : (puts "#{colhdr} **NOT FOUND**")
+          colhdr = "hostname column: '#{map_hostname}'"
+          csvheaders.include?(map_hostname) ? (puts "#{colhdr} **Confirmed**") : (puts "#{colhdr} **NOT FOUND**")
+          colhdr = "ec2 column: '#{map_ec2}'"
+          csvheaders.include?(map_ec2) ? (puts "#{colhdr} **Confirmed**") : (puts "#{colhdr} **NOT FOUND**")
+          colhdr = "netbios column: '#{map_netbios}'"
+          csvheaders.include?(map_netbios) ? (puts "#{colhdr} **Confirmed**") : (puts "#{colhdr} **NOT FOUND**")
+          colhdr = "url column: '#{map_url}'"
+          csvheaders.include?(map_url) ? (puts "#{colhdr} **Confirmed**") : (puts "#{colhdr} **NOT FOUND**")
+          colhdr = "fqdn column: '#{map_fqdn}'"
+          csvheaders.include?(map_fqdn) ? (puts "#{colhdr} **Confirmed**") : (puts "#{colhdr} **NOT FOUND**")
+          colhdr = "external_id column: '#{map_external_id}'"
+          csvheaders.include?(map_external_id) ? (puts "#{colhdr} **Confirmed**") : (puts "#{colhdr} **NOT FOUND**")
+          colhdr = "database column: '#{map_database}'"
+          csvheaders.include?(map_database) ? (puts "#{colhdr} **Confirmed**") : (puts "#{colhdr} **NOT FOUND**")
+          colhdr = "application column: '#{map_application}'"
+          csvheaders.include?(map_application) ? (puts "#{colhdr} **Confirmed**") : (puts "#{colhdr} **NOT FOUND**")
+          colhdr = "tags column: '#{map_tags}'"
+          csvheaders.include?(map_tags) ? (puts "#{colhdr} **Confirmed**") : (puts "#{colhdr} **NOT FOUND**")
+          colhdr = "owner column: '#{map_owner}'"
+          csvheaders.include?(map_owner) ? (puts "#{colhdr} **Confirmed**") : (puts "#{colhdr} **NOT FOUND**")
+          colhdr = "os column: '#{map_os}'"
+          csvheaders.include?(map_os) ? (puts "#{colhdr} **Confirmed**") : (puts "#{colhdr} **NOT FOUND**")
+          colhdr = "os_version column: '#{map_os_version}'"
+          csvheaders.include?(map_os_version) ? (puts "#{colhdr} **Confirmed**") : (puts "#{colhdr} **NOT FOUND**")
+          colhdr = "priority column: '#{map_priority}'"
+          csvheaders.include?(map_priority) ? (puts "#{colhdr} **Confirmed**") : (puts "#{colhdr} **NOT FOUND**")
+          colhdr = "scanner_id column: '#{map_scanner_id}'"
+          csvheaders.include?(map_scanner_id) ? (puts "#{colhdr} **Confirmed**") : (puts "#{colhdr} **NOT FOUND**")
+          colhdr = "additional_fields column: '#{map_additional_fields}'"
+          csvheaders.include?(map_additional_fields) ? (puts "#{colhdr} **Confirmed**") : (puts "#{colhdr} **NOT FOUND**")
+          colhdr = "details column: '#{map_details}'"
+          csvheaders.include?(map_details) ? (puts "#{colhdr} **Confirmed**") : (puts "#{colhdr} **NOT FOUND**")
+          colhdr = "created column: '#{map_created}'"
+          csvheaders.include?(map_created) ? (puts "#{colhdr} **Confirmed**") : (puts "#{colhdr} **NOT FOUND**")
+          colhdr = "scanner_score column: '#{map_scanner_score}'"
+          csvheaders.include?(map_scanner_score) ? (puts "#{colhdr} **Confirmed**") : (puts "#{colhdr} **NOT FOUND**")
+          colhdr = "last_fixed column: '#{map_last_fixed}'"
+          csvheaders.include?(map_last_fixed) ? (puts "#{colhdr} **Confirmed**") : (puts "#{colhdr} **NOT FOUND**")
+          colhdr = "last_seen column: '#{map_last_seen}'"
+          csvheaders.include?(map_last_seen) ? (puts "#{colhdr} **Confirmed**") : (puts "#{colhdr} **NOT FOUND**")
+          colhdr = "status column: '#{map_status}'"
+          csvheaders.include?(map_status) ? (puts "#{colhdr} **Confirmed**") : (puts "#{colhdr} **NOT FOUND**")
+          colhdr = "closed column: '#{map_closed}'"
+          csvheaders.include?(map_closed) ? (puts "#{colhdr} **Confirmed**") : (puts "#{colhdr} **NOT FOUND**")
+          colhdr = "port column: '#{map_port}'"
+          csvheaders.include?(map_port) ? (puts "#{colhdr} **Confirmed**") : (puts "#{colhdr} **NOT FOUND**")
+          colhdr = "cve_id column: '#{map_cve_id}'"
+          csvheaders.include?(map_cve_id) ? (puts "#{colhdr} **Confirmed**") : (puts "#{colhdr} **NOT FOUND**")
+          colhdr = "wasc_id column: '#{map_wasc_id}'"
+          csvheaders.include?(map_wasc_id) ? (puts "#{colhdr} **Confirmed**") : (puts "#{colhdr} **NOT FOUND**")
+          colhdr = "cwe_id column: '#{map_cwe_id}'"
+          csvheaders.include?(map_cwe_id) ? (puts "#{colhdr} **Confirmed**") : (puts "#{colhdr} **NOT FOUND**")
+          colhdr = "name column: '#{map_name}'"
+          csvheaders.include?(map_name) ? (puts "#{colhdr} **Confirmed**") : (puts "#{colhdr} **NOT FOUND**")
+          colhdr = "description column: '#{map_description}'"
+          csvheaders.include?(map_description) ? (puts "#{colhdr} **Confirmed**") : (puts "#{colhdr} **NOT FOUND**")
+          colhdr = "solution column: '#{map_solution}'"
+          csvheaders.include?(map_solution) ? (puts "#{colhdr} **Confirmed**") : (puts "#{colhdr} **NOT FOUND**")
 
           puts "Ending processing of pre-check request"
           return
@@ -242,7 +274,7 @@ module Kenna
           file = row[map_file.to_s] # (string) path to affected file
           
           ip_address = row[map_ip_address.to_s] # (string) ip_address of internal facing asset
-          if !ip_address.nil? 
+          unless ip_address.nil?
             ip_address.strip!
             if IPAddress::valid?(ip_address) || ip_address.empty?
               ##Its valid, Do nothing
@@ -329,7 +361,7 @@ module Kenna
             ############################
 
             cve_id = (row[map_cve_id.to_s]) # (string) Any CVE(s)?
-            if !cve_id.nil?
+            unless cve_id.nil?
               cve_id.strip!
               if cve_id.match(/^[C,c][V,v][E,e]-\d{4}-\d{4,7}$/) || cve_id.empty?
                 ##Its valid, Do nothing
@@ -343,7 +375,7 @@ module Kenna
             wasc_id = row[map_wasc_id.to_s] # (string) Any WASC?
 
             cwe_id = (row[map_cwe_id.to_s]) # (string) Any CWE?
-            if !cwe_id.nil? 
+            unless cwe_id.nil?
               cwe_id.strip!
               if cwe_id.match(/^[C,c][W,w][E,e]-\d{1,5}$/) || cwe_id.empty?
                 ##Its valid, Do nothing
