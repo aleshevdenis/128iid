@@ -196,6 +196,7 @@ module Kenna
           puts ""
           puts "Date format: #{$date_format_in} "
           puts "Locator: #{$map_locator}"
+          map_scanner_type.empty? ? (puts "**Scanner Type is empty and is a mandatory field - **DANGER** It will die!!**") : (puts "scanner type: #{map_scanner_type}") 
           colhdr = "file column: '#{map_file}'"
           csvheaders.include?(map_file) ? (puts "#{colhdr} **Confirmed**") : (puts "#{colhdr} **NOT FOUND**")
           colhdr = "ip_address column: '#{map_ip_address}'"
@@ -280,7 +281,7 @@ module Kenna
               ## Its valid, Do nothing
             else
               total_skipped += 1
-              puts "#{ip_address} -- ** Invalid IP Address format, record skipped ** Total records skipped: #{total_skipped}"
+              puts "#{ip_address} -- at ~ line #{(total_skipped + total_processed + kdi_entry_total + 1)} ** Invalid IP Address format, record skipped ** Total records skipped: #{total_skipped}"
               next ## go to next one in do loop
             end
           end
@@ -333,10 +334,10 @@ module Kenna
                            else
                              row[map_scanner_type.to_s] # (string) - default is freeform if nil from CSV
                            end
-            raise "No scanner type found-check meta file mapping or input file column!" unless !scanner_type.nil? && !scanner_type.empty?
+            raise "No scanner type found: Check meta file mapping !!" unless !scanner_type.nil? && !scanner_type.empty?
 
             scanner_id = row[map_scanner_id.to_s]
-            raise "No scanner id found-check meta file mapping or input file column!!" unless !scanner_id.nil? && !scanner_id.empty?
+            raise "No scanner id found: Check meta file mapping or input file column at ~ line #{(total_skipped + total_processed + kdi_entry_total + 2)}!!" unless !scanner_id.nil? && !scanner_id.empty?
 
             details = row[map_details.to_s] # (string) - Details about vuln
             created = row[map_created.to_s]
@@ -367,7 +368,7 @@ module Kenna
                 ## Its valid, Do nothing
               else
                 total_skipped += 1
-                puts "#{cve_id} -- ** Invalid CVE format, record skipped ** Total records skipped: #{total_skipped}"
+                puts "#{cve_id} -- at ~ line #{(total_skipped + total_processed + kdi_entry_total + 1)} ** Invalid CVE format, record skipped ** Total records skipped: #{total_skipped}"
                 next ## go to next one in do loop
               end
             end
@@ -381,7 +382,7 @@ module Kenna
                 ## Its valid, Do nothing
               else
                 total_skipped += 1
-                puts "#{cwe_id} -- ** Invalid CWE format, record skipped ** Total records skipped: #{total_skipped}"
+                puts "#{cwe_id} -- at ~ line #{(total_skipped + total_processed + kdi_entry_total + 1)} ** Invalid CWE format, record skipped ** Total records skipped: #{total_skipped}"
                 next ## go to next one in do loop
               end
             end
@@ -421,9 +422,9 @@ module Kenna
                 col = col.gsub(/\A['"]+|['"]+\Z/, "")
                 if !row[col].nil? && !row[col].empty?
                   if additional_fields.nil?
-                    additional_fields = { col => row[col] }
+                    additional_fields = JSON.pretty_generate({ col => row[col] })
                   else
-                    additional_fields.merge!({ col => row[col] })
+                    JSON.pretty_generate(additional_fields.merge!({ col => row[col] }))
                   end
                 end
               end
