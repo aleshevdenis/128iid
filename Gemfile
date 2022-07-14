@@ -22,6 +22,7 @@ gem "sanitize"
 gem "tty-pager"
 gem "httparty"
 gem "rexml", ">= 3.2.5"
+gem "ipaddress"
 
 group :development, :test do
   gem "pry"
