@@ -96,6 +96,7 @@ module Kenna
             next unless a[:key] == "CVE_ID"
 
             # if so, create vuln and attach to asset
+            fail_task "#{a.inspect} #{f.inspect}"
             create_asset_vuln fqdn, a[:value], f[:numericSeverity], f[:title]
 
             # also create the vuln def if we dont already have it (function handles dedupe)
