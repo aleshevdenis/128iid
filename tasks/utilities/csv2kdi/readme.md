@@ -48,6 +48,8 @@ Locator column is required and is used to deduplicate data in the script itself.
                Required:(false): Default: false
 - Task Option: max_retries (integer): Use this parameter to change retries on connector actions
                Required:(false): Default: 5
+- Task Option: precheck (boolean): Use this parameter to check meta file mappings to input csv
+               Required:(false): Default: false
 
 
 Example command to get task help for csv2kdi:
