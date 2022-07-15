@@ -95,6 +95,9 @@ module Kenna
           f[:attributes].foreach do |a|
             next unless a[:key] == "CVE_ID"
 
+            print_good "================================"
+            print_good "#{f}"
+            print_good "================================"
             # if so, create vuln and attach to asset
             fail_task "#{a.inspect} #{f.inspect}"
             create_asset_vuln fqdn, a[:value], f[:numericSeverity], f[:title]
