@@ -5,10 +5,6 @@ require "aws-sdk-inspector"
 module Kenna
   module 128iid
     class AwsInspectorToKdi < Kenna::128iid::BaseTask
-      ###
-      ### TODO ... needs to be converted to KDI helpers
-      ###
-
       def self.metadata
         {
           id: "aws_inspector",
@@ -64,26 +60,35 @@ module Kenna
 
       def run(opts)
         super # opts -> @options
+        initialize_options
+        initialize_client
 
-        # Get options
-        kenna_api_host = @options[:kenna_api_host]
-        kenna_api_key = @options[:kenna_api_key]
-        kenna_connector_id = @options[:kenna_connector_id]
-        aws_region = @options[:aws_region]
-        aws_access_key = @options[:aws_access_key]
-        aws_secret_key = @options[:aws_secret_key]
-
-        # iterate through the findings, looking for CVEs
-        print_good "Getting inspector findings"
         @assets = []
         @vuln_defs = []
-        get_inspector_findings(aws_region, aws_access_key, aws_secret_key).foreach do |f|
+
+        findings = get_inspector_findings
+
+        create_assets_vulns_and_vuln_defs(findings)
+
+        output_dir = "#{$basedir}/#{@options[:output_directory]}"
+        filename = "inspector.kdi.json"
+        write_to_file(output_dir, filename)
+        upload_file_to_kenna_connector @kenna_connector_id, @kenna_api_host, @kenna_api_key, "#{output_dir}/#{filename}"
+      end
+
+      def write_to_file(output_dir, filename)
+        kdi_output = { skip_autoclose: false, version: 2, assets: @assets, vuln_defs: @vuln_defs }
+        # actually write it
+        write_file output_dir, filename, JSON.pretty_generate(kdi_output)
+        print_good "Output is available at: #{output_dir}/#{filename}"
+      end
+
+      def create_assets_vulns_and_vuln_defs(findings)
+        findings.foreach do |f|
           # create an asset with our locators (regardless of whether we have vulns)
           fqdn = f[:asset_attributes][:hostname]
           instance_id = f[:attributes].find { |a| a[:key] == "INSTANCE_ID" }[:value]
 
-          # this function hackily handles dedupe
-          print_good "Creating asset: #{fqdn}"
           create_asset fqdn, instance_id
 
           # and look through our finding's attributes to see if we have any CVEs
@@ -97,29 +102,13 @@ module Kenna
             create_vuln_def a[:value], f[:title]
           end
         end
-
-        ####
-        # Write KDI format
-        ####
-        kdi_output = { skip_autoclose: false, version: 2, assets: @assets, vuln_defs: @vuln_defs }
-        output_dir = "#{$basedir}/#{@options[:output_directory]}"
-        filename = "inspector.kdi.json"
-        # actually write it
-        write_file output_dir, filename, JSON.pretty_generate(kdi_output)
-        print_good "Output is available at: #{output_dir}/#{filename}"
-
-        ####
-        ### Finish by uploading if we're all configured
-        ####
-        return unless kenna_connector_id && kenna_api_host && kenna_api_key
-
-        print_good "Attempting to upload to Kenna API at #{kenna_api_host}"
-        upload_file_to_kenna_connector kenna_connector_id, kenna_api_host, kenna_api_key, "#{output_dir}/#{filename}"
       end
 
       def create_asset(fqdn, instance_id)
         # if we already have it, skip
         return unless @assets.select { |a| a[:fqdn] == fqdn }.empty?
+
+        print_good "Creating asset: #{fqdn}"
 
         @assets << {
           fqdn: fqdn.to_s,
@@ -157,29 +146,37 @@ module Kenna
         }
       end
 
-      def get_inspector_findings(region, access_key, secret_key)
-        begin
-          # do stuff
-          inspector = Aws::Inspector::Client.new({
-                                                   region:,
-                                                   credentials: Aws::Credentials.new(access_key, secret_key)
-                                                 })
+      def get_inspector_findings
+        print_good "Getting inspector findings"
 
-          # go get the inspector findings
-          finding_arns = inspector.list_findings.finding_arns
-          if finding_arns.count.positive?
-            findings = inspector.specialize_findings(finding_arns:).findings.map(&:to_hash)
-          else
-            print_error "No findings? Returning emptyhanded :["
-            findings = []
-          end
-        rescue Aws::Inspector::Errors::ServiceError => e
-          # rescues all errors returned by Amazon Inspector
-          print_error "Irrecoverable error connecting to AWS!"
-          fail_task e.inspect
+        finding_arns = @client.list_findings.finding_arns
+        if finding_arns.count.positive?
+          findings = @client.specialize_findings(finding_arns:).findings.map(&:to_hash)
+        else
+          print_error "No findings? Returning emptyhanded :["
+          findings = []
         end
-
         findings
+      rescue Aws::Inspector::Errors::ServiceError => e
+        # rescues all errors returned by Amazon Inspector
+        print_error "Irrecoverable error connecting to AWS!"
+        fail_task e.inspect
+      end
+
+      def initialize_options
+        @kenna_api_host = @options[:kenna_api_host]
+        @kenna_api_key = @options[:kenna_api_key]
+        @kenna_connector_id = @options[:kenna_connector_id]
+        @aws_region = @options[:aws_region]
+        @aws_access_key = @options[:aws_access_key]
+        @aws_secret_key = @options[:aws_secret_key]
+      end
+
+      def initialize_client
+        @client = Aws::Inspector::Client.new({
+                                                 region: @aws_region,
+                                                 credentials: Aws::Credentials.new(@aws_access_key, @aws_secret_key)
+                                               })
       end
     end
   end
