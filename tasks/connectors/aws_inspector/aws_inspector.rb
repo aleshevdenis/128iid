@@ -91,10 +91,7 @@ module Kenna
             next unless a[:key] == "CVE_ID"
 
             # if so, create vuln and attach to asset
-            print_good "=============================="
-            print_good f.inspect
-            print_good "=============================="
-            create_asset_vuln fqdn, a[:value], f[:numericSeverity], f[:title]
+            create_asset_vuln fqdn, a[:value], f[:numeric_severity], f[:title]
 
             # also create the vuln def if we dont already have it (function handles dedupe)
             create_vuln_def a[:value], f[:title]
@@ -138,15 +135,17 @@ module Kenna
         asset = @assets.find { |a| a[:fqdn] == fqdn }
         return unless asset[:vulns].select { |v| v[:scanner_identifier] == cve_id }.empty?
 
-        asset[:vulns] << {
+        vuln = {
           scanner_identifier: cve_id.to_s,
-          scanner_score: numeric_severity.round.to_i,
           scanner_type: "AWS Inspector",
           created_at: DateTime.now,
           last_seen_at: DateTime.now,
           status: "open",
           vuln_def_name: title
         }
+        vuln.merge(scanner_score: numeric_severity.round.to_i) if numeric_severity
+
+        asset[:vulns] << vuln
       end
 
       def create_vuln_def(cve_id, title)
