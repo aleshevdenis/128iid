@@ -32,11 +32,11 @@ module Kenna
         private
 
         def submissions_url(options = {})
-          params_string = "page[offset]=:offset&page[limit]=:limit&filter[duplicate]=:include_duplicated"\
-                          "&filter[severity]=:severity&filter[state]=:state&filter[source]=:source&filter[submitted]=:submitted"\
-                          "&fields[submission]=bug_url,custom_fields,description,extra_info,http_request,remediation_advice,"\
-                          "source,submitted_at,title,vrt_id,vrt_version,vulnerability_references,severity,state,target,"\
-                          "program,cvss_vector&fields[organization]=name&fields[target]=name,category&include=target,program,"\
+          params_string = "page[offset]=:offset&page[limit]=:limit&filter[duplicate]=:include_duplicated" \
+                          "&filter[severity]=:severity&filter[state]=:state&filter[source]=:source&filter[submitted]=:submitted" \
+                          "&fields[submission]=bug_url,custom_fields,description,extra_info,http_request,remediation_advice," \
+                          "source,submitted_at,title,vrt_id,vrt_version,vulnerability_references,severity,state,target," \
+                          "program,cvss_vector&fields[organization]=name&fields[target]=name,category&include=target,program," \
                           "program.organization,cvss_vector&fields[program]=name,organization"
           defaults = { severity: "", state: "", submitted: "" }
           params = fill_params(params_string, defaults.merge(options))
