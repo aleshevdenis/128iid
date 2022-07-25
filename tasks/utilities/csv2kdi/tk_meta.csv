@@ -1,8 +1,8 @@
 Kenna Item,Associated Source File Column,Required,Description,Object Type
 date_format,%FT%T%:z,,,
 locator,hostname,,field used to compare for dupes for this file load only,Asset
-file,,one value per Asset is required,(string) path to affected file,Asset
-ip_address,,one value per Asset is required,(string) IP of internal facing asset,Asset
+file,,One locator required per asset,(string) path to affected file,Asset
+ip_address,,One locator required per asset,(string) IP of internal facing asset,Asset
 mac_address,,one value per Asset is required,(mac format-regex) MAC address asset,Asset
 hostname,Trusted Peer,one value per Asset is required,(string) host name/domain name of affected asset,Asset
 ec2,,one value per Asset is required,(string) Amazon EC2 instance id or name,Asset

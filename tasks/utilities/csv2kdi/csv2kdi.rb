@@ -363,8 +363,9 @@ module Kenna
 
             cve_id = (row[map_cve_id.to_s]) # (string) Any CVE(s)?
             unless cve_id.nil?
-              cve_id.strip!
-              if cve_id.match(/^[C,c][V,v][E,e]-\d{4}-\d{4,7}$/) || cve_id.empty?
+              cve_id.gsub!(/\s+/, "")
+              cve_id.gsub!(/[cve]/, &:upcase)
+              if cve_id.match(/^[C,c][V,v][E,e]-/) || cve_id.empty?
                 ## Its valid, Do nothing
               else
                 total_skipped += 1
@@ -377,8 +378,9 @@ module Kenna
 
             cwe_id = (row[map_cwe_id.to_s]) # (string) Any CWE?
             unless cwe_id.nil?
-              cwe_id.strip!
-              if cwe_id.match(/^[C,c][W,w][E,e]-\d{1,5}$/) || cwe_id.empty?
+              cwe_id.gsub!(/\s+/, "")
+              cwe_id.gsub!(/[cwe]/, &:upcase)
+              if cwe_id.match(/^[C,c][W,w][E,e]-/) || cwe_id.empty?
                 ## Its valid, Do nothing
               else
                 total_skipped += 1
