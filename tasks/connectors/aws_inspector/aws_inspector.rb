@@ -91,17 +91,17 @@ module Kenna
             next unless a[:key] == "CVE_ID"
 
             # if so, create vuln and attach to asset
-            create_asset_vuln fqdn, a[:value]
+            create_asset_vuln fqdn, a[:value], f[:numeric_severity], f[:title]
 
             # also create the vuln def if we dont already have it (function handles dedupe)
-            create_vuln_def a[:value]
+            create_vuln_def a[:value], f[:title]
           end
         end
 
         ####
         # Write KDI format
         ####
-        kdi_output = { skip_autoclose: false, assets: @assets, vuln_defs: @vuln_defs }
+        kdi_output = { skip_autoclose: false, version: 2, assets: @assets, vuln_defs: @vuln_defs }
         output_dir = "#{$basedir}/#{@options[:output_directory]}"
         filename = "inspector.kdi.json"
         # actually write it
@@ -130,27 +130,32 @@ module Kenna
         }
       end
 
-      def create_asset_vuln(fqdn, cve_id)
+      def create_asset_vuln(fqdn, cve_id, numeric_severity, title)
         # check to make sure it doesnt exist
         asset = @assets.find { |a| a[:fqdn] == fqdn }
         return unless asset[:vulns].select { |v| v[:scanner_identifier] == cve_id }.empty?
 
-        asset[:vulns] << {
+        vuln = {
           scanner_identifier: cve_id.to_s,
           scanner_type: "AWS Inspector",
           created_at: DateTime.now,
           last_seen_at: DateTime.now,
-          status: "open"
+          status: "open",
+          vuln_def_name: title
         }
+        vuln.merge(scanner_score: numeric_severity.round.to_i) if numeric_severity
+
+        asset[:vulns] << vuln
       end
 
-      def create_vuln_def(cve_id)
+      def create_vuln_def(cve_id, title)
         return unless @vuln_defs.select { |a| a[:cve_identifiers] == cve_id }.empty?
 
         @vuln_defs << {
           scanner_identifier: cve_id.to_s,
           scanner_type: "AWS Inspector",
-          cve_identifiers: cve_id.to_s
+          cve_identifiers: cve_id.to_s,
+          name: title
         }
       end
 
