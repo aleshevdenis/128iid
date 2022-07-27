@@ -169,7 +169,7 @@ If you wish to upload the /output folder to your local development environment, 
 
 `bundle exec ruby 128iid.rb task=your-task kenna_api_host=your-local-api-host`
 
-Prerequisites: version of ruby that is specified in `.ruby-version`
+Prerequisites: API token generated in UI, version of ruby that is specified in `.ruby-version`
 
 
 
