@@ -164,6 +164,13 @@ Please send all 128iid feature requests to denistreshchev@gmail.com
 
 You are free to make changes to this project by making your local copy without any problems
 
+## QA
+If you wish to upload the /output folder to your local development environment, run:
+
+`bundle exec ruby 128iid.rb task=your-task kenna_api_host=your-local-api-host`
+
+Prerequisites: version of ruby that is specified in `.ruby-version`
+
 
 
 
