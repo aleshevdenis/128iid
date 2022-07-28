@@ -1,3 +1,7 @@
+## Support
+
+All issues and inquiries relating to this 128iid implementation must contact Armis support at `support@armis.com`.
+
 ## Prerequisites
 
 This task with communicate with Armis and Kenna APIs. To run the task you will need
@@ -77,7 +81,3 @@ Complete list of Options:
 ## Armis - Kenna Mapping Information
 
 Please go through [data mapping document](kenna-armis-mapping.pdf) to understand which fields gets synced through this connector.
-
-## Support 
-
-In case of any queries, please rforeach out to support@armis.com.
