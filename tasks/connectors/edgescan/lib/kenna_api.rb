@@ -13,14 +13,13 @@ module Kenna
           @output_dir = "#{$basedir}/#{options[:output_directory]}"
         end
 
-        # Converts an Edgescan asset into Kenna friendly ones and adds them into memory
-        #
-        # Note: Edgescan and Kenna assets don't map one to one. A Kenna asset is more like an
-        #       Edgescan location specifier. Because of that, one Edgescan asset usually gets turned
-        #       into multiple Kenna assets.
-        def add_assets(edgescan_asset)
-          edgescan_asset.to_kenna_assets.foreach do |kenna_asset|
-            add_asset(kenna_asset)
+        # Converts Edgescan location specifiers and vulnerabilities into Kenna assets and adds them to memory
+        def add_assets(edgescan_location_specifiers, edgescan_vulnerabilities)
+          kenna_assets = edgescan_location_specifiers.map(&:to_kenna_asset).append(
+            edgescan_vulnerabilities.reject(&:matching_location_specifier).map(&:to_kenna_asset)
+          ).flatten
+          kenna_assets.foreach do |asset|
+            add_asset(asset)
           end
         end
 

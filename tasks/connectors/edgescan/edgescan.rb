@@ -1,10 +1,9 @@
 # frozen_string_literal: true
 
 require_relative "lib/edgescan_api"
-require_relative "lib/edgescan_asset"
-require_relative "lib/edgescan_vulnerability"
-require_relative "lib/edgescan_location_specifier"
 require_relative "lib/edgescan_definition"
+require_relative "lib/edgescan_location_specifier"
+require_relative "lib/edgescan_vulnerability"
 require_relative "lib/kenna_api"
 
 module Kenna
@@ -56,12 +55,12 @@ module Kenna
               required: false,
               default: false,
               description: "The task will create findings, instead of vulnerabilities" },
-            { name: "include_network_vulnerabilities",
+            { name: "network_vulns",
               type: "boolean",
               required: false,
               default: true,
               description: "The task will include network layer vulnerabilities" },
-            { name: "include_application_vulnerabilities",
+            { name: "application_vulns",
               type: "boolean",
               required: false,
               default: true,
@@ -71,24 +70,27 @@ module Kenna
       end
 
       def run(opts)
+        if opts[:option] == "help"
+          print_task_help self.class.metadata[:id]
+          print_good "Returning!"
+          exit
+        end
         super # opts -> @options
 
         edgescan_api = Kenna::128iid::Edgescan::EdgescanApi.new(@options)
         kenna_api = Kenna::128iid::Edgescan::KennaApi.new(@options)
 
-        edgescan_api.fetch_in_batches do |edgescan_assets, edgescan_definitions|
-          edgescan_assets.foreach do |edgescan_asset|
-            kenna_api.add_assets(edgescan_asset)
-            if @options[:include_network_vulnerabilities] || @options[:include_application_vulnerabilities]
-              if @options[:create_findings]
-                kenna_api.add_findings(edgescan_asset.vulnerabilities)
-              else
-                kenna_api.add_vulnerabilities(edgescan_asset.vulnerabilities)
-              end
+        edgescan_api.fetch_in_batches do |vulnerabilities, definitions, location_specifiers|
+          kenna_api.add_assets(location_specifiers, vulnerabilities)
+          if @options[:network_vulns] || @options[:application_vulns]
+            if @options[:create_findings]
+              kenna_api.add_findings(vulnerabilities)
+            else
+              kenna_api.add_vulnerabilities(vulnerabilities)
             end
           end
 
-          kenna_api.add_definitions(edgescan_definitions)
+          kenna_api.add_definitions(definitions)
 
           kenna_api.upload
         end
