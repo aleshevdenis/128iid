@@ -127,7 +127,8 @@ module Kenna
         $mapping_array = []
         $date_format_in = ""
 
-        CSV.parse(File.open("#{$basedir}/#{@input_directory}/#{@meta_file}", "r:iso-8859-1:utf-8", &:read), headers: @has_header.eql?("true") ? true : false) do |row|
+        CSV.parse(File.open("#{$basedir}/#{@input_directory}/#{@meta_file}", "r:iso-8859-1:utf-8", &:read),
+                  headers: @has_header.eql?("true") ? true : false, liberal_parsing: true) do |row|
           $mapping_array << Array[row[0], row[1]]
           $mapping_array.compact
         end
@@ -265,7 +266,8 @@ module Kenna
           puts "Ending processing of pre-check request"
           return
         end
-        CSV.parse(File.open("#{$basedir}/#{@input_directory}/#{@csv_in}", "r:bom|utf-8", &:read), headers: @has_header) do |row|
+        CSV.parse(File.open("#{$basedir}/#{@input_directory}/#{@csv_in}", "r:bom|utf-8", &:read),
+                  headers: @has_header, liberal_parsing: true) do |row|
           ##################
           #  CSV MAPPINGS  #
           ##################
