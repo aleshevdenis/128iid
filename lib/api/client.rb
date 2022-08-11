@@ -152,9 +152,11 @@ module Kenna
           )
 
           query_response_json = JSON.parse(query_response.body)
-          if query_response_json.fetch("success")
+          if query_response_json.fetch("success")=="true"
             print_good "Success!"
             File.delete(filepath) unless debug
+          else
+            raise StandardError.new("File upload failed. kenna response: #{query_response_json}")
           end
 
           running = true
@@ -191,13 +193,11 @@ module Kenna
             print_error "Max retries hit, failing with... #{e}"
             return
           end
-        rescue RestClient::UnprocessableEntity => e
-          print_error "Unprocessable Entity: #{e.message}..."
         rescue RestClient::BadRequest => e
           print_error "Bad Request: #{e.message}... #{e}"
         rescue RestClient::Unauthorized => e
           print_error "Unauthorized: #{e.message}... #{e}"
-        rescue RestClient::Exception, StandardError => e
+        rescue RestClient::Exception, RestClient::UnprocessableEntity, StandardError => e
           print_error "Unknown Exception: #{e}"
           puts e.backtrace
           print_error "Are you sure you provided a valid connector id?"
@@ -272,13 +272,11 @@ module Kenna
           connector_run_status_json = JSON.parse(connector_run_status_response)
         rescue RestClient::Exceptions::OpenTimeout => e
           print_error "Timeout: #{e.message}..."
-        rescue RestClient::UnprocessableEntity => e
-          print_error "Unprocessable Entity: #{e.message}..."
         rescue RestClient::BadRequest => e
           print_error "Bad Request: #{e.message}... #{e}"
         rescue RestClient::Unauthorized => e
           print_error "Unauthorized: #{e.message}... #{e}"
-        rescue RestClient::Exception, StandardError => e
+        rescue RestClient::Exception, RestClient::UnprocessableEntity, StandardError => e
           print_error "Unknown Exception: #{e}"
           print_error "Are you sure you provided a valid connector id?"
 
