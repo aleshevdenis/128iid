@@ -153,11 +153,9 @@ module Kenna
 
           query_response_json = JSON.parse(query_response.body)
           raise StandardError "File upload failed. kenna response: #{query_response_json}" unless query_response_json.fetch("success") == "true"
-          
+
           print_good "Success!"
           File.delete(filepath) unless debug
-
-
           running = true
 
           if run_now
