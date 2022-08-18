@@ -17,13 +17,6 @@ module Kenna
           @page_size = page_size
         end
 
-        def api_key_valid?
-          get("/", retries: 0)
-          true
-        rescue Error
-          false
-        end
-
         def vulns(filters = {}, &)
           query = {
             "display_description" => "custom",
@@ -77,8 +70,8 @@ module Kenna
           retries = options.delete(:retries) { |_k| 5 }
 
           url = "#{BASE_PATH}#{path}"
-          params = { key: @api_key, format: :json }.merge(options)
-          response = Kenna::128iid::Helpers::Http.http_get(url, { params: }, retries)
+          params = { key: @api_key, accept: "application/json" }.merge({ params: options })
+          response = Kenna::128iid::Helpers::Http.http_get(url, params, retries)
 
           raise Error unless response
 
