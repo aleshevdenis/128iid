@@ -17,13 +17,6 @@ module Kenna
           @page_size = page_size
         end
 
-        def api_key_valid?
-          get("/", retries: 0)
-          true
-        rescue Error
-          false
-        end
-
         def vulns(filters = {}, &)
           query = {
             "display_description" => "custom",
