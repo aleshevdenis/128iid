@@ -77,7 +77,7 @@ module Kenna
           retries = options.delete(:retries) { |_k| 5 }
 
           url = "#{BASE_PATH}#{path}"
-          params = { key: @api_key, accept: 'application/json' }.merge({params: options})
+          params = { key: @api_key, accept: "application/json" }.merge({ params: options })
           response = Kenna::128iid::Helpers::Http.http_get(url, params, retries)
 
           raise Error unless response
