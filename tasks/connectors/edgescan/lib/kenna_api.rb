@@ -11,13 +11,18 @@ module Kenna
           @kenna_api_key = options[:kenna_api_key]
           @kenna_connector_id = options[:kenna_connector_id]
           @output_dir = "#{$basedir}/#{options[:output_directory]}"
+          @skip_autoclose = false
+          @max_retries = 3
+          @kdi_version = 2
         end
 
         # Converts Edgescan location specifiers and vulnerabilities into Kenna assets and adds them to memory
         def add_assets(edgescan_location_specifiers, edgescan_vulnerabilities)
-          kenna_assets = edgescan_location_specifiers.map(&:to_kenna_asset).append(
-            edgescan_vulnerabilities.reject(&:matching_location_specifier).map(&:to_kenna_asset)
-          ).flatten
+          # Convert location specifiers into kenna assets, remove any lists within lists, or duplicate assets
+          kenna_assets = edgescan_location_specifiers.map(&:to_kenna_asset).flatten.uniq!
+          # Add any kenna assets, from vulnerabilities, that are not already present
+          # This will only happen if a vulnerability does not have a corresponding host or location specifier
+          kenna_assets.concat(edgescan_vulnerabilities.map(&:to_kenna_asset).uniq! - kenna_assets)
           kenna_assets.foreach do |asset|
             add_asset(asset)
           end
@@ -26,14 +31,14 @@ module Kenna
         # Converts Edgescan vulnerabilities into Kenna ones and adds them into memory
         def add_vulnerabilities(edgescan_vulnerabilities)
           edgescan_vulnerabilities.foreach do |vulnerability|
-            add_vulnerability(vulnerability.external_asset_id, vulnerability.to_kenna_vulnerability)
+            add_vulnerability(vulnerability.external_id, vulnerability.to_kenna_vulnerability)
           end
         end
 
         # Converts Edgescan vulnerabilities into Kenna findings and adds them into memory
         def add_findings(edgescan_vulnerabilities)
           edgescan_vulnerabilities.foreach do |vulnerability|
-            add_finding(vulnerability.external_asset_id, vulnerability.to_kenna_finding)
+            add_finding(vulnerability.external_id, vulnerability.to_kenna_finding)
           end
         end
 
@@ -51,7 +56,7 @@ module Kenna
         #       This allows for uploading in batches. Once a few batches have been uploaded and
         #       you're happy for whatever is there to get imported into Kenna you can call `kickoff`
         def upload
-          kdi_upload(@output_dir, "batch-#{millis}.json", @kenna_connector_id, @kenna_api_host, @kenna_api_key)
+          kdi_upload(@output_dir, "batch-#{millis}.json", @kenna_connector_id, @kenna_api_host, @kenna_api_key, @skip_autoclose, @max_retries, @kdi_version)
         end
 
         # Kicks off connector tasks so that whatever was uploaded actually gets imported into Kenna
@@ -69,13 +74,13 @@ module Kenna
         end
 
         # Adds Kenna vulnerability into memory
-        def add_vulnerability(external_asset_id, kenna_vulnerability)
-          create_kdi_asset_vuln({ "external_id" => external_asset_id }, kenna_vulnerability, "external_id")
+        def add_vulnerability(external_id, kenna_vulnerability)
+          create_kdi_asset_vuln({ "external_id" => external_id }, kenna_vulnerability, "external_id")
         end
 
         # Adds Kenna finding into memory
-        def add_finding(external_asset_id, kenna_finding)
-          create_kdi_asset_finding({ "external_id" => external_asset_id }, kenna_finding, "external_id")
+        def add_finding(external_id, kenna_finding)
+          create_kdi_asset_finding({ "external_id" => external_id }, kenna_finding, "external_id")
         end
 
         # Adds Kenna definition into memory
