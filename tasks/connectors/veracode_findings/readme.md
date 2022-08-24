@@ -45,12 +45,11 @@ This task uses the following Veracode REST API endpoints.
 | url | URL | For DYNAMIC Findings |
 | <app_name> - <url/file> | External ID | This concatenates the app_name to other primary locator for External ID. The File locator is used for STATIC. The URL value is used for DYNAMIC. |
 | Status/Resolution | Triage State | See explanation below. |
-| Scan Type  | Tags | |
 | CWE ID | CWE | |
 | CWE Name | CWE Name | |
 | fist_found_date | Created At | |
 | last_seen_date | Last Seen At | |
-| Issue_Id, Description, Recommendation, Violates Policy, Severity | Additional Information | |
+| Issue_Id, Description, Recommendation, Violates Policy, Severity, Scan Type, File Path, File Name, Module, Relative Location, Finding Category, Procedure, Exploitability, Attack Vector, File Line Number | Additional Information | |
 | Recommendation | Solution | |
 | "veracode" | Scanner Type | static value |
 | Severity | Scanner Score | |
