@@ -42,6 +42,8 @@ module Kenna
         end
 
         def create_kdi_from_issues(max_per_page, issue_types, priorities, tags, dfm, lookback)
+          offset = 1
+
           ###
           ### Get the list of business units
           ###
@@ -90,11 +92,15 @@ module Kenna
                 create_kdi_vuln_def(cvd)
               end
             end
-            if @assets.size.positive?
-              filename = "extend_kdi_#{bu}.json"
-              kdi_upload @output_dir, filename, @kenna_connector_id, @kenna_api_host, @kenna_api_key, false, 3, 2
-            end
           end
+          return unless @assets.size.positive?
+
+          filename = "extend_kdi_#{business_units.count}_business_units_#{offset}.json"
+          kdi_upload @output_dir, filename, @kenna_connector_id, @kenna_api_host, @kenna_api_key, false, 3, 2
+
+          # rubocop:disable Lint/UselessAssignment
+          offset += 1
+          # rubocop:enable Lint/UselessAssignment
         end
 
         def map_issue_priority(sev_word)
