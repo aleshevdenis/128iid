@@ -15,6 +15,7 @@
 | [AppScan Cloud](https://github.com/denistreshchev/128iid/tree/main/tasks/connectors/appscan_cloud/readme.md) | Pre-Release/Beta | Kenna |
 | [AppScan Enterprise](https://github.com/denistreshchev/128iid/tree/main/tasks/connectors/appscan_enterprise/readme.md) | Pre-Release/Beta | Kenna |
 | [Aqua](https://github.com/denistreshchev/128iid/tree/main/tasks/connectors/aqua/README.md) | Pre-Release/Beta | Aqua |
+| [Armis](https://github.com/denistreshchev/128iid/tree/main/tasks/connectors/armis) | Pre_Release/Beta | Armis |
 | [AWS_guardduty](https://github.com/denistreshchev/128iid/blob/main/tasks/connectors/aws_guardduty/ReadME.md) | Pre-Release/Beta | Kenna |
 | [AWS_inspector](https://github.com/denistreshchev/128iid/tree/main/tasks/connectors/aws_inspector) | Pre-Release/Beta | Kenna |
 | [Bitsight](https://github.com/denistreshchev/128iid/blob/main/tasks/connectors/digital_footprint/bitsight/README.md) | Released | Kenna |
@@ -24,13 +25,13 @@
 | [Checkmarx Sast](https://github.com/denistreshchev/128iid/blob/main/tasks/connectors/checkmarx_sast/README.md) | Pre-Release/Beta | Kenna |
 | [Checkmarx SCA](https://github.com/denistreshchev/128iid/blob/main/tasks/connectors/checkmarx_sca/readme.md) | Pre-Release/Beta | Kenna |
 | [Cobaltio](https://github.com/denistreshchev/128iid/blob/main/tasks/connectors/cobaltio/readme.md) | Pre-Release/Beta | Cobalt.io |
-| [Contrast](https://github.com/denistreshchev/128iid/blob/main/tasks/connectors/contrast/readme.md) | Released | Contrast Security |
+| [Contrast](https://github.com/denistreshchev/128iid/blob/main/tasks/connectors/contrast/readme.md) | Certified | Contrast Security |
 | [DigitalDefense](https://github.com/denistreshchev/128iid/blob/main/tasks/connectors/digital_defense/readme.md) | Pre-Release/Beta | Kenna |
 | [Edgescan](https://github.com/denistreshchev/128iid/blob/main/tasks/connectors/edgescan/README.md) | Released | Edgescan |
-| Expanse | Pre-Released/Beta | Kenna |
 | [Expanse_issues](https://github.com/denistreshchev/128iid/blob/main/tasks/connectors/digital_footprint/extend_issues/README.md) | Released | Kenna | 
 | [GitHub Code Scanning](https://github.com/denistreshchev/128iid/blob/main/tasks/connectors/github_code_scanning/readme.md) | Pre-Release/Beta | Kenna |
 | [GitHub Dependabot](https://github.com/denistreshchev/128iid/blob/main/tasks/connectors/github_dependabot/readme.md) | Released | Kenna |
+| [Github Secret Scanning](https://github.com/denistreshchev/128iid/tree/main/tasks/connectors/github_secret_scanning) | Pre-Release/Beta | GitHub |
 | [HackerOne](https://github.com/denistreshchev/128iid/blob/main/tasks/connectors/hackerone/readme.md) | Pre-Release/Beta | Kenna |
 | [InsightAppSec](https://github.com/denistreshchev/128iid/blob/main/tasks/connectors/insight_appsec/readme.md) | Pre-Release/Beta | Kenna |
 | [JFrog Xray](https://github.com/denistreshchev/128iid/blob/main/tasks/connectors/jfrog/readme.md) | Released | Kenna |
@@ -49,4 +50,4 @@
 | [Veracode_asset_vulns](https://github.com/denistreshchev/128iid/blob/main/tasks/connectors/veracode_asset_vulns/readme.md) | Released | Kenna |
 | [Veracode_findings](https://github.com/denistreshchev/128iid/blob/main/tasks/connectors/veracode_findings/readme.md) | Released | Kenna |
 | [WhiteSource](https://github.com/denistreshchev/128iid/blob/main/tasks/connectors/whitesource/readme.md) | Released | Kenna |
-| [Wiz](https://github.com/denistreshchev/128iid/tree/main/tasks/connectors/wiz) | Released | Kenna |
+| [Wiz](https://github.com/denistreshchev/128iid/tree/main/tasks/connectors/wiz) | Certified | Kenna |
