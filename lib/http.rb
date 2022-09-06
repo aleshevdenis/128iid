@@ -133,9 +133,11 @@ module Kenna
           print_error "Exception! #{error}"
           return unless log_request?
 
-          print_debug "#{error.response.request.method.upcase}: #{error.response.request.url}"
-          print_debug "Request Payload: #{error.response.request.payload}"
-          print_debug "Server Response: #{error.response.body}"
+          if error.is_a?(RestClient::Exception)
+            print_debug "#{error.response.request.method.upcase}: #{error.response.request.url}"
+            print_debug "Request Payload: #{error.response.request.payload}"
+            print_debug "Server Response: #{error.response.body}"
+          end
         end
 
         def log_request?
