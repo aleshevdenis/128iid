@@ -39,6 +39,11 @@ module Kenna
               required: false,
               default: 10,
               description: "Number of pages from Aqua (500 default) that should be batched to Kenna" },
+            { name: "aqua_console_https",
+              type: "boolean",
+              required: false,
+              default: false,
+              description: "Use HTTPS? true/false" },
             { name: "container_data",
               type: "boolean",
               required: true,
@@ -75,10 +80,12 @@ module Kenna
         password = @options[:aqua_password]
         aqua_port = @options[:aqua_console_port]
         aqua_console = @options[:aqua_console]
+        aqua_console_https = @options[:aqua_console_https]
+        aqua_prefix = aqua_console_https ? "https://" : "http://"
         aqua_url = if aqua_port
-                     "#{aqua_console}:#{aqua_port}"
+                     "#{aqua_prefix}#{aqua_console}:#{aqua_port}"
                    else
-                     aqua_console
+                     "#{aqua_prefix}#{aqua_console}"
                    end
         container_data = @options[:container_data]
         max_batch_size = @options[:batch_pages_count]
@@ -92,7 +99,7 @@ module Kenna
         @kenna_api_key = @options[:kenna_api_key]
         @kenna_connector_id = @options[:kenna_connector_id]
 
-        token = aqua_get_token(aqua_url, username, password)
+        token = aqua_get_token(aqua_prefix, aqua_url, username, password)
         fail_task "Unable to authenticate with Aqua, please check credentials" unless token
 
         if container_data
@@ -103,7 +110,7 @@ module Kenna
 
             cont_pagenum += 1
             batch_count += 1
-            cont_json = aqua_get_containers(aqua_url, token, page_size, cont_pagenum)
+            cont_json = aqua_get_containers(aqua_prefix, aqua_url, token, page_size, cont_pagenum)
 
             if cont_json.nil? || cont_json.empty? || cont_json.length.zero?
               contpages = false
@@ -156,7 +163,7 @@ module Kenna
 
           pagenum += 1
           batch_count += 1
-          vuln_json = aqua_get_vuln(aqua_url, token, page_size, pagenum)
+          vuln_json = aqua_get_vuln(aqua_prefix, aqua_url, token, page_size, pagenum)
 
           # print_debug "vuln json = #{vuln_json}"
           print_debug "Page: #{pagenum}"
