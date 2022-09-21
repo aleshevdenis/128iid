@@ -44,6 +44,7 @@ By default the vulnerabilities will be both application and network types. Eithe
 | create_findings    | false    | The task will create findings, instead of vulnerabilities                    | false                    |
 | network_vulns      | false    | The task will include network layer vulnerabilities                          | true                     |
 | application_vulns  | false    | The task will include application layer vulnerabilities                      | true                     |
+| assets_from_hosts  | false    | The task will create assets from hosts only, instead of location specifiers  | false                    |
 
 ## Data Mappings
 

@@ -2,6 +2,7 @@
 
 require_relative "lib/edgescan_api"
 require_relative "lib/edgescan_definition"
+require_relative "lib/edgescan_host"
 require_relative "lib/edgescan_location_specifier"
 require_relative "lib/edgescan_vulnerability"
 require_relative "lib/kenna_api"
@@ -64,7 +65,12 @@ module Kenna
               type: "boolean",
               required: false,
               default: true,
-              description: "The task will include application layer vulnerabilities" }
+              description: "The task will include application layer vulnerabilities" },
+            { name: "assets_from_hosts",
+              type: "boolean",
+              required: false,
+              default: false,
+              description: "Create assets from edgescan hosts, do not use location specifier data" }
           ]
         }
       end
@@ -80,8 +86,8 @@ module Kenna
         edgescan_api = Kenna::128iid::Edgescan::EdgescanApi.new(@options)
         kenna_api = Kenna::128iid::Edgescan::KennaApi.new(@options)
 
-        edgescan_api.fetch_in_batches do |vulnerabilities, definitions, location_specifiers|
-          kenna_api.add_assets(location_specifiers, vulnerabilities)
+        edgescan_api.fetch_in_batches do |vulnerabilities, definitions, specifiers_hosts|
+          kenna_api.add_assets(specifiers_hosts, vulnerabilities)
           if @options[:network_vulns] || @options[:application_vulns]
             if @options[:create_findings]
               kenna_api.add_findings(vulnerabilities)

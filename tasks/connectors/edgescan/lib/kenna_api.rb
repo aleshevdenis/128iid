@@ -11,20 +11,18 @@ module Kenna
           @kenna_api_key = options[:kenna_api_key]
           @kenna_connector_id = options[:kenna_connector_id]
           @output_dir = "#{$basedir}/#{options[:output_directory]}"
+          @assets_from_hosts = options[:assets_from_hosts]
           @skip_autoclose = false
           @max_retries = 3
           @kdi_version = 2
         end
 
-        # Converts Edgescan location specifiers and vulnerabilities into Kenna assets and adds them to memory
-        def add_assets(edgescan_location_specifiers, edgescan_vulnerabilities)
-          # Convert location specifiers into kenna assets, remove any lists within lists, or duplicate assets
-          kenna_assets = edgescan_location_specifiers.map(&:to_kenna_asset).flatten.uniq!
-          # Add any kenna assets, from vulnerabilities, that are not already present
-          # This will only happen if a vulnerability does not have a corresponding host or location specifier
-          kenna_assets.concat(edgescan_vulnerabilities.map(&:to_kenna_asset).uniq! - kenna_assets)
-          kenna_assets.foreach do |asset|
-            add_asset(asset)
+        # Converts edgescan data into Kenna assets
+        def add_assets(specifiers_hosts, vulnerabilities)
+          if @assets_from_hosts
+            add_assets_from_hosts(specifiers_hosts)
+          else
+            add_assets_from_specifiers(specifiers_hosts, vulnerabilities)
           end
         end
 
@@ -65,6 +63,26 @@ module Kenna
         end
 
         private
+
+        # Converts Edgescan location specifiers and vulnerabilities into Kenna assets and adds them to memory
+        def add_assets_from_specifiers(edgescan_location_specifiers, edgescan_vulnerabilities)
+          # Convert location specifiers into kenna assets, remove any lists within lists, or duplicate assets
+          kenna_assets = edgescan_location_specifiers.map(&:to_kenna_asset).flatten.uniq
+          # Add any kenna assets, from vulnerabilities, that are not already present
+          # This will only happen if a vulnerability does not have a corresponding host or location specifier
+          kenna_assets.concat(edgescan_vulnerabilities.map(&:to_kenna_asset).uniq - kenna_assets)
+          kenna_assets.foreach do |asset|
+            add_asset(asset)
+          end
+        end
+
+        # Convert Edgescan hosts into Kenna assets and add them to memory
+        def add_assets_from_hosts(edgescan_hosts)
+          kenna_assets = edgescan_hosts.map(&:to_kenna_asset)
+          kenna_assets.foreach do |asset|
+            add_asset(asset)
+          end
+        end
 
         # Adds Kenna asset into memory (if one with the same `external_id` doesn't exist already)
         def add_asset(kenna_asset)
