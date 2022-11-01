@@ -335,7 +335,6 @@ module Kenna
           priority = row[map_priority.to_s].to_i unless row[map_priority.to_s].nil? || row[map_priority.to_s].empty?
           # (Integer) Def:10 - Priority of asset (int 1 to 10).Adjusts asset score.
 
-          asset_type = nil
           asset_type = if container_id || image_id
             if container_id
               "container"
