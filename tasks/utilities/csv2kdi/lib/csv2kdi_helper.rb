@@ -29,7 +29,7 @@ module Kenna
         { skip_autoclose: ($skip_autoclose.eql?("true") ? true : false), assets: @assets.uniq, vuln_defs: @vuln_defs.uniq }
       end
 
-      def create_asset(file, ip_address, mac_address, hostname, ec2, netbios, url, fqdn, external_id, database, application, tags, owner, os, os_version, priority)
+      def create_asset(file, ip_address, mac_address, hostname, container_id, image_id, asset_type, ec2, netbios, url, fqdn, external_id, database, application, tags, owner, os, os_version, priority)
         tmpassets = []
         success = true
 
@@ -41,6 +41,10 @@ module Kenna
           return success unless @assets.select { |a| a[:ip_address] == ip_address }.empty?
         when "hostname"
           return success unless @assets.select { |a| a[:hostname] == hostname }.empty?
+        when "container_id"
+          return success unless @assets.select { |a| a[:container_id] == container_id }.empty?
+        when "image_id"
+          return success unless @assets.select { |a| a[:image_id] == image_id }.empty?
         when "file"
           return success unless @assets.select { |a| a[:file] == file }.empty?
         when "mac_address"
@@ -67,6 +71,9 @@ module Kenna
         tmpassets << { ip_address: } unless ip_address.nil? || ip_address.empty?
         tmpassets << { mac_address: } unless mac_address.nil? || mac_address.empty?
         tmpassets << { hostname: } unless hostname.nil? || hostname.empty?
+        tmpassets << { container_id: container_id.to_s } unless container_id.nil? || container_id.empty?
+        tmpassets << { image_id: image_id.to_s } unless image_id.nil? || image_id.empty?
+        tmpassets << { asset_type: asset_type.to_s } unless asset_type.nil? || asset_type.empty?
         tmpassets << { ec2: ec2.to_s } unless ec2.nil? || ec2.empty?
         tmpassets << { netbios: netbios.to_s } unless netbios.nil? || netbios.empty?
         tmpassets << { url: url.to_s } unless url.nil? || url.empty?
@@ -82,14 +89,14 @@ module Kenna
         tmpassets << { vulns: [] }
         tmpassets << { findings: [] }
 
-        success = false if file.to_s.empty? && ip_address.to_s.empty? && mac_address.to_s.empty? && hostname.to_s.empty? && ec2.to_s.empty? && netbios.to_s.empty? && url.to_s.empty? && database.to_s.empty? && external_id.to_s.empty? && fqdn.to_s.empty? && application.to_s.empty?
+        success = false if file.to_s.empty? && ip_address.to_s.empty? && mac_address.to_s.empty? && hostname.to_s.empty? && ec2.to_s.empty? && netbios.to_s.empty? && url.to_s.empty? && database.to_s.empty? && external_id.to_s.empty? && fqdn.to_s.empty? && application.to_s.empty? && container_id.to_s.empty? && image_id.to_s.empty?
 
         @assets << tmpassets.reduce(&:merge) if success
 
         success
       end
 
-      def create_asset_vuln(hostname, ip_address, file, mac_address, netbios, url, ec2, fqdn, external_id, database, scanner_type, scanner_id, details, created, scanner_score, last_fixed,
+      def create_asset_vuln(hostname, container_id, image_id, ip_address, file, mac_address, netbios, url, ec2, fqdn, external_id, database, scanner_type, scanner_id, details, created, scanner_score, last_fixed,
                             last_seen, status, closed, port)
 
         # find the asset
@@ -110,6 +117,10 @@ module Kenna
           asset = @assets.find { |a| a[:ec2] == ec2 }
         when "fqdn"
           asset = @assets.find { |a| a[:fqdn] == fqdn }
+        when "container_id"
+          asset = @assets.find { |a| a[:container_id] == container_id }
+        when "image_id"
+          asset = @assets.find { |a| a[:image_id] == image_id }
         when "external_id"
           asset = @assets.find { |a| a[:external_id] == external_id }
         when "database"
