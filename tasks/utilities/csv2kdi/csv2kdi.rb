@@ -132,6 +132,7 @@ module Kenna
           $mapping_array << Array[row[0], row[1]]
           $mapping_array.compact
         end
+
         # headers =
         $date_format_in = $mapping_array.assoc("date_format").last.to_s.strip
         $map_locator = $mapping_array.assoc("locator").last.to_s.strip
@@ -140,6 +141,8 @@ module Kenna
         map_mac_address = $mapping_array.assoc("mac_address").last.to_s.strip
         map_hostname = $mapping_array.assoc("hostname").last.to_s.strip
         map_ec2 = $mapping_array.assoc("ec2").last.to_s.strip
+        map_container = $mapping_array.assoc("container_id").last.to_s.strip
+        map_image = $mapping_array.assoc("image_id").last.to_s.strip
         map_netbios = $mapping_array.assoc("netbios").last.to_s.strip
         map_url = $mapping_array.assoc("url").last.to_s.strip
         map_fqdn = $mapping_array.assoc("fqdn").last.to_s.strip
@@ -208,6 +211,10 @@ module Kenna
           csvheaders.include?(map_hostname) ? (puts "#{colhdr} **Confirmed**") : (puts "#{colhdr} **NOT FOUND**")
           colhdr = "ec2 column: '#{map_ec2}'"
           csvheaders.include?(map_ec2) ? (puts "#{colhdr} **Confirmed**") : (puts "#{colhdr} **NOT FOUND**")
+          colhdr = "container column: '#{map_container}'"
+          csvheaders.include?(map_container) ? (puts "#{colhdr} **Confirmed**") : (puts "#{colhdr} **NOT FOUND**")
+          colhdr = "image column: '#{map_image}'"
+          csvheaders.include?(map_image) ? (puts "#{colhdr} **Confirmed**") : (puts "#{colhdr} **NOT FOUND**")
           colhdr = "netbios column: '#{map_netbios}'"
           csvheaders.include?(map_netbios) ? (puts "#{colhdr} **Confirmed**") : (puts "#{colhdr} **NOT FOUND**")
           colhdr = "url column: '#{map_url}'"
@@ -290,6 +297,8 @@ module Kenna
 
           mac_address = row[map_mac_address.to_s] # (mac format-regex) MAC address asset
           hostname = row[map_hostname.to_s] # (string) hostname name/domain name of affected asset
+          container_id = row[map_container.to_s] # (string) Container ID
+          image_id = row[map_image.to_s] # (string) Image ID
           ec2 = row[map_ec2.to_s] # (string) Amazon EC2 instance id or name
           netbios = row[map_netbios.to_s] # (string) netbios name
           url = row[map_url.to_s]
@@ -325,6 +334,14 @@ module Kenna
           os_version = row[map_os_version.to_s] # (string) OS version
           priority = row[map_priority.to_s].to_i unless row[map_priority.to_s].nil? || row[map_priority.to_s].empty?
           # (Integer) Def:10 - Priority of asset (int 1 to 10).Adjusts asset score.
+
+          asset_type = if container_id || image_id
+                         if container_id
+                           "container"
+                         else
+                           "image"
+                         end
+                       end
 
           if @assets_only == "false"
 
@@ -437,16 +454,15 @@ module Kenna
           end
 
           ### CREATE THE ASSET
-          done = create_asset(file, ip_address, mac_address, hostname, ec2, netbios, url, fqdn, external_id, database, application, tags, owner, os, os_version, priority)
+          done = create_asset(file, ip_address, mac_address, hostname, container_id, image_id, asset_type, ec2, netbios, url, fqdn, external_id, database, application, tags, owner, os, os_version, priority)
           # puts "create assset = #{done}"
           next unless done
 
           ### ASSOCIATE THE ASSET TO THE VULN
-
           if @assets_only == "false" # Added for ASSET ONLY Run
             kdi_entry_total += 1
             if @appsec_findings == "false"
-              create_asset_vuln(hostname, ip_address, file, mac_address, netbios, url, ec2, fqdn, external_id, database, scanner_type, scanner_id, details, created, scanner_score, last_fixed,
+              create_asset_vuln(hostname, container_id, image_id, ip_address, file, mac_address, netbios, url, ec2, fqdn, external_id, database, scanner_type, scanner_id, details, created, scanner_score, last_fixed,
                                 last_seen, status, closed, port)
             else
               ### ASSOCIATE THE ASSET TO THE findings/vuln

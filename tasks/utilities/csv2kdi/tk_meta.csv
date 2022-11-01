@@ -5,6 +5,8 @@ file,,One locator required per asset,(string) path to affected file,Asset
 ip_address,,One locator required per asset,(string) IP of internal facing asset,Asset
 mac_address,,one value per Asset is required,(mac format-regex) MAC address asset,Asset
 hostname,Trusted Peer,one value per Asset is required,(string) host name/domain name of affected asset,Asset
+container_id,,one value per Asset is required,(string) container identifier of affected asset,Asset
+image_id,,one value per Asset is required,(string) image identifier of affected asset,Asset
 ec2,,one value per Asset is required,(string) Amazon EC2 instance id or name,Asset
 netbios,,one value per Asset is required,(string) netbios name,Asset
 external_ip_address,,no,(string) IP of external facing asset,Asset
