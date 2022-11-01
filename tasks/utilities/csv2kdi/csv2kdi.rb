@@ -336,12 +336,12 @@ module Kenna
           # (Integer) Def:10 - Priority of asset (int 1 to 10).Adjusts asset score.
 
           asset_type = if container_id || image_id
-            if container_id
-              "container"
-            else
-              "image"
-            end
-          end
+                         if container_id
+                           "container"
+                         else
+                           "image"
+                         end
+                       end
 
           if @assets_only == "false"
 
