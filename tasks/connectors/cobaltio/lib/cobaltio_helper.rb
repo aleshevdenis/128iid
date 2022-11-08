@@ -7,7 +7,7 @@ module Kenna
 
       def cobalt_get_assets(api_token, org_token)
         print "Getting list of assets"
-        cobalt_assets_api = "https://api.cobalt.io/assets"
+        cobalt_assets_api = "https://api.cobalt.io/assets?limit=1000"
         headers = cobalt_get_req_headers(api_token, org_token)
 
         response = http_get(cobalt_assets_api, headers)
@@ -29,7 +29,7 @@ module Kenna
 
       def cobalt_get_findings(api_token, org_token)
         print "Getting list of findings"
-        cobalt_findings_api = "https://api.cobalt.io/findings"
+        cobalt_findings_api = "https://api.cobalt.io/findings?limit=1000"
         headers = cobalt_get_req_headers(api_token, org_token)
 
         response = http_get(cobalt_findings_api, headers)
