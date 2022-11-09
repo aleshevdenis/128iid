@@ -146,7 +146,7 @@ module Kenna
         map_mac_address = $mapping_array.assoc("mac_address").last.to_s.strip
         map_hostname = $mapping_array.assoc("hostname").last.to_s.strip
         map_ec2 = $mapping_array.assoc("ec2").last.to_s.strip
-        map_container = $mapping_array.assoc("container_id").last.to_s.strip 
+        map_container = $mapping_array.assoc("container_id").last.to_s.strip
         map_image = $mapping_array.assoc("image_id").last.to_s.strip
         map_netbios = $mapping_array.assoc("netbios").last.to_s.strip
         map_url = $mapping_array.assoc("url").last.to_s.strip
