@@ -137,7 +137,6 @@ module Kenna
         $mapping_array << Array["container_id", nil] unless $mapping_array.assoc("container_id")
         $mapping_array << Array["image_id", nil] unless $mapping_array.assoc("image_id")
 
-
         # headers =
         $date_format_in = $mapping_array.assoc("date_format").last.to_s.strip
         $map_locator = $mapping_array.assoc("locator").last.to_s.strip
