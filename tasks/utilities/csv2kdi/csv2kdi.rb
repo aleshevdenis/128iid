@@ -134,13 +134,8 @@ module Kenna
         end
 
         # For backwards compatibility for older meta files before addition of container and image IDs
-        if !$mapping_array.assoc("container_id")
-          $mapping_array << Array["container_id", nil]
-        end
-
-        if !$mapping_array.assoc("image_id")
-          $mapping_array << Array["image_id", nil]
-        end
+        $mapping_array << Array["container_id", nil] unless $mapping_array.assoc("container_id")
+        $mapping_array << Array["image_id", nil] unless $mapping_array.assoc("image_id")
 
 
         # headers =
