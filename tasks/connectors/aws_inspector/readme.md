@@ -1,11 +1,12 @@
-## Running the AWS Inspector task 
+## Running the AWS Inspector V1 task 
 
-This 128iid brings in data from AWS Inspector
+This 128iid brings in data from AWS Inspector v1
 
 To run this task you need the following information from AWS: 
 
 1. aws_access_key
 2. aws_secret_key
+3. AWSInspector permissions. If you attempt this with V2 permissions your run will fail with a permissions error. 
 
 
 ## Command Line
