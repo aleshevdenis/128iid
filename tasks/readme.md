@@ -17,7 +17,7 @@
 | [Aqua](https://github.com/denistreshchev/128iid/tree/main/tasks/connectors/aqua/README.md) | Pre-Release/Beta | Aqua |
 | [Armis](https://github.com/denistreshchev/128iid/tree/main/tasks/connectors/armis) | Pre_Release/Beta | Armis |
 | [AWS_guardduty](https://github.com/denistreshchev/128iid/blob/main/tasks/connectors/aws_guardduty/ReadME.md) | Pre-Release/Beta | Kenna |
-| [AWS_inspector](https://github.com/denistreshchev/128iid/tree/main/tasks/connectors/aws_inspector) | Pre-Release/Beta | Kenna |
+| [AWS_inspector v1](https://github.com/denistreshchev/128iid/tree/main/tasks/connectors/aws_inspector) | Pre-Release/Beta | Kenna |
 | [Bitsight](https://github.com/denistreshchev/128iid/blob/main/tasks/connectors/digital_footprint/bitsight/README.md) | Released | Kenna |
 | [Bugcrowd](https://github.com/denistreshchev/128iid/blob/main/tasks/connectors/bugcrowd/readme.md) | Pre-Release/Beta | Kenna |
 | [Burp](https://github.com/denistreshchev/128iid/blob/main/tasks/connectors/burp/readme.md) | Pre-Release/Beta | Kenna |
