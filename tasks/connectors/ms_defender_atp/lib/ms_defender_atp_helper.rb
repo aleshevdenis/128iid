@@ -34,7 +34,7 @@ module Kenna
         ### Finish by uploading if we're all configured
         return unless kenna_connector_id && kenna_api_host && kenna_api_key
 
-        print_good "Attempting to run to Kenna Connector at #{kenna_api_host}"
+        print_good "Attempting to run Kenna Connector at #{kenna_api_host}"
         run_files_on_kenna_connector kenna_connector_id, kenna_api_host, kenna_api_key, @uploaded_files, max_retries
       end
 

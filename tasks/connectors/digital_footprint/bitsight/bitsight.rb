@@ -91,7 +91,7 @@ module Kenna
         bitsight_findings_and_create_kdi(bitsight_create_benign_findings, benign_finding_grades, company_guids, fm, @options[:bitsight_lookback])
 
         ### Write KDI format
-        print_good "Attempting to run to Kenna Connector at #{@kenna_api_host}"
+        print_good "Attempting to run Kenna Connector at #{@kenna_api_host}"
         kdi_connector_kickoff(@kenna_connector_id, @kenna_api_host, @kenna_api_key)
       end
     end

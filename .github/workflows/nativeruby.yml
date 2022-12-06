@@ -18,7 +18,7 @@ jobs:
     - name: Set up Ruby
       uses: ruby/setup-ruby@v1
       with:
-        ruby-version: 3.1
+        ruby-version: 3.1.2
     - name: Config environment
       run: bundle config set --local without 'development test'
     - name: Install dependencies

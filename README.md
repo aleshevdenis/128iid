@@ -75,7 +75,7 @@ If everything's working, let's proceed to utilizing the capabilities of the 128i
 
 In order to utilize the 128iid's functionality, you'll want to pass a 'task=[name of task]' variable. See below for all the possible task names!
 
-Calling A Specific Task WIth Docker:
+Calling A Specific Task With Docker:
 
     docker run -it --rm 128iid:latest task=example
 

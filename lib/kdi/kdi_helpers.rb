@@ -209,7 +209,7 @@ module Kenna
         return unless write_assets.present?
 
         write_file_stream(output_dir, filename, skip_autoclose, write_assets, @vuln_defs, version)
-        print_good "Output is available at: #{filename}"
+        print_good "Output is available at: #{output_dir}/#{filename}"
 
         ### Finish by uploading if we're all configured
         if kenna_connector_id && kenna_api_host && kenna_api_key
@@ -227,7 +227,7 @@ module Kenna
         ### Finish by uploading if we're all configured
         return if @uploaded_files.blank?
 
-        print_good "Attempting to run to Kenna Connector at #{@kenna_api_host}"
+        print_good "Attempting to run Kenna Connector at #{@kenna_api_host}"
         run_files_on_kenna_connector(kenna_connector_id, kenna_api_host, kenna_api_key, @uploaded_files)
       end
 
