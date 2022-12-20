@@ -52,7 +52,7 @@ module Kenna
         end
 
         def extract_definition(vuln)
-          cve = (vuln["name"] || "").scan(/CVE-\d*-\d*/).join(", ")
+          cve = (vuln["name"] || "").scan(/CVE-\d{4}-\d{4,7}/).join(", ")
           {
             "name" => extract_vuln_def_name(vuln),
             "description" => vuln["CVEDescription"] || vuln["description"] || vuln["name"],
