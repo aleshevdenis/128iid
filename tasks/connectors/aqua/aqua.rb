@@ -105,7 +105,7 @@ module Kenna
             batch_count += 1
             cont_json = aqua_get_containers(aqua_url, token, page_size, cont_pagenum)
 
-            if cont_json.nil? || cont_json.empty? || cont_json.length.zero?
+            if cont_json.nil? || cont_json.empty?
               contpages = false
               break
             end
@@ -163,7 +163,7 @@ module Kenna
           vuln_json.to_json
           print_debug "vuln result json: #{vuln_json}"
 
-          if vuln_json.nil? || vuln_json.empty? || vuln_json.length.zero?
+          if vuln_json.nil? || vuln_json.empty?
             morepages = false
             break
           end
