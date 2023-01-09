@@ -28,8 +28,6 @@ module Kenna
               "verbose": "true",
               "limitResults": page_size,
               "startFromOffset": offset
-            },
-            "filters": {
             }
           }
         }

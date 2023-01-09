@@ -7,7 +7,7 @@ require:
 # These cops are compatible across supported versions of rubocop
 
 AllCops:
-  TargetRubyVersion: 3.1.2
+  TargetRubyVersion: 3.2.0
   NewCops: enable
   Exclude:
     - bin/**/*
