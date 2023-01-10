@@ -25,7 +25,7 @@ module Kenna
             { name: "wiz_auth_endpoint",
               type: "hostname",
               required: false,
-              default: "auth.wiz.io",
+              default: "auth.app.wiz.io",
               description: "WIZ auth endpoint hostname used to get the authorization token." },
             { name: "wiz_api_host",
               type: "hostname",
