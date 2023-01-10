@@ -71,7 +71,7 @@ module Kenna
         print_debug "findings json = #{findings_json}"
         fail_task "Unable to retrieve findings, please check credentials" if findings_json.nil?
 
-        severity_map = { "high" => 7, "medium" => 5, "low" => 3 } # converter
+        severity_map = { "critical" => 9, "high" => 7, "medium" => 5, "low" => 3, "informational" => 1 } # converter
         state_map = { "need_fix" => "new", "wont_fix" => "risk_accepted", "valid_fix" => "resolved", "check_fix" => "in_progress", "carried_over" => "new" }
         status_map = { "need_fix" => "open", "wont_fix" => "closed", "valid_fix" => "closed", "check_fix" => "open", "carried_over" => "open" }
         findings_json.foreach do |finding_obj|
