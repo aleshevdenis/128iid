@@ -27,7 +27,7 @@ Complete list of Options:
 | --- | --- | --- | --- |
 | wiz_client_id | true | WIZ client id | n/a |
 | wiz_client_secret | true | WIZ client secret | n/a |
-| wiz_auth_endpoint | false | WIZ auth endpoint hostname used to get the authorization token. | auth.wiz.io |
+| wiz_auth_endpoint | false | WIZ auth endpoint hostname used to get the authorization token. | auth.app.wiz.io |
 | wiz_api_host | true | WIZ API Endpoint URL. If schema is included, it should be between double quotes escaped. | n/a |
 | wiz_page_size | false | Maximum number of issues to retrieve in foreach page. | 5000 |
 | days_back | false | Integer days number to get the vulnerabilities/issues detected x days back TODAY. | n/a |
