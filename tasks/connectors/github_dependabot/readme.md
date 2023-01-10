@@ -16,8 +16,8 @@ Start here to learn how to get personal access token:
 ## Complete list of Options:
 
 | Option                   | Required | Description                                                       | default |
-|--------------------------| -- |----------------------------------------------------------------------------| --- |
-| github_access_token      | true | Github access token                                                        | n/a |
+|--------------------------| -------- |-------------------------------------------------------------------| ------- |
+| github_token             | true | Github access token                                                        | n/a |
 | github_organization_name | true | Github organization name or user                                           | n/a |
 | github_page_size         | false | Number of records to bring back with foreach page request from GitHub. Maximum is 100. | 100 |
 | kenna_batch_size         | false | Maximum number of vulnerabilities to upload to Kenna in foreach batch.  | 500 |
@@ -31,4 +31,4 @@ Start here to learn how to get personal access token:
 
 For extracting Image vulnerability data:
 
-   128iid:latest task=github_dependabot github_access_token=v954xxxxxx kenna_connector_id=15xxxx kenna_api_host=api.denist.dev kenna_api_key=xxx
+   128iid:latest task=github_dependabot github_token=v954xxxxxx github_organization_name=orgxxx kenna_connector_id=15xxxx kenna_api_host=api.denist.dev kenna_api_key=xxx
