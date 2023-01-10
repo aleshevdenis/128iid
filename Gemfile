@@ -2,7 +2,7 @@
 
 source "https://rubygems.org"
 
-ruby "3.1.2"
+ruby ">= 3.0.0"
 # git_source(:github) do |repo_name|
 #  repo_name = "#{repo_name}/#{repo_name}" unless repo_name.include?("/")
 #  "https://github.com/#{repo_name}.git"
@@ -15,14 +15,14 @@ gem "activesupport"
 gem "addressable"
 gem "aws-sdk-guardduty"
 gem "aws-sdk-inspector"
+gem "httparty"
+gem "ipaddress"
 gem "json"
 gem "json-write-stream"
 gem "rest-client"
+gem "rexml", ">= 3.2.5"
 gem "sanitize"
 gem "tty-pager"
-gem "httparty"
-gem "rexml", ">= 3.2.5"
-gem "ipaddress"
 
 group :development, :test do
   gem "pry"
