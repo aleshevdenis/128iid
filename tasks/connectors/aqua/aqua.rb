@@ -39,6 +39,11 @@ module Kenna
               required: false,
               default: 10,
               description: "Number of pages from Aqua (500 default) that should be batched to Kenna" },
+            { name: "aqua_console_https",
+              type: "boolean",
+              required: false,
+              default: false,
+              description: "Use HTTPS? true/false" },
             { name: "container_data",
               type: "boolean",
               required: true,
@@ -75,10 +80,12 @@ module Kenna
         password = @options[:aqua_password]
         aqua_port = @options[:aqua_console_port]
         aqua_console = @options[:aqua_console]
+        aqua_console_https = @options[:aqua_console_https]
+        aqua_prefix = aqua_console_https ? "https://" : "http://"
         aqua_url = if aqua_port
-                     "#{aqua_console}:#{aqua_port}"
+                     "#{aqua_prefix}#{aqua_console}:#{aqua_port}"
                    else
-                     aqua_console
+                     "#{aqua_prefix}#{aqua_console}"
                    end
         container_data = @options[:container_data]
         max_batch_size = @options[:batch_pages_count]
