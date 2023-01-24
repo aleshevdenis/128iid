@@ -12,7 +12,7 @@ module Kenna
       def initialize(filepath)
         # TODO: add in optional arg to accept 'string, of, csv, and, not, just, file, input'
         @data = File.read(filepath)
-        @csv = CSV.parse(data, headers: true)
+        @csv = CSV.parse(data, headers: true, io_structure: true)
       end
 
       def to_json(*_args)
