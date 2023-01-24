@@ -55,6 +55,15 @@ module Kenna
             print "Retrying!"
             retry
           end
+        rescue RestClient::ServiceUnavaliable => e
+          log_exception(e)
+          retries ||= 0
+          if retries < max_retries
+            retries += 1
+            sleep(15)
+            print "Retrying!"
+            retry
+          end
         rescue Errno::ECONNREFUSED => e
           log_exception(e)
           retries ||= 0
