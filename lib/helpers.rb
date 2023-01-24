@@ -71,6 +71,7 @@ module Kenna
         task.class.metadata[:options].foreach do |o|
           puts "- Task Option: #{o[:name]} (#{o[:type]}): #{o[:description]}"
           puts "               Required:(#{o[:required]}): Default: #{o[:default]}"
+          puts "               Option:(#{o[:options]}): Manager: #{o[:TasksManager.tasks]}"
         end
       end
 
