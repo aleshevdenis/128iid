@@ -69,7 +69,7 @@ module Kenna
             mappings = []
             rows = CSV.parse(File.open(mapping_file_path, "r:iso-8859-1:utf-8", &:read), headers: true)
             definitions = rows.select { |row| row["type"] == "definition" }
-            definitions.foreach do |row|
+            definitions.each do |row|
               mapping = {
                 name: row[1],
                 cwe: row[2],
@@ -79,18 +79,34 @@ module Kenna
               }
               mappings << mapping
             end
-            mappings_by_name = mappings.index_by { |m| m[:name] }
-            matchers = rows.select { |row| row["type"] == "match" }
-            matchers.foreach do |row|
-              mapping = mappings_by_name[row["name"]]
-              raise "Invalid mapping file. Matcher references non existent definition named: #{row[:name]}." unless mapping
 
-              matcher = {
-                source: row[2],
-                vuln_id: row[3],
-                ports: (row[4] || "").split(",").filter_map { |p| p.strip.to_i if p.strip.present? }
-              }
-              (mapping[:matches] ||= []) << matcher
+          mappings_by_name = mappings.index_by { |m| m[:name] }
+          total_matchers = 0
+          invalid_matchers = 0
+
+          matchers = rows.select { |row| row["type"] == "match" }
+          matchers.each do |row|
+            mapping = mappings_by_name[row["name"]]
+
+          if mapping.nil?
+            invalid_matchers += 1
+            raise "Invalid mapping file. Matcher references non existent definition named: #{row[:name]}."
+          end
+
+          matcher = {
+            source: row[2],
+            vuln_id: row[3],
+            ports: (row[4] || "").split(",").filter_map { |p| p.strip.to_i if p.strip.present? }
+          }
+
+          mapping[:matches] ||= []
+          mapping[:matches] << matcher
+
+          total_matchers += 1
+      end
+
+          puts "Total Matchers Processed: #{total_matchers}"
+          puts "Invalid Matchers: #{invalid_matchers}"
             end
             mappings
           end
