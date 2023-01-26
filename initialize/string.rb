@@ -10,12 +10,14 @@ class String
   end
 
   def to_string_identifier
+    gsub!(/\s+/, "") # remove whitespaces
+    downcase!
     tr!(".", "_")
     tr!("~", "_")
     tr!("/", "_")
     tr!("\\", "_")
     tr!("+", "_")
     tr!("-", "_")
-    downcase
+    self
   end
 end
