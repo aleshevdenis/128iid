@@ -17,6 +17,15 @@ module Kenna
         param = +""
         escaping = false
 
+        case options[:input_type]
+        when "json"
+          params_array = JSON.parse(params_array)
+        when "yaml"
+          params_array = YAML.load(params_array)
+        end
+
+        separator = options[:separator] || /[:\s;,]+/
+
         until input.empty?
           char = input.shift
           case char
