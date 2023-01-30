@@ -9,7 +9,7 @@ module Kenna
       end
 
       def self.tasks
-        @tasks.reject { |x| x.metadata[:disabled] }
+        @tasks.reject { |x| x.metadata[:disabled] }.map {|t| Concurrent::Promise.execute { t.run } }
       end
 
       def self.find_by_id(provided_id)
