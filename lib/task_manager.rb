@@ -13,7 +13,12 @@ module Kenna
       end
 
       def self.find_by_id(provided_id)
-        @tasks.find { |x| x.metadata[:id] == provided_id }
+        @tasks.select { |x| provided_ids.include? x.metadata[:id] }
+        @task.nil? ? 'Task not found' : task
+      end
+
+      def self.find_by_metadata(key,value)
+        @tasks.select { |x| x.metadata[key] == value }
       end
     end
   end
