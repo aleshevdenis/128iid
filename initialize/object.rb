@@ -1,12 +1,19 @@
 # frozen_string_literal: true
 
-$128iid_debug = false
-$128iid_running_local = true
+module Kenna
+  module 128iid
+    module DebugHelper
+      class << self
+        attr_accessor :debug, :running_local
 
-def debug?
-  $128iid_debug
-end
+        def debug?
+          @debug ||= false
+        end
 
-def running_local?
-  $128iid_running_local
+        def running_local?
+          @running_local ||= true
+        end
+      end
+    end
+  end
 end
